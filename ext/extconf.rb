@@ -15,13 +15,12 @@ require_header "zstd_errors.h", %w[ZSTD_ErrorCode]
 require_header "zstd.h", [
   "ZSTD_CCtx *",
   "ZSTD_DCtx *",
-  "ZSTD_strategy",
+  "ZSTD_CStream *",
+  "ZSTD_DStream *",
   "ZSTD_cParameter",
   "ZSTD_dParameter",
   "ZSTD_inBuffer",
-  "ZSTD_outBuffer",
-  "ZSTD_CStream *",
-  "ZSTD_DStream *"
+  "ZSTD_outBuffer"
 ]
 
 def require_library(name, functions)
@@ -35,8 +34,8 @@ require_library(
   %w[
     ZSTD_getErrorCode
     ZSTD_createCCtx
-    ZSTD_freeCCtx
     ZSTD_createDCtx
+    ZSTD_freeCCtx
     ZSTD_freeDCtx
     ZSTD_CCtx_setParameter
     ZSTD_DCtx_setParameter
@@ -56,6 +55,7 @@ dir_config extension_name
 
 # rubocop:disable Style/GlobalVars
 $srcs = %w[
+  error
   main
 ]
 .map { |name| "src/#{extension_name}/#{name}.c" }

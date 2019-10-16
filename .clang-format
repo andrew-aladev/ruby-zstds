@@ -1,0 +1,10 @@
+Language: Cpp
+BasedOnStyle: Google
+
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+BreakBeforeBraces: Stroustrup
+ColumnLimit: 0
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 2
+SpacesBeforeTrailingComments: 1
