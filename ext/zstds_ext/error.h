@@ -29,6 +29,6 @@ enum {
 
 zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code);
 
-NORETURN(void zstds_ext_raise_error(zstds_ext_result_t result));
+NORETURN(void zstds_ext_raise_error(zstds_ext_result_t ext_result));
 
 #endif // ZSTDS_EXT_ERROR_H

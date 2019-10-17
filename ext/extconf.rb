@@ -17,8 +17,10 @@ require_header "zstd.h", [
   "ZSTD_DCtx *",
   "ZSTD_CStream *",
   "ZSTD_DStream *",
+  "ZSTD_strategy",
   "ZSTD_cParameter",
   "ZSTD_dParameter",
+  "ZSTD_bounds",
   "ZSTD_inBuffer",
   "ZSTD_outBuffer"
 ]
@@ -32,6 +34,7 @@ end
 require_library(
   "zstd",
   %w[
+    ZSTD_isError
     ZSTD_getErrorCode
     ZSTD_createCCtx
     ZSTD_createDCtx
@@ -39,6 +42,8 @@ require_library(
     ZSTD_freeDCtx
     ZSTD_CCtx_setParameter
     ZSTD_DCtx_setParameter
+    ZSTD_cParam_getBounds
+    ZSTD_dParam_getBounds
     ZSTD_CStreamInSize
     ZSTD_CStreamOutSize
     ZSTD_DStreamInSize
@@ -57,6 +62,7 @@ dir_config extension_name
 $srcs = %w[
   error
   main
+  option
 ]
 .map { |name| "src/#{extension_name}/#{name}.c" }
 .freeze

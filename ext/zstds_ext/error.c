@@ -42,9 +42,9 @@ static inline NORETURN(void raise(const char *name, const char *description))
   rb_raise(error, "%s", description);
 }
 
-void zstds_ext_raise_error(zstds_ext_result_t result)
+void zstds_ext_raise_error(zstds_ext_result_t ext_result)
 {
-  switch (result) {
+  switch (ext_result) {
     case ZSTDS_EXT_ERROR_ALLOCATE_FAILED:
       raise("AllocateError", "allocate error");
     case ZSTDS_EXT_ERROR_VALIDATE_FAILED:
