@@ -177,7 +177,7 @@ module ZSTDS
       # "compression_level" is just a preset for other options.
       # We need to ignore combinations between "compression_level" and these options.
 
-      COMPRESSION_LEVEL_INHERIT_OPTIONS = %i[
+      COMPRESSION_LEVEL_PRESET_FOR_OPTIONS = %i[
         window_log
         hash_log
         chain_log
@@ -342,9 +342,9 @@ module ZSTDS
 
         compressor_option_combinations.select do |options|
           if options[:compression_level].nil?
-            COMPRESSION_LEVEL_INHERIT_OPTIONS.all? { |option| !options[option].nil? }
+            COMPRESSION_LEVEL_PRESET_FOR_OPTIONS.all? { |option| !options[option].nil? }
           else
-            COMPRESSION_LEVEL_INHERIT_OPTIONS.all? { |option| options[option].nil? }
+            COMPRESSION_LEVEL_PRESET_FOR_OPTIONS.all? { |option| options[option].nil? }
           end
         end
       end
