@@ -39,6 +39,7 @@ PLATFORMS
 DEPENDENCIES
   minitar (~> 0.9)
   minitest (~> 5.12)
+  rake
   rake-compiler (~> 1.0)
   rubocop (~> 0.75)
   rubocop-performance (~> 1.5)
