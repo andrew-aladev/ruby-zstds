@@ -19,10 +19,6 @@ module ZSTDS
       BUFFER_LENGTH_NAMES   = %i[destination_buffer_length].freeze
       BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
 
-      INVALID_COMPRESSOR_OPTIONS     = Option.get_invalid_compressor_options(BUFFER_LENGTH_NAMES).freeze
-      INVALID_DECOMPRESSOR_OPTIONS   = Option.get_invalid_decompressor_options(BUFFER_LENGTH_NAMES).freeze
-      COMPRESSOR_OPTION_COMBINATIONS = Option.get_compressor_option_combinations(BUFFER_LENGTH_NAMES).freeze
-
       # def test_invalid_arguments
       #   Validation::INVALID_STRINGS.each do |invalid_string|
       #     assert_raises ValidateError do
@@ -82,6 +78,10 @@ module ZSTDS
       # end
 
       # -----
+
+      def get_compressor_options(&block)
+        Option.get_compressor_options(BUFFER_LENGTH_NAMES, &block)
+      end
 
       def get_compatible_decompressor_options(compressor_options, &block)
         Option.get_compatible_decompressor_options(compressor_options, BUFFER_LENGTH_MAPPING, &block)
