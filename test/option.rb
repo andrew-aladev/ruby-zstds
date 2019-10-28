@@ -172,6 +172,12 @@ module ZSTDS
       ]
       .freeze
 
+      STRATEGIES = [
+        ZSTDS::Option::STRATEGIES.first,
+        ZSTDS::Option::STRATEGIES.last
+      ]
+      .freeze
+
       LDM_HASH_LOGS = [
         ZSTDS::Option::MIN_LDM_HASH_LOG,
         ZSTDS::Option::MAX_LDM_HASH_LOG
@@ -239,7 +245,7 @@ module ZSTDS
           :search_log    => SEARCH_LOGS,
           :min_match     => MIN_MATCHES,
           :target_length => TARGET_LENGTHS,
-          :strategy      => ZSTDS::Option::STRATEGIES
+          :strategy      => STRATEGIES
         )
 
         ldm_generator = OCG.new(
