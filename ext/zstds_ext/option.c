@@ -43,6 +43,13 @@ static inline int get_int_option_value(VALUE raw_value)
   return NUM2INT(raw_value);
 }
 
+static inline unsigned int get_ull_option_value(VALUE raw_value)
+{
+  Check_Type(raw_value, T_FIXNUM);
+
+  return NUM2ULL(raw_value);
+}
+
 static inline ZSTD_strategy get_strategy_option_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_SYMBOL);
@@ -111,6 +118,16 @@ void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_o
   option->value = value;
 }
 
+void zstds_ext_get_size_option(VALUE options, zstds_ext_size_option_t* option, const char* name)
+{
+  VALUE raw_value = get_raw_option_value(options, name);
+
+  option->has_value = raw_value != Qnil;
+  if (option->has_value) {
+    option->value = (zstds_ext_size_option_value_t)get_ull_option_value(raw_value);
+  }
+}
+
 unsigned long zstds_ext_get_ulong_option_value(VALUE options, const char* name)
 {
   VALUE raw_value = get_raw_option_value(options, name);
@@ -156,6 +173,13 @@ zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_co
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_nbWorkers, options->nb_workers);
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_jobSize, options->job_size);
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_overlapLog, options->overlap_log);
+
+  if (options->pledged_size.has_value) {
+    result = ZSTD_CCtx_setPledgedSrcSize(ctx, options->pledged_size.value);
+    if (ZSTD_isError(result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    }
+  }
 
   return 0;
 }

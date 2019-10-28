@@ -42,6 +42,7 @@ require_library(
     ZSTD_freeDCtx
     ZSTD_CCtx_setParameter
     ZSTD_DCtx_setParameter
+    ZSTD_CCtx_setPledgedSrcSize
     ZSTD_cParam_getBounds
     ZSTD_dParam_getBounds
     ZSTD_CStreamInSize
