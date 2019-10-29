@@ -5,6 +5,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <zstd.h>
 #include <zstd_errors.h>
 
@@ -43,7 +44,7 @@ static inline int get_int_option_value(VALUE raw_value)
   return NUM2INT(raw_value);
 }
 
-static inline unsigned int get_ull_option_value(VALUE raw_value)
+static inline unsigned long long get_ull_option_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_FIXNUM);
 
@@ -118,23 +119,23 @@ void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_o
   option->value = value;
 }
 
-void zstds_ext_get_size_option(VALUE options, zstds_ext_size_option_t* option, const char* name)
+void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name)
 {
   VALUE raw_value = get_raw_option_value(options, name);
 
   option->has_value = raw_value != Qnil;
   if (option->has_value) {
-    option->value = (zstds_ext_size_option_value_t)get_ull_option_value(raw_value);
+    option->value = (zstds_ext_ull_option_value_t)get_ull_option_value(raw_value);
   }
 }
 
-unsigned long zstds_ext_get_ulong_option_value(VALUE options, const char* name)
+size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
 {
   VALUE raw_value = get_raw_option_value(options, name);
 
   Check_Type(raw_value, T_FIXNUM);
 
-  return NUM2ULONG(raw_value);
+  return NUM2SIZET(raw_value);
 }
 
 // -- set params --
