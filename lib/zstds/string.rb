@@ -15,6 +15,8 @@ module ZSTDS
 
       options = Option.get_compressor_options options, BUFFER_LENGTH_NAMES
 
+      options[:pledged_size] = source.bytesize
+
       ZSTDS._native_compress_string source, options
     end
 
