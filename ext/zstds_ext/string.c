@@ -69,6 +69,58 @@ static inline zstds_ext_result_t increase_destination_buffer(
 
 // -- compress --
 
+static inline zstds_ext_result_t compress(
+  ZSTD_CCtx*     ctx,
+  const uint8_t* remaining_source, size_t remaining_source_length,
+  VALUE destination_value, size_t destination_buffer_length)
+{
+  // brs_ext_result_t ext_result;
+  //
+  // size_t destination_length                  = 0;
+  // size_t remaining_destination_buffer_length = destination_buffer_length;
+  //
+  // while (true) {
+  //   uint8_t* remaining_destination_buffer             = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+  //   size_t   prev_remaining_destination_buffer_length = remaining_destination_buffer_length;
+  //
+  //   BROTLI_BOOL result = BrotliEncoderCompressStream(
+  //     state_ptr,
+  //     BROTLI_OPERATION_FINISH,
+  //     &remaining_source_length, &remaining_source,
+  //     &remaining_destination_buffer_length, &remaining_destination_buffer,
+  //     NULL);
+  //
+  //   if (!result) {
+  //     return BRS_EXT_ERROR_UNEXPECTED;
+  //   }
+  //
+  //   destination_length += prev_remaining_destination_buffer_length - remaining_destination_buffer_length;
+  //
+  //   if (BrotliEncoderHasMoreOutput(state_ptr) || !BrotliEncoderIsFinished(state_ptr)) {
+  //     ext_result = increase_destination_buffer(
+  //       destination_value, destination_length,
+  //       &remaining_destination_buffer_length, destination_buffer_length);
+  //
+  //     if (ext_result != 0) {
+  //       return ext_result;
+  //     }
+  //
+  //     continue;
+  //   }
+  //
+  //   break;
+  // }
+  //
+  // int exception;
+  //
+  // RESIZE_BUFFER(destination_value, destination_length, exception);
+  // if (exception != 0) {
+  //   return BRS_EXT_ERROR_ALLOCATE_FAILED;
+  // }
+
+  return 0;
+}
+
 VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value, VALUE options)
 {
   GET_SOURCE_DATA(source_value);
@@ -87,35 +139,88 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
     zstds_ext_raise_error(ext_result);
   }
 
-  // if (destination_buffer_length == 0) {
-  //   destination_buffer_length = BRS_DEFAULT_DESTINATION_BUFFER_LENGTH_FOR_COMPRESSOR;
+  if (destination_buffer_length == 0) {
+    destination_buffer_length = ZSTD_CStreamOutSize();
+  }
+
+  int exception;
+
+  CREATE_BUFFER(destination_value, destination_buffer_length, exception);
+  if (exception != 0) {
+    ZSTD_freeCCtx(ctx);
+    zstds_ext_raise_error(ext_result);
+  }
+
+  ext_result = compress(
+    ctx,
+    remaining_source, remaining_source_length,
+    destination_value, destination_buffer_length);
+
+  ZSTD_freeCCtx(ctx);
+
+  if (ext_result != 0) {
+    zstds_ext_raise_error(ext_result);
+  }
+
+  return destination_value;
+}
+
+// -- decompress --
+
+static inline zstds_ext_result_t decompress(
+  ZSTD_DCtx*     ctx,
+  const uint8_t* remaining_source, size_t remaining_source_length,
+  VALUE destination_value, size_t destination_buffer_length)
+{
+  // brs_ext_result_t ext_result;
+  //
+  // size_t destination_length                  = 0;
+  // size_t remaining_destination_buffer_length = destination_buffer_length;
+  //
+  // while (true) {
+  //   uint8_t* remaining_destination_buffer             = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+  //   size_t   prev_remaining_destination_buffer_length = remaining_destination_buffer_length;
+  //
+  //   BrotliDecoderResult result = BrotliDecoderDecompressStream(
+  //     state_ptr,
+  //     &remaining_source_length, &remaining_source,
+  //     &remaining_destination_buffer_length, &remaining_destination_buffer,
+  //     NULL);
+  //
+  //   if (
+  //     result != BROTLI_DECODER_RESULT_SUCCESS &&
+  //     result != BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT &&
+  //     result != BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
+  //     BrotliDecoderErrorCode error_code = BrotliDecoderGetErrorCode(state_ptr);
+  //     return brs_ext_get_decompressor_error(error_code);
+  //   }
+  //
+  //   destination_length += prev_remaining_destination_buffer_length - remaining_destination_buffer_length;
+  //
+  //   if (result == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
+  //     ext_result = increase_destination_buffer(
+  //       destination_value, destination_length,
+  //       &remaining_destination_buffer_length, destination_buffer_length);
+  //
+  //     if (ext_result != 0) {
+  //       return ext_result;
+  //     }
+  //
+  //     continue;
+  //   }
+  //
+  //   break;
   // }
   //
   // int exception;
   //
-  // CREATE_BUFFER(destination_value, destination_buffer_length, exception);
+  // RESIZE_BUFFER(destination_value, destination_length, exception);
   // if (exception != 0) {
-  //   BrotliEncoderDestroyInstance(state_ptr);
   //   brs_ext_raise_error(BRS_EXT_ERROR_ALLOCATE_FAILED);
   // }
-  //
-  // ext_result = compress(
-  //   state_ptr,
-  //   remaining_source, remaining_source_length,
-  //   destination_value, destination_buffer_length);
-  //
-  // BrotliEncoderDestroyInstance(state_ptr);
-  //
-  // if (ext_result != 0) {
-  //   brs_ext_raise_error(ext_result);
-  // }
-  //
-  // return destination_value;
 
-  return Qnil;
+  return 0;
 }
-
-// -- decompress --
 
 VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value, VALUE options)
 {
@@ -135,32 +240,30 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
     zstds_ext_raise_error(ext_result);
   }
 
-  // if (destination_buffer_length == 0) {
-  //   destination_buffer_length = BRS_DEFAULT_DESTINATION_BUFFER_LENGTH_FOR_DECOMPRESSOR;
-  // }
-  //
-  // int exception;
-  //
-  // CREATE_BUFFER(destination_value, destination_buffer_length, exception);
-  // if (exception != 0) {
-  //   BrotliDecoderDestroyInstance(state_ptr);
-  //   brs_ext_raise_error(BRS_EXT_ERROR_ALLOCATE_FAILED);
-  // }
-  //
-  // ext_result = decompress(
-  //   state_ptr,
-  //   remaining_source, remaining_source_length,
-  //   destination_value, destination_buffer_length);
-  //
-  // BrotliDecoderDestroyInstance(state_ptr);
-  //
-  // if (ext_result != 0) {
-  //   brs_ext_raise_error(ext_result);
-  // }
-  //
-  // return destination_value;
+  if (destination_buffer_length == 0) {
+    destination_buffer_length = ZSTD_DStreamOutSize();
+  }
 
-  return Qnil;
+  int exception;
+
+  CREATE_BUFFER(destination_value, destination_buffer_length, exception);
+  if (exception != 0) {
+    ZSTD_freeDCtx(ctx);
+    zstds_ext_raise_error(ext_result);
+  }
+
+  ext_result = decompress(
+    ctx,
+    remaining_source, remaining_source_length,
+    destination_value, destination_buffer_length);
+
+  ZSTD_freeDCtx(ctx);
+
+  if (ext_result != 0) {
+    zstds_ext_raise_error(ext_result);
+  }
+
+  return destination_value;
 }
 
 void zstds_ext_string_exports(VALUE root_module)
