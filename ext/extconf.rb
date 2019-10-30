@@ -61,9 +61,11 @@ dir_config extension_name
 
 # rubocop:disable Style/GlobalVars
 $srcs = %w[
+  buffer
   error
   main
   option
+  string
 ]
 .map { |name| "src/#{extension_name}/#{name}.c" }
 .freeze
