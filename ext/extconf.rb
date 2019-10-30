@@ -15,11 +15,7 @@ require_header "zstd_errors.h", %w[ZSTD_ErrorCode]
 require_header "zstd.h", [
   "ZSTD_CCtx *",
   "ZSTD_DCtx *",
-  "ZSTD_CStream *",
-  "ZSTD_DStream *",
   "ZSTD_strategy",
-  "ZSTD_cParameter",
-  "ZSTD_dParameter",
   "ZSTD_bounds",
   "ZSTD_inBuffer",
   "ZSTD_outBuffer"
@@ -49,9 +45,7 @@ require_library(
     ZSTD_CStreamOutSize
     ZSTD_DStreamInSize
     ZSTD_DStreamOutSize
-    ZSTD_compressStream
-    ZSTD_flushStream
-    ZSTD_endStream
+    ZSTD_compressStream2
     ZSTD_decompressStream
   ]
 )

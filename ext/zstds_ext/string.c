@@ -59,64 +59,61 @@ static inline zstds_ext_result_t increase_destination_buffer(
 
 // -- utils --
 
-#define GET_SOURCE_DATA(source_value)                                 \
-  Check_Type(source_value, T_STRING);                                 \
-                                                                      \
-  const char*    source                  = RSTRING_PTR(source_value); \
-  size_t         source_length           = RSTRING_LEN(source_value); \
-  const uint8_t* remaining_source        = (const uint8_t*)source;    \
-  size_t         remaining_source_length = source_length;
+#define GET_SOURCE_DATA(source_value)                    \
+  Check_Type(source_value, T_STRING);                    \
+                                                         \
+  const char* source        = RSTRING_PTR(source_value); \
+  size_t      source_length = RSTRING_LEN(source_value); \
+                                                         \
+  ZSTD_inBuffer source_buffer;                           \
+  source_buffer.src  = source;                           \
+  source_buffer.size = source_length;                    \
+  source_buffer.pos  = 0;
 
 // -- compress --
 
-static inline zstds_ext_result_t compress(
-  ZSTD_CCtx*     ctx,
-  const uint8_t* remaining_source, size_t remaining_source_length,
-  VALUE destination_value, size_t destination_buffer_length)
+static inline zstds_ext_result_t compress(ZSTD_CCtx* ctx, ZSTD_inBuffer* source_buffer_ptr, VALUE destination_value, size_t destination_buffer_length)
 {
-  // brs_ext_result_t ext_result;
-  //
-  // size_t destination_length                  = 0;
-  // size_t remaining_destination_buffer_length = destination_buffer_length;
-  //
-  // while (true) {
-  //   uint8_t* remaining_destination_buffer             = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
-  //   size_t   prev_remaining_destination_buffer_length = remaining_destination_buffer_length;
-  //
-  //   BROTLI_BOOL result = BrotliEncoderCompressStream(
-  //     state_ptr,
-  //     BROTLI_OPERATION_FINISH,
-  //     &remaining_source_length, &remaining_source,
-  //     &remaining_destination_buffer_length, &remaining_destination_buffer,
-  //     NULL);
-  //
-  //   if (!result) {
-  //     return BRS_EXT_ERROR_UNEXPECTED;
-  //   }
-  //
-  //   destination_length += prev_remaining_destination_buffer_length - remaining_destination_buffer_length;
-  //
-  //   if (BrotliEncoderHasMoreOutput(state_ptr) || !BrotliEncoderIsFinished(state_ptr)) {
-  //     ext_result = increase_destination_buffer(
-  //       destination_value, destination_length,
-  //       &remaining_destination_buffer_length, destination_buffer_length);
-  //
-  //     if (ext_result != 0) {
-  //       return ext_result;
-  //     }
-  //
-  //     continue;
-  //   }
-  //
-  //   break;
-  // }
-  //
-  // int exception;
-  //
-  // RESIZE_BUFFER(destination_value, destination_length, exception);
-  // if (exception != 0) {
-  //   return BRS_EXT_ERROR_ALLOCATE_FAILED;
-  // }
+  zstds_result_t     result;
+  zstds_ext_result_t ext_result;
+
+  ZSTD_outBuffer destination_buffer;
+  size_t         destination_length                  = 0;
+  size_t         remaining_destination_buffer_length = destination_buffer_length;
+
+  while (true) {
+    destination_buffer.dst  = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+    destination_buffer.size = remaining_destination_buffer_length;
+    destination_buffer.pos  = 0;
+
+    result = ZSTD_compressStream2(ctx, &destination_buffer, source_buffer_ptr, ZSTD_e_end);
+    if (ZSTD_isError(result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    }
+
+    destination_length += destination_buffer.pos;
+
+    if (result != 0) {
+      ext_result = increase_destination_buffer(
+        destination_value, destination_length,
+        &remaining_destination_buffer_length, destination_buffer_length);
+
+      if (ext_result != 0) {
+        return ext_result;
+      }
+
+      continue;
+    }
+
+    break;
+  }
+
+  int exception;
+
+  RESIZE_BUFFER(destination_value, destination_length, exception);
+  if (exception != 0) {
+    return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
+  }
 
   return 0;
 }
@@ -151,10 +148,7 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
     zstds_ext_raise_error(ext_result);
   }
 
-  ext_result = compress(
-    ctx,
-    remaining_source, remaining_source_length,
-    destination_value, destination_buffer_length);
+  ext_result = compress(ctx, &source_buffer, destination_value, destination_buffer_length);
 
   ZSTD_freeCCtx(ctx);
 
@@ -167,57 +161,48 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
 
 // -- decompress --
 
-static inline zstds_ext_result_t decompress(
-  ZSTD_DCtx*     ctx,
-  const uint8_t* remaining_source, size_t remaining_source_length,
-  VALUE destination_value, size_t destination_buffer_length)
+static inline zstds_ext_result_t decompress(ZSTD_DCtx* ctx, ZSTD_inBuffer* source_buffer_ptr, VALUE destination_value, size_t destination_buffer_length)
 {
-  // brs_ext_result_t ext_result;
-  //
-  // size_t destination_length                  = 0;
-  // size_t remaining_destination_buffer_length = destination_buffer_length;
-  //
-  // while (true) {
-  //   uint8_t* remaining_destination_buffer             = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
-  //   size_t   prev_remaining_destination_buffer_length = remaining_destination_buffer_length;
-  //
-  //   BrotliDecoderResult result = BrotliDecoderDecompressStream(
-  //     state_ptr,
-  //     &remaining_source_length, &remaining_source,
-  //     &remaining_destination_buffer_length, &remaining_destination_buffer,
-  //     NULL);
-  //
-  //   if (
-  //     result != BROTLI_DECODER_RESULT_SUCCESS &&
-  //     result != BROTLI_DECODER_RESULT_NEEDS_MORE_INPUT &&
-  //     result != BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
-  //     BrotliDecoderErrorCode error_code = BrotliDecoderGetErrorCode(state_ptr);
-  //     return brs_ext_get_decompressor_error(error_code);
-  //   }
-  //
-  //   destination_length += prev_remaining_destination_buffer_length - remaining_destination_buffer_length;
-  //
-  //   if (result == BROTLI_DECODER_RESULT_NEEDS_MORE_OUTPUT) {
-  //     ext_result = increase_destination_buffer(
-  //       destination_value, destination_length,
-  //       &remaining_destination_buffer_length, destination_buffer_length);
-  //
-  //     if (ext_result != 0) {
-  //       return ext_result;
-  //     }
-  //
-  //     continue;
-  //   }
-  //
-  //   break;
-  // }
-  //
-  // int exception;
-  //
-  // RESIZE_BUFFER(destination_value, destination_length, exception);
-  // if (exception != 0) {
-  //   brs_ext_raise_error(BRS_EXT_ERROR_ALLOCATE_FAILED);
-  // }
+  zstds_result_t     result;
+  zstds_ext_result_t ext_result;
+
+  ZSTD_outBuffer destination_buffer;
+  size_t         destination_length                  = 0;
+  size_t         remaining_destination_buffer_length = destination_buffer_length;
+
+  while (true) {
+    destination_buffer.dst  = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+    destination_buffer.size = remaining_destination_buffer_length;
+    destination_buffer.pos  = 0;
+
+    result = ZSTD_decompressStream(ctx, &destination_buffer, source_buffer_ptr);
+    if (ZSTD_isError(result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    }
+
+    destination_length += destination_buffer.pos;
+
+    if (result != 0) {
+      ext_result = increase_destination_buffer(
+        destination_value, destination_length,
+        &remaining_destination_buffer_length, destination_buffer_length);
+
+      if (ext_result != 0) {
+        return ext_result;
+      }
+
+      continue;
+    }
+
+    break;
+  }
+
+  int exception;
+
+  RESIZE_BUFFER(destination_value, destination_length, exception);
+  if (exception != 0) {
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
+  }
 
   return 0;
 }
@@ -252,10 +237,7 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
     zstds_ext_raise_error(ext_result);
   }
 
-  ext_result = decompress(
-    ctx,
-    remaining_source, remaining_source_length,
-    destination_value, destination_buffer_length);
+  ext_result = decompress(ctx, &source_buffer, destination_value, destination_buffer_length);
 
   ZSTD_freeDCtx(ctx);
 

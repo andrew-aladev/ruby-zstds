@@ -173,7 +173,6 @@ zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_co
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_dictIDFlag, options->dict_id_flag);
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_nbWorkers, options->nb_workers);
   SET_COMPRESSOR_PARAM(ctx, ZSTD_c_jobSize, options->job_size);
-  SET_COMPRESSOR_PARAM(ctx, ZSTD_c_overlapLog, options->overlap_log);
 
   if (options->pledged_size.has_value) {
     result = ZSTD_CCtx_setPledgedSrcSize(ctx, options->pledged_size.value);
@@ -250,7 +249,6 @@ void zstds_ext_option_exports(VALUE root_module)
   EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_ldmHashRateLog, UINT, "LDM_HASH_RATE_LOG");
   EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_nbWorkers, UINT, "NB_WORKERS");
   EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_jobSize, UINT, "JOB_SIZE");
-  EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_overlapLog, UINT, "OVERLAP_LOG");
 
   EXPORT_DECOMPRESSOR_PARAM_BOUNDS(module, ZSTD_d_windowLogMax, UINT, "WINDOW_LOG_MAX");
 }

@@ -44,7 +44,6 @@ module ZSTDS
           yield({ :ldm_hash_rate_log   => invalid_integer })
           yield({ :nb_workers          => invalid_integer })
           yield({ :job_size            => invalid_integer })
-          yield({ :overlap_log         => invalid_integer })
         end
 
         yield({ :window_log => ZSTDS::Option::MIN_WINDOW_LOG - 1 })
@@ -82,9 +81,6 @@ module ZSTDS
 
         yield({ :job_size => ZSTDS::Option::MIN_JOB_SIZE - 1 })
         yield({ :job_size => ZSTDS::Option::MAX_JOB_SIZE + 1 })
-
-        yield({ :overlap_log => ZSTDS::Option::MIN_OVERLAP_LOG - 1 })
-        yield({ :overlap_log => ZSTDS::Option::MAX_OVERLAP_LOG + 1 })
 
         (Validation::INVALID_SYMBOLS - [nil]).each do |invalid_symbol|
           yield({ :strategy => invalid_symbol })
@@ -214,12 +210,6 @@ module ZSTDS
       ]
       .freeze
 
-      OVERLAP_LOGS = [
-        ZSTDS::Option::MIN_OVERLAP_LOG,
-        ZSTDS::Option::MAX_OVERLAP_LOG
-      ]
-      .freeze
-
       WINDOW_LOG_MAXES = [
         ZSTDS::Option::MIN_WINDOW_LOG_MAX,
         ZSTDS::Option::MAX_WINDOW_LOG_MAX
@@ -271,9 +261,8 @@ module ZSTDS
           :dict_id_flag => BOOLS
         )
         .mix(
-          :nb_workers  => NB_WORKERS,
-          :job_size    => JOB_SIZES,
-          :overlap_log => OVERLAP_LOGS
+          :nb_workers => NB_WORKERS,
+          :job_size   => JOB_SIZES
         )
 
         complete_generator = buffer_length_generator.and(main_generator).mix other_generator

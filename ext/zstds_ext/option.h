@@ -55,7 +55,6 @@ typedef struct {
   zstds_ext_option_t     dict_id_flag;
   zstds_ext_option_t     nb_workers;
   zstds_ext_option_t     job_size;
-  zstds_ext_option_t     overlap_log;
   zstds_ext_ull_option_t pledged_size;
 } zstds_ext_compressor_options_t;
 
@@ -93,7 +92,6 @@ void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, con
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, dict_id_flag);                  \
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, nb_workers);                    \
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, job_size);                      \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, overlap_log);                   \
   ZSTDS_EXT_GET_ULL_OPTION(options, compressor_options, pledged_size);
 
 #define ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options)      \
