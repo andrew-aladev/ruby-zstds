@@ -28,7 +28,8 @@ module ZSTDS
       :checksum_flag                 => nil,
       :dict_id_flag                  => nil,
       :nb_workers                    => nil,
-      :job_size                      => nil
+      :job_size                      => nil,
+      :overlap_log                   => nil
     }
     .freeze
 
@@ -152,6 +153,13 @@ module ZSTDS
         Validation.validate_not_negative_integer job_size
         raise ValidateError, "invalid job size" if
           job_size < MIN_JOB_SIZE || job_size > MAX_JOB_SIZE
+      end
+
+      overlap_log = options[:overlap_log]
+      unless overlap_log.nil?
+        Validation.validate_not_negative_integer overlap_log
+        raise ValidateError, "invalid overlap log" if
+          overlap_log < MIN_OVERLAP_LOG || overlap_log > MAX_OVERLAP_LOG
       end
 
       options

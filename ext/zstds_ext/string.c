@@ -92,6 +92,7 @@ static inline zstds_ext_result_t compress(ZSTD_CCtx* ctx, ZSTD_inBuffer* source_
     }
 
     destination_length += destination_buffer.pos;
+    remaining_destination_buffer_length -= destination_buffer.pos;
 
     if (result != 0) {
       ext_result = increase_destination_buffer(
@@ -181,6 +182,7 @@ static inline zstds_ext_result_t decompress(ZSTD_DCtx* ctx, ZSTD_inBuffer* sourc
     }
 
     destination_length += destination_buffer.pos;
+    remaining_destination_buffer_length -= destination_buffer.pos;
 
     if (result != 0) {
       ext_result = increase_destination_buffer(
