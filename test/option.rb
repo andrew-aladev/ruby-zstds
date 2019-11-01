@@ -177,7 +177,7 @@ module ZSTDS
 
       STRATEGIES = [
         ZSTDS::Option::STRATEGIES.first,
-        ZSTDS::Option::STRATEGIES[[2, ZSTDS::Option::STRATEGIES.length - 1].min]
+        ZSTDS::Option::STRATEGIES[[4, ZSTDS::Option::STRATEGIES.length - 1].min]
       ]
       .freeze
 
@@ -269,7 +269,8 @@ module ZSTDS
         # other
 
         flags_generator = OCG.new(
-          :content_size_flag => BOOLS,
+          # TODO: content size is broken https://github.com/facebook/zstd/issues/1863.
+          :content_size_flag => [true],
           :checksum_flag     => BOOLS,
           :dict_id_flag      => BOOLS
         )
@@ -278,7 +279,7 @@ module ZSTDS
           :nb_workers => [NB_WORKERS.first]
         )
 
-        if ZSTDS::Option::MAX_NB_WORKERS != 0
+        if NB_WORKERS.first != NB_WORKERS.last
           # Multithreaded support is enabled.
           thread_generator = thread_generator.or(
             :nb_workers  => [NB_WORKERS.last],
