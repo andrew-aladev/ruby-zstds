@@ -114,29 +114,43 @@ static inline zstds_ext_result_t read_more_source(
   return 0;
 }
 
-#define BUFFERED_READ_SOURCE(function, ...)               \
-  while (true) {                                          \
-    ext_result = function(__VA_ARGS__);                   \
-    if (ext_result != 0) {                                \
-      return ext_result;                                  \
-    }                                                     \
-                                                          \
-    ext_result = read_more_source(                        \
-      source_file,                                        \
-      &source, &source_length,                            \
-      source_buffer, source_buffer_length);               \
-                                                          \
-    if (ext_result == ZSTDS_EXT_FILE_READ_FINISHED) {     \
-      if (source_length != 0) {                           \
-        /* ZSTD won't provide any remainder by design. */ \
-        return ZSTDS_EXT_ERROR_READ_IO;                   \
-      }                                                   \
-      break;                                              \
-    }                                                     \
-    else if (ext_result != 0) {                           \
-      return ext_result;                                  \
-    }                                                     \
-  }
+#define BUFFERED_READ_SOURCE(function, ...)                 \
+  do {                                                      \
+    bool is_function_called = false;                        \
+                                                            \
+    while (true) {                                          \
+      ext_result = read_more_source(                        \
+        source_file,                                        \
+        &source, &source_length,                            \
+        source_buffer, source_buffer_length);               \
+                                                            \
+      if (ext_result == ZSTDS_EXT_FILE_READ_FINISHED) {     \
+        if (source_length != 0) {                           \
+          /* ZSTD won't provide any remainder by design. */ \
+          return ZSTDS_EXT_ERROR_READ_IO;                   \
+        }                                                   \
+        break;                                              \
+      }                                                     \
+      else if (ext_result != 0) {                           \
+        return ext_result;                                  \
+      }                                                     \
+                                                            \
+      ext_result = function(__VA_ARGS__);                   \
+      if (ext_result != 0) {                                \
+        return ext_result;                                  \
+      }                                                     \
+                                                            \
+      is_function_called = true;                            \
+    }                                                       \
+                                                            \
+    if (!is_function_called) {                              \
+      /* Function should be called at least once. */        \
+      ext_result = function(__VA_ARGS__);                   \
+      if (ext_result != 0) {                                \
+        return ext_result;                                  \
+      }                                                     \
+    }                                                       \
+  } while (false);
 
 // Algorithm has written data into destination buffer.
 // We need to write this data into file.
@@ -392,7 +406,7 @@ static inline zstds_ext_result_t buffered_decompress(
 
     *destination_length_ptr += out_buffer.pos;
 
-    if (result != 0) {
+    if (out_buffer.pos == out_buffer.size) {
       ext_result = flush_destination_buffer(
         destination_file,
         destination_buffer, destination_length_ptr, destination_buffer_length);
