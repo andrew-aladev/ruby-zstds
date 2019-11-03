@@ -27,7 +27,34 @@ fi
 bash -cl "\
   rvm use '.'; \
   gem install bundler && \
-  bundle install && \
+  bundle install \
+"
+
+# Compiling library from source.
+ZSTD_BRANCH="v1.4.3"
+
+build="build"
+mkdir -p "$build"
+cd "$build"
+
+# Remove orphaned directory.
+rm -rf "zstd"
+git clone "https://github.com/facebook/zstd.git" --single-branch --branch "$ZSTD_BRANCH" --depth 1 "zstd"
+cd "zstd"
+
+make clean
+make -j2
+
+# "sudo" may be required for "/usr/local".
+if command -v sudo > /dev/null 2>&1; then
+  sudo make install
+else
+  make install
+fi
+
+bash -cl "\
+  cd ../.. && \
+  rvm use '.'; \
   bundle exec rake clean && \
   bundle exec rake \
 "

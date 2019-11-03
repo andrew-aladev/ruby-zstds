@@ -10,18 +10,6 @@ arch:
   - amd64
   - arm64
 
-dist: bionic
-
-addons:
-  apt:
-    packages:
-      - libzstd-dev
-    update: true
-  homebrew:
-    packages:
-      - zstd
-    update: true
-
 before_install:
   - gem install bundler
 
