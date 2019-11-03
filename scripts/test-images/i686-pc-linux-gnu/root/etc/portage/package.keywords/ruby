@@ -1,0 +1,17 @@
+dev-lang/ruby:2.6 ~x86
+
+virtual/rubygems ~x86
+dev-ruby/rubygems ~x86
+dev-ruby/bundler ~x86
+dev-ruby/rake ~x86
+dev-ruby/racc ~x86
+dev-ruby/rdoc ~x86
+
+dev-ruby/json ~x86
+dev-ruby/xmlrpc ~x86
+dev-ruby/did_you_mean ~x86
+dev-ruby/net-telnet ~x86
+dev-ruby/power_assert ~x86
+dev-ruby/kpeg ~x86
+dev-ruby/test-unit ~x86
+dev-ruby/minitest ~x86

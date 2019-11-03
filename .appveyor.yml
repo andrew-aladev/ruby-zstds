@@ -1,0 +1,13 @@
+image: Ubuntu
+
+environment:
+  matrix:
+    - RUBY_VERSION: 26
+
+init:
+  - sh: sudo apt-get install -y libzstd-dev
+
+test_script:
+  - sh: scripts/ci_test.sh
+
+build: off

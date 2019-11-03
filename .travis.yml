@@ -1,0 +1,23 @@
+language: ruby
+rvm:
+  - 2.6
+
+os:
+  - linux
+  - osx
+
+addons:
+  apt:
+    packages:
+      - libzstd-dev
+    update: true
+  homebrew:
+    packages:
+      - zstd
+    update: true
+
+before_install:
+  - gem install bundler
+
+script:
+  - scripts/ci_test.sh

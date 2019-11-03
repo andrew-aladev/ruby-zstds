@@ -1,0 +1,5 @@
+task:
+  only_if: $CIRRUS_BRANCH == 'master'
+  container:
+    image: puchuu/test-ruby-zstds_amd64-pc-linux-gnu:latest
+  script: /home/entrypoint.sh

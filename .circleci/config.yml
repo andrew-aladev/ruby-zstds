@@ -1,0 +1,11 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: puchuu/test-ruby-zstds_i686-pc-linux-gnu:latest
+    branches:
+      only:
+        - master
+    steps:
+      - run: /home/entrypoint.sh

@@ -130,103 +130,119 @@ module ZSTDS
       ]
       .freeze
 
-      # Max values are dangerous, it can provide out of memory exception.
-      # Using recommended values.
+      private_class_method def self.get_option_values(values, min, max)
+        values.map { |value| [[value, min].max, max].min }
+      end
 
-      COMPRESSION_LEVELS = [
+      # Absolute min values works too slow.
+      # Absolute max values are dangerous, it can provide out of memory exception.
+      # We can use more reasonable min and max values defined in "zstd/lib/compress/zstd_compress.c".
+
+      COMPRESSION_LEVELS = get_option_values(
+        [3, 16],
         ZSTDS::Option::MIN_COMPRESSION_LEVEL,
-        [3, ZSTDS::Option::MAX_COMPRESSION_LEVEL].min
-      ]
+        ZSTDS::Option::MAX_COMPRESSION_LEVEL
+      )
       .freeze
 
-      WINDOW_LOGS = [
+      WINDOW_LOGS = get_option_values(
+        [17, 22],
         ZSTDS::Option::MIN_WINDOW_LOG,
-        [23, ZSTDS::Option::MAX_WINDOW_LOG].min
-      ]
+        ZSTDS::Option::MAX_WINDOW_LOG
+      )
       .freeze
 
-      HASH_LOGS = [
+      HASH_LOGS = get_option_values(
+        [17, 22],
         ZSTDS::Option::MIN_HASH_LOG,
-        [22, ZSTDS::Option::MAX_HASH_LOG].min
-      ]
+        ZSTDS::Option::MAX_HASH_LOG
+      )
       .freeze
 
-      CHAIN_LOGS = [
+      CHAIN_LOGS = get_option_values(
+        [16, 23],
         ZSTDS::Option::MIN_CHAIN_LOG,
-        [23, ZSTDS::Option::MAX_CHAIN_LOG].min
-      ]
+        ZSTDS::Option::MAX_CHAIN_LOG
+      )
       .freeze
 
-      SEARCH_LOGS = [
+      SEARCH_LOGS = get_option_values(
+        [1, 7],
         ZSTDS::Option::MIN_SEARCH_LOG,
-        [5, ZSTDS::Option::MAX_SEARCH_LOG].min
-      ]
+        ZSTDS::Option::MAX_SEARCH_LOG
+      )
       .freeze
 
-      MIN_MATCHES = [
+      MIN_MATCHES = get_option_values(
+        [3, 5],
         ZSTDS::Option::MIN_MIN_MATCH,
-        [4, ZSTDS::Option::MAX_MIN_MATCH].min
-      ]
+        ZSTDS::Option::MAX_MIN_MATCH
+      )
       .freeze
 
-      TARGET_LENGTHS = [
+      TARGET_LENGTHS = get_option_values(
+        [0, 64],
         ZSTDS::Option::MIN_TARGET_LENGTH,
-        [64, ZSTDS::Option::MAX_TARGET_LENGTH].min
-      ]
+        ZSTDS::Option::MAX_TARGET_LENGTH
+      )
       .freeze
 
       STRATEGIES = [
-        ZSTDS::Option::STRATEGIES.first,
-        ZSTDS::Option::STRATEGIES[[4, ZSTDS::Option::STRATEGIES.length - 1].min]
+        ZSTDS::Option::STRATEGIES[[2, ZSTDS::Option::STRATEGIES.length - 1].min],
+        ZSTDS::Option::STRATEGIES[[ZSTDS::Option::STRATEGIES.length - 3, 0].max]
       ]
       .freeze
 
-      LDM_HASH_LOGS = [
+      # LDM options are useless for small inputs.
+      # Using default values.
+
+      LDM_HASH_LOGS = get_option_values(
+        [0],
         ZSTDS::Option::MIN_LDM_HASH_LOG,
-        [23 - 7, ZSTDS::Option::MAX_LDM_HASH_LOG].min
-      ]
+        ZSTDS::Option::MAX_LDM_HASH_LOG
+      )
       .freeze
 
-      LDM_MIN_MATCHES = [
+      LDM_MIN_MATCHES = get_option_values(
+        [0],
         ZSTDS::Option::MIN_LDM_MIN_MATCH,
-        [64, ZSTDS::Option::MAX_LDM_MIN_MATCH].min
-      ]
+        ZSTDS::Option::MAX_LDM_MIN_MATCH
+      )
       .freeze
 
-      LDM_BUCKET_SIZE_LOGS = [
+      LDM_BUCKET_SIZE_LOGS = get_option_values(
+        [0],
         ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG,
-        [3, ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG].min
-      ]
+        ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG
+      )
       .freeze
 
-      LDM_HASH_RATE_LOGS = [
+      LDM_HASH_RATE_LOGS = get_option_values(
+        [0],
         ZSTDS::Option::MIN_LDM_HASH_RATE_LOG,
-        [7, ZSTDS::Option::MAX_LDM_HASH_RATE_LOG].min
-      ]
+        ZSTDS::Option::MAX_LDM_HASH_RATE_LOG
+      )
       .freeze
 
-      NB_WORKERS = [
+      NB_WORKERS = get_option_values(
+        [0, 2],
         ZSTDS::Option::MIN_NB_WORKERS,
-        [2, ZSTDS::Option::MAX_NB_WORKERS].min
-      ]
+        ZSTDS::Option::MAX_NB_WORKERS
+      )
       .freeze
 
-      JOB_SIZES = [
+      JOB_SIZES = get_option_values(
+        [128, 512],
         ZSTDS::Option::MIN_JOB_SIZE,
-        [256, ZSTDS::Option::MAX_JOB_SIZE].min
-      ]
+        ZSTDS::Option::MAX_JOB_SIZE
+      )
       .freeze
 
-      OVERLAP_LOGS = [
+      OVERLAP_LOGS = get_option_values(
+        [0, 1],
         ZSTDS::Option::MIN_OVERLAP_LOG,
-        [1, ZSTDS::Option::MAX_OVERLAP_LOG].min
-      ]
-      .freeze
-
-      WINDOW_LOG_MAXES = [
-        ZSTDS::Option::MIN_WINDOW_LOG_MAX,
-        [12, ZSTDS::Option::MAX_WINDOW_LOG_MAX].min
-      ]
+        ZSTDS::Option::MAX_OVERLAP_LOG
+      )
       .freeze
 
       private_class_method def self.get_buffer_length_option_generator(buffer_length_names)
@@ -297,28 +313,16 @@ module ZSTDS
         yield complete_generator.next until complete_generator.finished?
       end
 
-      private_class_method def self.get_decompressor_options(buffer_length_names, &_block)
-        buffer_length_generator = get_buffer_length_option_generator buffer_length_names
-
-        main_generator = OCG.new(
-          :window_log_max => WINDOW_LOG_MAXES
-        )
-
-        complete_generator = buffer_length_generator.and main_generator
-
-        yield complete_generator.next until complete_generator.finished?
-      end
-
       def self.get_compatible_decompressor_options(compressor_options, buffer_length_name_mapping, &_block)
-        buffer_length_names = buffer_length_name_mapping.values
+        decompressor_options = {
+          :window_log_max => compressor_options[:window_log]
+        }
 
-        get_decompressor_options(buffer_length_names) do |decompressor_options|
-          same_buffer_length_values = buffer_length_name_mapping.all? do |compressor_name, decompressor_name|
-            decompressor_options[decompressor_name] == compressor_options[compressor_name]
-          end
-
-          yield decompressor_options if same_buffer_length_values
+        buffer_length_name_mapping.each do |compressor_name, decompressor_name|
+          decompressor_options[decompressor_name] = compressor_options[compressor_name]
         end
+
+        yield decompressor_options
       end
     end
   end
