@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <zstd.h>
-#include <zstd_errors.h>
 
 #include "ruby.h"
 #include "zstds_ext/common.h"

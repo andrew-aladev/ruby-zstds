@@ -6,6 +6,12 @@ os:
   - linux
   - osx
 
+arch:
+  - amd64
+  - arm64
+
+dist: bionic
+
 addons:
   apt:
     packages:
