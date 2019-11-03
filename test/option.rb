@@ -232,7 +232,7 @@ module ZSTDS
       .freeze
 
       JOB_SIZES = get_option_values(
-        [128, 512],
+        [64 * 1024, 512 * 1024],
         ZSTDS::Option::MIN_JOB_SIZE,
         ZSTDS::Option::MAX_JOB_SIZE
       )
