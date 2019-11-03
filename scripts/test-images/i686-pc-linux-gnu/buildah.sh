@@ -16,7 +16,7 @@ copy ../entrypoint.sh /home/
 
 copy root/ /
 build emerge -v \
-  dev-vcs/git app-arch/zstd \
+  dev-vcs/git \
   dev-lang/ruby:2.6 virtual/rubygems
 
 build "update && upgrade && cleanup"

@@ -30,6 +30,12 @@ bash -cl "\
   bundle install \
 "
 
+# Fix path environment params.
+export PATH="$PATH:/usr/local/bin"
+export C_INCLUDE_PATH="$C_INCLUDE_PATH:/usr/local/include"
+export LIBRARY_PATH="$C_INCLUDE_PATH:/usr/local/lib"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
+
 # Compiling library from source.
 ZSTD_BRANCH="v1.4.3"
 
