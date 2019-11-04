@@ -3,6 +3,8 @@
 
 require "mkmf"
 
+$LDFLAGS << " -pthread" # rubocop:disable Style/GlobalVars
+
 def require_header(name, types = [])
   abort "Can't find #{name} header" unless find_header name
 
