@@ -119,7 +119,7 @@ VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
   decompressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
   VALUE bytes_read             = SIZET2NUM(in_buffer.pos);
-  VALUE needs_more_destination = out_buffer.pos == out_buffer.size ? Qtrue : Qfalse;
+  VALUE needs_more_destination = decompressor_ptr->remaining_destination_buffer_length == 0 ? Qtrue : Qfalse;
 
   return rb_ary_new_from_args(2, bytes_read, needs_more_destination);
 }

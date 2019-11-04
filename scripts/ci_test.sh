@@ -48,6 +48,9 @@ rm -rf "zstd"
 git clone "https://github.com/facebook/zstd.git" --single-branch --branch "$ZSTD_BRANCH" --depth 1 "zstd"
 cd "zstd"
 
+export CFLAGS="-DZSTD_MULTITHREAD=1"
+export CXXFLAGS="-DZSTD_MULTITHREAD=1"
+
 make clean
 make -j2
 

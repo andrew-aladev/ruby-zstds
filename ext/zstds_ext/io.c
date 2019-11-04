@@ -226,7 +226,7 @@ static inline zstds_ext_result_t buffered_compress(
 
     *destination_length_ptr += out_buffer.pos;
 
-    if (out_buffer.pos == out_buffer.size) {
+    if (*destination_length_ptr == destination_buffer_length) {
       ext_result = flush_destination_buffer(
         destination_file,
         destination_buffer, destination_length_ptr, destination_buffer_length);
@@ -406,7 +406,7 @@ static inline zstds_ext_result_t buffered_decompress(
 
     *destination_length_ptr += out_buffer.pos;
 
-    if (out_buffer.pos == out_buffer.size) {
+    if (*destination_length_ptr == destination_buffer_length) {
       ext_result = flush_destination_buffer(
         destination_file,
         destination_buffer, destination_length_ptr, destination_buffer_length);

@@ -197,7 +197,7 @@ static inline zstds_ext_result_t decompress(
     destination_length += out_buffer.pos;
     remaining_destination_buffer_length -= out_buffer.pos;
 
-    if (out_buffer.pos == out_buffer.size) {
+    if (remaining_destination_buffer_length == 0) {
       ext_result = increase_destination_buffer(
         destination_value, destination_length,
         &remaining_destination_buffer_length, destination_buffer_length);

@@ -119,7 +119,7 @@ VALUE zstds_ext_compress(VALUE self, VALUE source_value)
   compressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
   VALUE bytes_written          = SIZET2NUM(in_buffer.pos);
-  VALUE needs_more_destination = out_buffer.pos == out_buffer.size ? Qtrue : Qfalse;
+  VALUE needs_more_destination = compressor_ptr->remaining_destination_buffer_length == 0 ? Qtrue : Qfalse;
 
   return rb_ary_new_from_args(2, bytes_written, needs_more_destination);
 }
