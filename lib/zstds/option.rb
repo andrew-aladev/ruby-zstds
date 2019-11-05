@@ -3,6 +3,7 @@
 
 require "zstds_ext"
 
+require_relative "dictionary"
 require_relative "error"
 require_relative "validation"
 
@@ -29,7 +30,8 @@ module ZSTDS
       :dict_id_flag                  => nil,
       :nb_workers                    => nil,
       :job_size                      => nil,
-      :overlap_log                   => nil
+      :overlap_log                   => nil,
+      :dictionary                    => nil
     }
     .freeze
 
@@ -160,6 +162,11 @@ module ZSTDS
         Validation.validate_not_negative_integer overlap_log
         raise ValidateError, "invalid overlap log" if
           overlap_log < MIN_OVERLAP_LOG || overlap_log > MAX_OVERLAP_LOG
+      end
+
+      dictionary = options[:dictionary]
+      unless dictionary.nil?
+        raise ValidateError, "invalid dictionary" unless dictionary.is_a? Dictionary
       end
 
       options

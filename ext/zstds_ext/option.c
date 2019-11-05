@@ -10,6 +10,7 @@
 
 #include "ruby.h"
 #include "zstds_ext/common.h"
+#include "zstds_ext/dictionary.h"
 #include "zstds_ext/error.h"
 
 // -- values --
@@ -128,6 +129,11 @@ void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, con
   }
 }
 
+void zstds_ext_get_value_option(VALUE options, VALUE* option, const char* name)
+{
+  *option = get_raw_option_value(options, name);
+}
+
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
 {
   VALUE raw_value = get_raw_option_value(options, name);
@@ -149,6 +155,10 @@ size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
 
 #define SET_COMPRESSOR_PARAM(ctx, param, option) \
   SET_OPTION_VALUE(ZSTD_CCtx_setParameter, ctx, param, option);
+
+#define GET_DICTIONARY(dictionary)        \
+  zstds_ext_dictionary_t* dictionary_ptr; \
+  Data_Get_Struct(dictionary, zstds_ext_dictionary_t, dictionary_ptr);
 
 zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_compressor_options_t* options)
 {
@@ -181,6 +191,14 @@ zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_co
     }
   }
 
+  if (options->dictionary != Qnil) {
+    GET_DICTIONARY(options->dictionary);
+    result = ZSTD_CCtx_loadDictionary(ctx, dictionary_ptr->buffer, dictionary_ptr->size);
+    if (ZSTD_isError(result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    }
+  }
+
   return 0;
 }
 
@@ -192,6 +210,14 @@ zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_
   zstds_result_t result;
 
   SET_DECOMPRESSOR_PARAM(ctx, ZSTD_d_windowLogMax, options->window_log_max);
+
+  if (options->dictionary != Qnil) {
+    GET_DICTIONARY(options->dictionary);
+    result = ZSTD_DCtx_loadDictionary(ctx, dictionary_ptr->buffer, dictionary_ptr->size);
+    if (ZSTD_isError(result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    }
+  }
 
   return 0;
 }

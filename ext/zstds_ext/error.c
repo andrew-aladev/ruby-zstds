@@ -18,6 +18,8 @@ zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
     case ZSTD_error_tableLog_tooLarge:
     case ZSTD_error_maxSymbolValue_tooLarge:
     case ZSTD_error_maxSymbolValue_tooSmall:
+    case ZSTD_error_stage_wrong:
+    case ZSTD_error_init_missing:
     case ZSTD_error_workSpace_tooSmall:
     case ZSTD_error_srcSize_wrong:
     case ZSTD_error_dstSize_tooSmall:
@@ -30,6 +32,10 @@ zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
     case ZSTD_error_corruption_detected:
     case ZSTD_error_checksum_wrong:
       return ZSTDS_EXT_ERROR_DECOMPRESSOR_CORRUPTED_SOURCE;
+    case ZSTD_error_dictionary_corrupted:
+    case ZSTD_error_dictionary_wrong:
+    case ZSTD_error_dictionaryCreation_failed:
+      return ZSTDS_EXT_ERROR_CORRUPTED_DICTIONARY;
     default:
       return ZSTDS_EXT_ERROR_UNEXPECTED;
   }
@@ -58,6 +64,8 @@ void zstds_ext_raise_error(zstds_ext_result_t ext_result)
       raise("NotEnoughDestinationBufferError", "not enough destination buffer");
     case ZSTDS_EXT_ERROR_DECOMPRESSOR_CORRUPTED_SOURCE:
       raise("DecompressorCorruptedSourceError", "decompressor received corrupted source");
+    case ZSTDS_EXT_ERROR_CORRUPTED_DICTIONARY:
+      raise("CorruptedDictionaryError", "corrupted dictionary");
 
     case ZSTDS_EXT_ERROR_ACCESS_IO:
       raise("AccessIOError", "failed to access IO");

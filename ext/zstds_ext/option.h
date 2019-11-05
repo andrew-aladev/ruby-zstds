@@ -57,20 +57,26 @@ typedef struct {
   zstds_ext_option_t     job_size;
   zstds_ext_option_t     overlap_log;
   zstds_ext_ull_option_t pledged_size;
+  VALUE                  dictionary;
 } zstds_ext_compressor_options_t;
 
 typedef struct {
   zstds_ext_option_t window_log_max;
+  VALUE              dictionary;
 } zstds_ext_decompressor_options_t;
 
 void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_option_type_t type, const char* name);
 void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name);
+void zstds_ext_get_value_option(VALUE options, VALUE* option, const char* name);
 
 #define ZSTDS_EXT_GET_OPTION(options, target_options, type, name) \
   zstds_ext_get_option(options, &target_options.name, type, #name);
 
 #define ZSTDS_EXT_GET_ULL_OPTION(options, target_options, name) \
   zstds_ext_get_ull_option(options, &target_options.name, #name);
+
+#define ZSTDS_EXT_GET_VALUE_OPTION(options, target_options, name) \
+  zstds_ext_get_value_option(options, &target_options.name, #name);
 
 #define ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options)                                                               \
   zstds_ext_compressor_options_t compressor_options;                                                            \
@@ -94,12 +100,14 @@ void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, con
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, nb_workers);                    \
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, job_size);                      \
   ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, overlap_log);                   \
-  ZSTDS_EXT_GET_ULL_OPTION(options, compressor_options, pledged_size);
+  ZSTDS_EXT_GET_ULL_OPTION(options, compressor_options, pledged_size);                                          \
+  ZSTDS_EXT_GET_VALUE_OPTION(options, compressor_options, dictionary);
 
-#define ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options)      \
-  zstds_ext_decompressor_options_t decompressor_options; \
-                                                         \
-  ZSTDS_EXT_GET_OPTION(options, decompressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log_max);
+#define ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options)                                                \
+  zstds_ext_decompressor_options_t decompressor_options;                                           \
+                                                                                                   \
+  ZSTDS_EXT_GET_OPTION(options, decompressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log_max); \
+  ZSTDS_EXT_GET_VALUE_OPTION(options, decompressor_options, dictionary);
 
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name);
 

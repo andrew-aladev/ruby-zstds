@@ -12,6 +12,7 @@ module ZSTDS
   class NotEnoughDestinationBufferError  < BaseError; end
   class NotEnoughDestinationError        < BaseError; end
   class DecompressorCorruptedSourceError < BaseError; end
+  class CorruptedDictionaryError         < BaseError; end
 
   class AccessIOError < BaseError; end
   class ReadIOError   < BaseError; end
