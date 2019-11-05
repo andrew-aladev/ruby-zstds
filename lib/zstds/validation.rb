@@ -10,7 +10,7 @@ module ZSTDS
     end
 
     def self.validate_integer(value)
-      raise ValidateError, "invalid integer" unless value.is_a?(::Integer)
+      raise ValidateError, "invalid integer" unless value.is_a? ::Integer
     end
 
     def self.validate_positive_integer(value)

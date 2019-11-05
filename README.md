@@ -7,6 +7,21 @@
 
 See [zstd library](https://github.com/facebook/zstd).
 
+## Installation
+
+Please install zstd library first, use latest 1.4.3+ version.
+
+```sh
+gem install ruby-zstds
+```
+
+You can build it from source.
+
+```sh
+rake gem
+gem install pkg/ruby-zstds-*.gem
+```
+
 WIP
 
 ## License

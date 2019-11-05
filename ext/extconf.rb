@@ -13,7 +13,9 @@ def require_header(name, types = [])
   end
 end
 
-require_header "zstd_errors.h", %w[ZSTD_ErrorCode]
+require_header "zstd_errors.h", %w[
+  ZSTD_ErrorCode
+]
 require_header "zstd.h", [
   "ZSTD_CCtx *",
   "ZSTD_DCtx *",
@@ -22,6 +24,7 @@ require_header "zstd.h", [
   "ZSTD_inBuffer",
   "ZSTD_outBuffer"
 ]
+require_header "zdict.h"
 
 def require_library(name, functions)
   functions.each do |function|
@@ -49,6 +52,8 @@ require_library(
     ZSTD_DStreamOutSize
     ZSTD_compressStream2
     ZSTD_decompressStream
+    ZDICT_getDictID
+    ZDICT_trainFromBuffer
   ]
 )
 
@@ -60,6 +65,7 @@ $srcs = %w[
   stream/compressor
   stream/decompressor
   buffer
+  dictionary
   error
   io
   main
