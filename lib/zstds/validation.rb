@@ -33,6 +33,10 @@ module ZSTDS
       raise ValidateError, "invalid io" unless value.is_a? ::IO
     end
 
+    def self.validate_array(value)
+      raise ValidateError, "invalid array" unless value.is_a? ::Array
+    end
+
     def self.validate_hash(value)
       raise ValidateError, "invalid hash" unless value.is_a? ::Hash
     end

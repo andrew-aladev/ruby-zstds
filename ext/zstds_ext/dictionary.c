@@ -139,9 +139,9 @@ VALUE zstds_ext_get_dictionary_id(VALUE self)
 
 void zstds_ext_dictionary_exports(VALUE root_module)
 {
-  VALUE dictionary = rb_define_class_under(root_module, "Dictionary", rb_cObject);
+  VALUE dictionary = rb_define_class_under(root_module, "NativeDictionary", rb_cObject);
   rb_define_alloc_func(dictionary, zstds_ext_allocate_dictionary);
-  rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 3);
-  rb_define_method(dictionary, "size", zstds_ext_get_dictionary_size, 1);
-  rb_define_method(dictionary, "id", zstds_ext_get_dictionary_id, 1);
+  rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 2);
+  rb_define_method(dictionary, "size", zstds_ext_get_dictionary_size, 0);
+  rb_define_method(dictionary, "id", zstds_ext_get_dictionary_id, 0);
 }

@@ -26,6 +26,7 @@ module ZSTDS
       INVALID_BOOLS    = (TYPES - [true]).freeze
       INVALID_STRINGS  = (TYPES - %w[1 a]).freeze
       INVALID_SYMBOLS  = (TYPES - %i[a]).freeze
+      INVALID_ARRAYS   = (TYPES - [[]]).freeze
       INVALID_HASHES   = (TYPES - [{}]).freeze
       INVALID_IOS      = (TYPES - [::STDOUT]).freeze
       INVALID_CHARS    = (INVALID_NUMBERS & INVALID_STRINGS).freeze
