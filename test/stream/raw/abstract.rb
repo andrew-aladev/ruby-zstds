@@ -8,7 +8,7 @@ module ZSTDS
   module Test
     module Stream
       module Raw
-        class Abstract < Minitest::Unit::TestCase
+        class Abstract < Minitest::Test
           NOOP_PROC = Validation::NOOP_PROC
 
           def test_invalid_flush

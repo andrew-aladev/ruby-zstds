@@ -10,7 +10,7 @@ require_relative "validation"
 
 module ZSTDS
   module Test
-    class File < Minitest::Unit::TestCase
+    class File < Minitest::Test
       Target = ZSTDS::File
 
       SOURCE_PATH  = Common::SOURCE_PATH

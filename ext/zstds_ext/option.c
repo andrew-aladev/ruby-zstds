@@ -129,9 +129,19 @@ void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, con
   }
 }
 
-void zstds_ext_get_value_option(VALUE options, VALUE* option, const char* name)
+void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* name)
 {
-  *option = get_raw_option_value(options, name);
+  VALUE raw_value = get_raw_option_value(options, name);
+
+  if (raw_value != Qnil) {
+    VALUE root_module = rb_define_module(ZSTDS_EXT_MODULE_NAME);
+    VALUE dictionary  = rb_const_get_at(root_module, rb_intern("NativeDictionary"));
+    if (rb_obj_is_kind_of(raw_value, dictionary) != Qtrue) {
+      zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
+    }
+  }
+
+  *option = raw_value;
 }
 
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name)

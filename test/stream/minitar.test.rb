@@ -11,7 +11,7 @@ require_relative "../minitest"
 module ZSTDS
   module Test
     module Stream
-      class MinitarTest < Minitest::Unit::TestCase
+      class MinitarTest < Minitest::Test
         Reader = ZSTDS::Stream::Reader
         Writer = ZSTDS::Stream::Writer
 

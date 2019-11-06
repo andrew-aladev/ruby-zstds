@@ -10,7 +10,7 @@ require_relative "validation"
 
 module ZSTDS
   module Test
-    class String < Minitest::Unit::TestCase
+    class String < Minitest::Test
       Target = ZSTDS::String
 
       TEXTS       = Common::TEXTS

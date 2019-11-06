@@ -12,7 +12,7 @@ require_relative "../validation"
 module ZSTDS
   module Test
     module Stream
-      class WriterHelpers < Minitest::Unit::TestCase
+      class WriterHelpers < Minitest::Test
         Target = ZSTDS::Stream::Writer
         String = ZSTDS::String
 

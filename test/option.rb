@@ -1,14 +1,18 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "zstds/dictionary"
 require "zstds/option"
 require "ocg"
 
+require_relative "common"
 require_relative "validation"
 
 module ZSTDS
   module Test
     module Option
+      DICTIONARY_SAMPLES = Common::DICTIONARY_SAMPLES
+
       private_class_method def self.get_invalid_buffer_length_options(buffer_length_names, &_block)
         buffer_length_names.each do |name|
           (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
@@ -98,6 +102,10 @@ module ZSTDS
           yield({ :checksum_flag                 => invalid_bool })
           yield({ :dict_id_flag                  => invalid_bool })
         end
+
+        (Validation::INVALID_DICTIONARIES - [nil]).each do |invalid_dictionary|
+          yield({ :dictionary => invalid_dictionary })
+        end
       end
 
       def self.get_invalid_decompressor_options(buffer_length_names, &block)
@@ -113,6 +121,10 @@ module ZSTDS
 
         yield({ :window_log_max => ZSTDS::Option::MIN_WINDOW_LOG_MAX - 1 })
         yield({ :window_log_max => ZSTDS::Option::MAX_WINDOW_LOG_MAX + 1 })
+
+        (Validation::INVALID_DICTIONARIES - [nil]).each do |invalid_dictionary|
+          yield({ :dictionary => invalid_dictionary })
+        end
       end
 
       # -----
@@ -245,6 +257,12 @@ module ZSTDS
       )
       .freeze
 
+      DICTIONARIES = [
+        nil,
+        Dictionary.new(DICTIONARY_SAMPLES)
+      ]
+      .freeze
+
       private_class_method def self.get_buffer_length_option_generator(buffer_length_names)
         OCG.new(
           Hash[buffer_length_names.map { |name| [name, BUFFER_LENGTHS] }]
@@ -280,7 +298,11 @@ module ZSTDS
           :ldm_hash_rate_log             => LDM_HASH_RATE_LOGS
         )
 
-        main_generator = general_generator.and ldm_generator
+        dictionary_generator = OCG.new(
+          :dictionary => DICTIONARIES
+        )
+
+        main_generator = general_generator.and(ldm_generator).and dictionary_generator
 
         # other
 
@@ -315,7 +337,8 @@ module ZSTDS
 
       def self.get_compatible_decompressor_options(compressor_options, buffer_length_name_mapping, &_block)
         decompressor_options = {
-          :window_log_max => compressor_options[:window_log]
+          :window_log_max => compressor_options[:window_log],
+          :dictionary     => compressor_options[:dictionary]
         }
 
         buffer_length_name_mapping.each do |compressor_name, decompressor_name|

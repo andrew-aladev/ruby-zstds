@@ -10,7 +10,7 @@ require_relative "../validation"
 module ZSTDS
   module Test
     module Stream
-      class Abstract < Minitest::Unit::TestCase
+      class Abstract < Minitest::Test
         SOURCE_PATH = Common::SOURCE_PATH
 
         def test_invalid_initialize
