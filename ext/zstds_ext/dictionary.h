@@ -14,7 +14,7 @@ typedef struct {
   size_t   size;
 } zstds_ext_dictionary_t;
 
-#define ZSTDS_EXT_DEFAULT_DICT_CAPACITY (1 << 17); // 128 KB
+#define ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY (1 << 17); // 128 KB
 
 VALUE zstds_ext_allocate_dictionary(VALUE klass);
 VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options);

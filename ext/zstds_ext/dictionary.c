@@ -59,7 +59,7 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
   ZSTDS_EXT_GET_BUFFER_LENGTH_OPTION(options, capacity);
 
   if (capacity == 0) {
-    capacity = ZSTDS_EXT_DEFAULT_DICT_CAPACITY;
+    capacity = ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY;
   }
 
   uint8_t* buffer = dictionary_ptr->buffer;

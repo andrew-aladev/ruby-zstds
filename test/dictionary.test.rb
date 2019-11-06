@@ -14,10 +14,10 @@ module ZSTDS
       Target = ZSTDS::Dictionary
       String = ZSTDS::String
 
-      TEXTS              = Common::TEXTS
-      DICTIONARY_SAMPLES = Common::DICTIONARY_SAMPLES
+      TEXTS   = Common::TEXTS
+      SAMPLES = Common::DICTIONARY_SAMPLES
 
-      DICTIONARY_CAPACITIES = [
+      CAPACITIES = [
         0,
         1 << 12 # 4 KB
       ]
@@ -48,13 +48,20 @@ module ZSTDS
       end
 
       def test_basic
-        DICTIONARY_CAPACITIES.each do |dictionary_capacity|
-          dictionary = Target.new DICTIONARY_SAMPLES, :capacity => dictionary_capacity
+        CAPACITIES.each do |capacity|
+          dictionary = Target.new SAMPLES, :capacity => capacity
 
           assert dictionary.id > 0
           assert dictionary.size > 0 # rubocop:disable Style/ZeroLengthPredicate
 
-          compressed_text = String.compress TEXTS.sample, :dictionary => dictionary
+          text = TEXTS.sample
+
+          compressed_text = String.compress text, :dictionary => dictionary
+
+          decompressed_text = String.decompress compressed_text, :dictionary => dictionary
+          decompressed_text.force_encoding text.encoding
+
+          assert_equal text, decompressed_text
 
           # Trying to decompress without dictionary.
           assert_raises ZSTDS::CorruptedDictionaryError do
