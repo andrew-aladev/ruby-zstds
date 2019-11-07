@@ -44,9 +44,9 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
   GET_DICTIONARY(self);
   Check_Type(samples, T_ARRAY);
 
-  size_t sample_index;
-  size_t samples_length = RARRAY_LEN(samples);
-  size_t samples_size   = 0;
+  size_t       sample_index;
+  unsigned int samples_length = RARRAY_LEN(samples);
+  size_t       samples_size   = 0;
 
   for (sample_index = 0; sample_index < samples_length; sample_index++) {
     VALUE sample = rb_ary_entry(samples, sample_index);
