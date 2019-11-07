@@ -11,6 +11,8 @@ require_relative "validation"
 module ZSTDS
   module Test
     module Option
+      Dictionary = ZSTDS::Dictionary
+
       DICTIONARY_SAMPLES = Common::DICTIONARY_SAMPLES
 
       private_class_method def self.get_invalid_buffer_length_options(buffer_length_names, &_block)
@@ -200,8 +202,7 @@ module ZSTDS
       .freeze
 
       STRATEGIES = [
-        ZSTDS::Option::STRATEGIES[[2, ZSTDS::Option::STRATEGIES.length - 1].min],
-        ZSTDS::Option::STRATEGIES[[ZSTDS::Option::STRATEGIES.length - 3, 0].max]
+        ZSTDS::Option::STRATEGIES[ZSTDS::Option::STRATEGIES.length / 2]
       ]
       .freeze
 
@@ -330,7 +331,7 @@ module ZSTDS
 
         # complete
 
-        complete_generator = buffer_length_generator.and(main_generator).mix other_generator
+        complete_generator = buffer_length_generator.mix(main_generator).mix other_generator
 
         yield complete_generator.next until complete_generator.finished?
       end
