@@ -45,7 +45,7 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
   Check_Type(samples, T_ARRAY);
 
   size_t       sample_index;
-  unsigned int samples_length = RARRAY_LEN(samples);
+  unsigned int samples_length = (unsigned int)RARRAY_LEN(samples);
   size_t       samples_size   = 0;
 
   for (sample_index = 0; sample_index < samples_length; sample_index++) {
