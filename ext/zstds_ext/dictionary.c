@@ -108,7 +108,13 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
     zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
   }
 
-  dictionary_ptr->buffer = buffer;
+  uint8_t* new_buffer = realloc(buffer, result);
+  if (new_buffer == NULL) {
+    free(buffer);
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
+  }
+
+  dictionary_ptr->buffer = new_buffer;
   dictionary_ptr->size   = result;
 
   return Qnil;
