@@ -21,6 +21,56 @@ rake gem
 gem install pkg/ruby-zstds-*.gem
 ```
 
+## Usage
+
+There are simple APIs: `String` and `File`. Also you can use generic streaming API: `Stream::Writer` and `Stream::Reader`.
+
+```ruby
+require "zstds"
+
+data = ZSTDS::String.compress "sample string"
+puts ZSTDS::String.decompress(data)
+
+ZSTDS::File.compress "file.txt", "file.txt.zst"
+ZSTDS::File.decompress "file.txt.zst", "file.txt"
+
+ZSTDS::Stream::Writer.open("file.txt.zst") { |writer| writer << "sample string" }
+puts ZSTDS::Stream::Reader.open("file.txt.zst") { |reader| reader.read }
+```
+
+You can create dictionary using `ZSTDS::Dictionary`.
+
+```ruby
+require "zstds"
+
+dictionary = ZSTDS::Dictionary.new samples
+
+data = ZSTDS::String.compress "sample string", :dictionary => dictionary
+puts ZSTDS::String.decompress(data, :dictionary => dictionary)
+```
+
+You can create and read `tar.zst` archives with `minitar` for example.
+
+```ruby
+require "zstds"
+require "minitar"
+
+ZSTDS::Stream::Writer.open "file.tar.zst" do |writer|
+  Minitar::Writer.open writer do |tar|
+    tar.add_file_simple "file", :data => "sample string"
+  end
+end
+
+ZSTDS::Stream::Reader.open "file.tar.zst" do |reader|
+  Minitar::Reader.open reader do |tar|
+    tar.each_entry do |entry|
+      puts entry.name
+      puts entry.read
+    end
+  end
+end
+```
+
 WIP
 
 ## License
