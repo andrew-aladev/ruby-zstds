@@ -10,7 +10,7 @@
 
 VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE buffer);
 VALUE zstds_ext_get_dictionary_id(VALUE self);
-VALUE zstds_ext_train_dictionary(VALUE self, VALUE samples, VALUE options);
+VALUE zstds_ext_train_dictionary_buffer(VALUE self, VALUE samples, VALUE options);
 
 void zstds_ext_dictionary_exports(VALUE root_module);
 

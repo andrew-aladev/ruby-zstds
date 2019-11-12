@@ -23,52 +23,62 @@ module ZSTDS
       ]
       .freeze
 
-      # def test_invalid_arguments
-      #   Validation::INVALID_ARRAYS.each do |invalid_samples|
-      #     assert_raises ValidateError do
-      #       Target.new invalid_samples
-      #     end
-      #   end
-      #
-      #   Validation::INVALID_STRINGS.each do |invalid_sample|
-      #     assert_raises ValidateError do
-      #       Target.new [invalid_sample]
-      #     end
-      #   end
-      #
-      #   assert_raises ValidateError do
-      #     Target.new [""]
-      #   end
-      #
-      #   Validation::INVALID_NOT_NEGATIVE_INTEGERS.each do |invalid_capacity|
-      #     assert_raises ValidateError do
-      #       Target.new ["123"], :capacity => invalid_capacity
-      #     end
-      #   end
-      # end
+      def test_invalid_initialize
+        (Validation::INVALID_STRINGS + [""]).each do |invalid_buffer|
+          assert_raises ValidateError do
+            Target.new invalid_buffer
+          end
+        end
+      end
 
-      # def test_basic
-      #   CAPACITIES.each do |capacity|
-      #     dictionary = Target.new SAMPLES, :capacity => capacity
-      #
-      #     assert dictionary.id > 0
-      #     assert dictionary.size > 0 # rubocop:disable Style/ZeroLengthPredicate
-      #
-      #     text = TEXTS.sample
-      #
-      #     compressed_text = String.compress text, :dictionary => dictionary
-      #
-      #     decompressed_text = String.decompress compressed_text, :dictionary => dictionary
-      #     decompressed_text.force_encoding text.encoding
-      #
-      #     assert_equal text, decompressed_text
-      #
-      #     # Trying to decompress without dictionary.
-      #     assert_raises ZSTDS::CorruptedDictionaryError do
-      #       String.decompress compressed_text
-      #     end
-      #   end
-      # end
+      def test_invalid_train
+        Validation::INVALID_ARRAYS.each do |invalid_samples|
+          assert_raises ValidateError do
+            Target.train invalid_samples
+          end
+        end
+
+        (Validation::INVALID_STRINGS + [""]).each do |invalid_sample|
+          assert_raises ValidateError do
+            Target.train [invalid_sample]
+          end
+        end
+
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS.each do |invalid_capacity|
+          assert_raises ValidateError do
+            Target.train ["123"], :capacity => invalid_capacity
+          end
+        end
+      end
+
+      def test_basic
+        CAPACITIES.each do |capacity|
+          dictionary = Target.train SAMPLES, :capacity => capacity
+
+          assert dictionary.id > 0
+          refute dictionary.buffer.nil?
+          refute dictionary.buffer.empty?
+
+          dictionary_copy = Target.new dictionary.buffer
+
+          assert_equal dictionary.id, dictionary_copy.id
+          assert_equal dictionary.buffer, dictionary_copy.buffer
+
+          text = TEXTS.sample
+
+          compressed_text = String.compress text, :dictionary => dictionary
+
+          decompressed_text = String.decompress compressed_text, :dictionary => dictionary
+          decompressed_text.force_encoding text.encoding
+
+          assert_equal text, decompressed_text
+
+          # Trying to decompress without dictionary.
+          assert_raises ZSTDS::CorruptedDictionaryError do
+            String.decompress compressed_text
+          end
+        end
+      end
     end
 
     Minitest << Dictionary

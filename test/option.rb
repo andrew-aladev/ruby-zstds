@@ -15,6 +15,146 @@ module ZSTDS
 
       DICTIONARY_SAMPLES = Common::DICTIONARY_SAMPLES
 
+      INVALID_COMPRESSOR_LEVELS = (
+        Validation::INVALID_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_COMPRESSION_LEVEL - 1,
+          ZSTDS::Option::MAX_COMPRESSION_LEVEL + 1
+        ]
+      )
+      .freeze
+
+      INVALID_WINDOW_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_WINDOW_LOG - 1,
+          ZSTDS::Option::MAX_WINDOW_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_HASH_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_HASH_LOG - 1,
+          ZSTDS::Option::MAX_HASH_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_CHAIN_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_CHAIN_LOG - 1,
+          ZSTDS::Option::MAX_CHAIN_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_SEARCH_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_SEARCH_LOG - 1,
+          ZSTDS::Option::MAX_SEARCH_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_MIN_MATCHES = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_MIN_MATCH - 1,
+          ZSTDS::Option::MAX_MIN_MATCH + 1
+        ]
+      )
+      .freeze
+
+      INVALID_TARGET_LENGTHS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_TARGET_LENGTH - 1,
+          ZSTDS::Option::MAX_TARGET_LENGTH + 1
+        ]
+      )
+      .freeze
+
+      INVALID_LDM_HASH_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_LDM_HASH_LOG - 1,
+          ZSTDS::Option::MAX_LDM_HASH_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_LDM_MIN_MATCHES = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_LDM_MIN_MATCH - 1,
+          ZSTDS::Option::MAX_LDM_MIN_MATCH + 1
+        ]
+      )
+      .freeze
+
+      INVALID_LDM_BUCKET_SIZE_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG - 1,
+          ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_LDM_HASH_RATE_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_LDM_HASH_RATE_LOG - 1,
+          ZSTDS::Option::MAX_LDM_HASH_RATE_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_NB_WORKERS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_NB_WORKERS - 1,
+          ZSTDS::Option::MAX_NB_WORKERS + 1
+        ]
+      )
+      .freeze
+
+      INVALID_JOB_SIZES = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_JOB_SIZE - 1,
+          ZSTDS::Option::MAX_JOB_SIZE + 1
+        ]
+      )
+      .freeze
+
+      INVALID_OVERLAP_LOGS = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_OVERLAP_LOG - 1,
+          ZSTDS::Option::MAX_OVERLAP_LOG + 1
+        ]
+      )
+      .freeze
+
+      INVALID_STRATEGIES = (
+        Validation::INVALID_SYMBOLS - [nil] + %i[invalid_strategy]
+      )
+      .freeze
+
+      INVALID_WINDOW_LOG_MAXES = (
+        Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil] +
+        [
+          ZSTDS::Option::MIN_WINDOW_LOG_MAX - 1,
+          ZSTDS::Option::MAX_WINDOW_LOG_MAX + 1
+        ]
+      )
+      .freeze
+
       private_class_method def self.get_invalid_buffer_length_options(buffer_length_names, &_block)
         buffer_length_names.each do |name|
           (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
@@ -30,73 +170,65 @@ module ZSTDS
 
         get_invalid_buffer_length_options buffer_length_names, &block
 
-        (Validation::INVALID_INTEGERS - [nil]).each do |invalid_integer|
-          yield({ :compression_level => invalid_integer })
+        INVALID_COMPRESSOR_LEVELS.each do |invalid_compression_level|
+          yield({ :compression_level => invalid_compression_level })
         end
 
-        yield({ :compression_level => ZSTDS::Option::MIN_COMPRESSION_LEVEL - 1 })
-        yield({ :compression_level => ZSTDS::Option::MAX_COMPRESSION_LEVEL + 1 })
-
-        (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
-          yield({ :window_log          => invalid_integer })
-          yield({ :hash_log            => invalid_integer })
-          yield({ :chain_log           => invalid_integer })
-          yield({ :search_log          => invalid_integer })
-          yield({ :min_match           => invalid_integer })
-          yield({ :target_length       => invalid_integer })
-          yield({ :ldm_hash_log        => invalid_integer })
-          yield({ :ldm_min_match       => invalid_integer })
-          yield({ :ldm_bucket_size_log => invalid_integer })
-          yield({ :ldm_hash_rate_log   => invalid_integer })
-          yield({ :nb_workers          => invalid_integer })
-          yield({ :job_size            => invalid_integer })
-          yield({ :overlap_log         => invalid_integer })
+        INVALID_WINDOW_LOGS.each do |invalid_window_log|
+          yield({ :window_log => invalid_window_log })
         end
 
-        yield({ :window_log => ZSTDS::Option::MIN_WINDOW_LOG - 1 })
-        yield({ :window_log => ZSTDS::Option::MAX_WINDOW_LOG + 1 })
-
-        yield({ :hash_log => ZSTDS::Option::MIN_HASH_LOG - 1 })
-        yield({ :hash_log => ZSTDS::Option::MAX_HASH_LOG + 1 })
-
-        yield({ :chain_log => ZSTDS::Option::MIN_CHAIN_LOG - 1 })
-        yield({ :chain_log => ZSTDS::Option::MAX_CHAIN_LOG + 1 })
-
-        yield({ :search_log => ZSTDS::Option::MIN_SEARCH_LOG - 1 })
-        yield({ :search_log => ZSTDS::Option::MAX_SEARCH_LOG + 1 })
-
-        yield({ :min_match => ZSTDS::Option::MIN_MIN_MATCH - 1 })
-        yield({ :min_match => ZSTDS::Option::MAX_MIN_MATCH + 1 })
-
-        yield({ :target_length => ZSTDS::Option::MIN_TARGET_LENGTH - 1 })
-        yield({ :target_length => ZSTDS::Option::MAX_TARGET_LENGTH + 1 })
-
-        yield({ :ldm_hash_log => ZSTDS::Option::MIN_LDM_HASH_LOG - 1 })
-        yield({ :ldm_hash_log => ZSTDS::Option::MAX_LDM_HASH_LOG + 1 })
-
-        yield({ :ldm_min_match => ZSTDS::Option::MIN_LDM_MIN_MATCH - 1 })
-        yield({ :ldm_min_match => ZSTDS::Option::MAX_LDM_MIN_MATCH + 1 })
-
-        yield({ :ldm_bucket_size_log => ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG - 1 })
-        yield({ :ldm_bucket_size_log => ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG + 1 })
-
-        yield({ :ldm_hash_rate_log => ZSTDS::Option::MIN_LDM_HASH_RATE_LOG - 1 })
-        yield({ :ldm_hash_rate_log => ZSTDS::Option::MAX_LDM_HASH_RATE_LOG + 1 })
-
-        yield({ :nb_workers => ZSTDS::Option::MIN_NB_WORKERS - 1 })
-        yield({ :nb_workers => ZSTDS::Option::MAX_NB_WORKERS + 1 })
-
-        yield({ :job_size => ZSTDS::Option::MIN_JOB_SIZE - 1 })
-        yield({ :job_size => ZSTDS::Option::MAX_JOB_SIZE + 1 })
-
-        yield({ :overlap_log => ZSTDS::Option::MIN_OVERLAP_LOG - 1 })
-        yield({ :overlap_log => ZSTDS::Option::MAX_OVERLAP_LOG + 1 })
-
-        (Validation::INVALID_SYMBOLS - [nil]).each do |invalid_symbol|
-          yield({ :strategy => invalid_symbol })
+        INVALID_HASH_LOGS.each do |invalid_hash_log|
+          yield({ :hash_log => invalid_hash_log })
         end
 
-        yield({ :strategy => :invalid_strategy })
+        INVALID_CHAIN_LOGS.each do |invalid_chain_log|
+          yield({ :chain_log => invalid_chain_log })
+        end
+
+        INVALID_SEARCH_LOGS.each do |invalid_search_log|
+          yield({ :search_log => invalid_search_log })
+        end
+
+        INVALID_MIN_MATCHES.each do |invalid_min_match|
+          yield({ :min_match => invalid_min_match })
+        end
+
+        INVALID_TARGET_LENGTHS.each do |invalid_target_length|
+          yield({ :target_length => invalid_target_length })
+        end
+
+        INVALID_LDM_HASH_LOGS.each do |invalid_ldm_hash_log|
+          yield({ :ldm_hash_log => invalid_ldm_hash_log })
+        end
+
+        INVALID_LDM_MIN_MATCHES.each do |invalid_ldm_min_match|
+          yield({ :ldm_min_match => invalid_ldm_min_match })
+        end
+
+        INVALID_LDM_BUCKET_SIZE_LOGS.each do |invalid_ldm_bucket_size_log|
+          yield({ :ldm_bucket_size_log => invalid_ldm_bucket_size_log })
+        end
+
+        INVALID_LDM_HASH_RATE_LOGS.each do |invalid_ldm_hash_rate_log|
+          yield({ :ldm_hash_rate_log => invalid_ldm_hash_rate_log })
+        end
+
+        INVALID_NB_WORKERS.each do |invalid_nb_workers|
+          yield({ :nb_workers => invalid_nb_workers })
+        end
+
+        INVALID_JOB_SIZES.each do |invalid_job_size|
+          yield({ :job_size => invalid_job_size })
+        end
+
+        INVALID_OVERLAP_LOGS.each do |invalid_overlap_log|
+          yield({ :overlap_log => invalid_overlap_log })
+        end
+
+        INVALID_STRATEGIES.each do |invalid_strategy|
+          yield({ :strategy => invalid_strategy })
+        end
 
         (Validation::INVALID_BOOLS - [nil]).each do |invalid_bool|
           yield({ :enable_long_distance_matching => invalid_bool })
@@ -117,12 +249,9 @@ module ZSTDS
 
         get_invalid_buffer_length_options buffer_length_names, &block
 
-        (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
-          yield({ :window_log_max => invalid_integer })
+        INVALID_WINDOW_LOG_MAXES.each do |invalid_window_log_max|
+          yield({ :window_log_max => invalid_window_log_max })
         end
-
-        yield({ :window_log_max => ZSTDS::Option::MIN_WINDOW_LOG_MAX - 1 })
-        yield({ :window_log_max => ZSTDS::Option::MAX_WINDOW_LOG_MAX + 1 })
 
         (Validation::INVALID_DICTIONARIES - [nil]).each do |invalid_dictionary|
           yield({ :dictionary => invalid_dictionary })

@@ -12,6 +12,7 @@
 #include "zstds_ext/buffer.h"
 #include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
+#include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
 VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE buffer)
@@ -37,7 +38,7 @@ VALUE zstds_ext_get_dictionary_id(VALUE self)
   return UINT2NUM(id);
 }
 
-VALUE zstds_ext_train_dictionary(VALUE self, VALUE samples, VALUE options)
+VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samples, VALUE options)
 {
   Check_Type(samples, T_ARRAY);
 
@@ -106,7 +107,7 @@ VALUE zstds_ext_train_dictionary(VALUE self, VALUE samples, VALUE options)
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  return rb_class_new_instance(1, &buffer, RCLASS_SUPER(self));
+  return buffer;
 }
 
 void zstds_ext_dictionary_exports(VALUE root_module)
@@ -117,5 +118,5 @@ void zstds_ext_dictionary_exports(VALUE root_module)
 
   rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 1);
   rb_define_method(dictionary, "id", zstds_ext_get_dictionary_id, 0);
-  rb_define_singleton_method(dictionary, "train", zstds_ext_train_dictionary, 2);
+  rb_define_singleton_method(dictionary, "train_buffer", zstds_ext_train_dictionary_buffer, 2);
 }

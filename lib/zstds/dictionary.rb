@@ -13,8 +13,6 @@ module ZSTDS
     }
     .freeze
 
-    singleton_class.send :alias_method, :super_train, :train
-
     def self.train(samples, options = {})
       Validation.validate_array samples
 
@@ -29,7 +27,8 @@ module ZSTDS
 
       Validation.validate_not_negative_integer options[:capacity]
 
-      super_train samples, options
+      buffer = train_buffer samples, options
+      new buffer
     end
   end
 end

@@ -41,9 +41,16 @@ puts ZSTDS::Stream::Reader.open("file.txt.zst") { |reader| reader.read }
 You can create dictionary using `ZSTDS::Dictionary`.
 
 ```ruby
+require "securerandom"
 require "zstds"
 
-dictionary = ZSTDS::Dictionary.new samples
+samples = (4..10).map { |power| ::SecureRandom.random_bytes(1 << power) }
+
+dictionary = ZSTDS::Dictionary.train samples
+File.write "dictionary.bin", dictionary.buffer
+
+dictionary_buffer = File.read "dictionary.bin"
+dictionary        = ZSTDS::Dictionary.new dictionary_buffer
 
 data = ZSTDS::String.compress "sample string", :dictionary => dictionary
 puts ZSTDS::String.decompress(data, :dictionary => dictionary)

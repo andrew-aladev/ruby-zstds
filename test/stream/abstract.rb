@@ -20,17 +20,7 @@ module ZSTDS
             end
           end
 
-          (Validation::INVALID_STRINGS - [nil]).each do |invalid_string|
-            assert_raises ValidateError do
-              target.new ::STDOUT, {}, :external_encoding => invalid_string
-            end
-
-            assert_raises ValidateError do
-              target.new ::STDOUT, {}, :internal_encoding => invalid_string
-            end
-          end
-
-          Validation::INVALID_ENCODINGS.each do |invalid_encoding|
+          (Validation::INVALID_STRINGS - [nil] + Validation::INVALID_ENCODINGS).each do |invalid_encoding|
             assert_raises ValidateError do
               target.new ::STDOUT, {}, :external_encoding => invalid_encoding
             end
@@ -50,17 +40,7 @@ module ZSTDS
         def test_invalid_set_encoding
           instance = target.new ::STDOUT
 
-          (Validation::INVALID_STRINGS - [nil]).each do |invalid_string|
-            assert_raises ValidateError do
-              instance.set_encoding invalid_string
-            end
-
-            assert_raises ValidateError do
-              instance.set_encoding ::Encoding::BINARY, invalid_string
-            end
-          end
-
-          Validation::INVALID_ENCODINGS.each do |invalid_encoding|
+          (Validation::INVALID_STRINGS - [nil] + Validation::INVALID_ENCODINGS).each do |invalid_encoding|
             assert_raises ValidateError do
               instance.set_encoding invalid_encoding
             end
@@ -68,7 +48,9 @@ module ZSTDS
             assert_raises ValidateError do
               instance.set_encoding ::Encoding::BINARY, invalid_encoding
             end
+          end
 
+          Validation::INVALID_ENCODINGS.each do |invalid_encoding|
             assert_raises ValidateError do
               instance.set_encoding "#{::Encoding::BINARY}:#{invalid_encoding}"
             end
