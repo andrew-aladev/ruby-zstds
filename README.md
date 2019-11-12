@@ -44,7 +44,7 @@ You can create dictionary using `ZSTDS::Dictionary`.
 require "securerandom"
 require "zstds"
 
-samples = (4..10).map { |power| ::SecureRandom.random_bytes(1 << power) }
+samples = (Array.new(8) { ::SecureRandom.random_bytes(1 << 8) } + ["sample string"]).shuffle
 
 dictionary = ZSTDS::Dictionary.train samples
 File.write "dictionary.bin", dictionary.buffer

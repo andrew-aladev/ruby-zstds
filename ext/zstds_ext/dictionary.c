@@ -15,21 +15,8 @@
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
-VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE buffer)
+VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
 {
-  if (rb_obj_is_kind_of(buffer, rb_cString) != Qtrue || RSTRING_LEN(buffer) == 0) {
-    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
-  }
-
-  rb_iv_set(self, "@buffer", buffer);
-
-  return Qnil;
-}
-
-VALUE zstds_ext_get_dictionary_id(VALUE self)
-{
-  VALUE buffer = rb_attr_get(self, rb_intern("@buffer"));
-
   unsigned int id = ZDICT_getDictID(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
   if (id == 0) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
@@ -112,11 +99,8 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
 
 void zstds_ext_dictionary_exports(VALUE root_module)
 {
-  VALUE dictionary = rb_define_class_under(root_module, "NativeDictionary", rb_cObject);
+  VALUE dictionary = rb_define_class_under(root_module, "Dictionary", rb_cObject);
 
-  rb_attr(dictionary, rb_intern("buffer"), 1, 0, 0);
-
-  rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 1);
-  rb_define_method(dictionary, "id", zstds_ext_get_dictionary_id, 0);
+  rb_define_singleton_method(dictionary, "get_buffer_id", zstds_ext_get_dictionary_buffer_id, 1);
   rb_define_singleton_method(dictionary, "train_buffer", zstds_ext_train_dictionary_buffer, 2);
 }

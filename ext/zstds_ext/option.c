@@ -135,7 +135,7 @@ void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* n
 
   if (raw_value != Qnil) {
     VALUE root_module = rb_define_module(ZSTDS_EXT_MODULE_NAME);
-    VALUE dictionary  = rb_const_get_at(root_module, rb_intern("NativeDictionary"));
+    VALUE dictionary  = rb_const_get_at(root_module, rb_intern("Dictionary"));
     if (rb_obj_is_kind_of(raw_value, dictionary) != Qtrue) {
       zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
     }
