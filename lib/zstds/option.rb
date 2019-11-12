@@ -36,7 +36,8 @@ module ZSTDS
     .freeze
 
     DECOMPRESSOR_DEFAULTS = {
-      :window_log_max => nil
+      :window_log_max => nil,
+      :dictionary     => nil
     }
     .freeze
 
