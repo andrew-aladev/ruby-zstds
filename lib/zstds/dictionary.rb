@@ -8,12 +8,14 @@ require_relative "validation"
 
 module ZSTDS
   class Dictionary < NativeDictionary
-    DEFAULTS = {
+    TRAIN_DEFAULTS = {
       :capacity => 0
     }
     .freeze
 
-    def initialize(samples, options = {})
+    singleton_class.send :alias_method, :super_train, :train
+
+    def self.train(samples, options = {})
       Validation.validate_array samples
 
       samples.each do |sample|
@@ -23,11 +25,11 @@ module ZSTDS
 
       Validation.validate_hash options
 
-      options = DEFAULTS.merge options
+      options = TRAIN_DEFAULTS.merge options
 
       Validation.validate_not_negative_integer options[:capacity]
 
-      super samples, options
+      super_train samples, options
     end
   end
 end

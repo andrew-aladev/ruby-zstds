@@ -230,6 +230,7 @@ void zstds_ext_compressor_exports(VALUE root_module)
   VALUE module = rb_define_module_under(root_module, "Stream");
 
   VALUE compressor = rb_define_class_under(module, "NativeCompressor", rb_cObject);
+
   rb_define_alloc_func(compressor, zstds_ext_allocate_compressor);
   rb_define_method(compressor, "initialize", zstds_ext_initialize_compressor, 1);
   rb_define_method(compressor, "write", zstds_ext_compress, 1);

@@ -8,32 +8,13 @@
 #include <zstd.h>
 
 #include "ruby.h"
+#include "zstds_ext/buffer.h"
 #include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
 // -- buffer --
-
-static inline VALUE create_buffer(VALUE length)
-{
-  return rb_str_new(NULL, NUM2SIZET(length));
-}
-
-#define CREATE_BUFFER(buffer, length, exception) \
-  VALUE buffer = rb_protect(create_buffer, SIZET2NUM(length), &exception);
-
-static inline VALUE resize_buffer(VALUE args)
-{
-  VALUE buffer = rb_ary_entry(args, 0);
-  VALUE length = rb_ary_entry(args, 1);
-  return rb_str_resize(buffer, NUM2SIZET(length));
-}
-
-#define RESIZE_BUFFER(buffer, length, exception)                                        \
-  VALUE resize_buffer_args = rb_ary_new_from_args(2, buffer, SIZET2NUM(length));        \
-  buffer                   = rb_protect(resize_buffer, resize_buffer_args, &exception); \
-  RB_GC_GUARD(resize_buffer_args);
 
 static inline zstds_ext_result_t increase_destination_buffer(
   VALUE destination_value, size_t destination_length,
@@ -46,7 +27,7 @@ static inline zstds_ext_result_t increase_destination_buffer(
 
   int exception;
 
-  RESIZE_BUFFER(destination_value, destination_length + destination_buffer_length, exception);
+  ZSTDS_EXT_RESIZE_STRING_BUFFER(destination_value, destination_length + destination_buffer_length, exception);
   if (exception != 0) {
     return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
   }
@@ -113,7 +94,7 @@ static inline zstds_ext_result_t compress(
 
   int exception;
 
-  RESIZE_BUFFER(destination_value, destination_length, exception);
+  ZSTDS_EXT_RESIZE_STRING_BUFFER(destination_value, destination_length, exception);
   if (exception != 0) {
     return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
   }
@@ -145,10 +126,10 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
 
   int exception;
 
-  CREATE_BUFFER(destination_value, destination_buffer_length, exception);
+  ZSTDS_EXT_CREATE_STRING_BUFFER(destination_value, destination_buffer_length, exception);
   if (exception != 0) {
     ZSTD_freeCCtx(ctx);
-    zstds_ext_raise_error(ext_result);
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
   ext_result = compress(
@@ -214,7 +195,7 @@ static inline zstds_ext_result_t decompress(
 
   int exception;
 
-  RESIZE_BUFFER(destination_value, destination_length, exception);
+  ZSTDS_EXT_RESIZE_STRING_BUFFER(destination_value, destination_length, exception);
   if (exception != 0) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
@@ -246,10 +227,10 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
 
   int exception;
 
-  CREATE_BUFFER(destination_value, destination_buffer_length, exception);
+  ZSTDS_EXT_CREATE_STRING_BUFFER(destination_value, destination_buffer_length, exception);
   if (exception != 0) {
     ZSTD_freeDCtx(ctx);
-    zstds_ext_raise_error(ext_result);
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
   ext_result = decompress(

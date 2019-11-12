@@ -9,39 +9,36 @@
 #include <zdict.h>
 
 #include "ruby.h"
+#include "zstds_ext/buffer.h"
 #include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/option.h"
 
-static void free_dictionary(zstds_ext_dictionary_t* dictionary_ptr)
+VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE buffer)
 {
-  uint8_t* buffer = dictionary_ptr->buffer;
-  if (buffer != NULL) {
-    free(buffer);
+  if (rb_obj_is_kind_of(buffer, rb_cString) != Qtrue || RSTRING_LEN(buffer) == 0) {
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
   }
 
-  free(dictionary_ptr);
+  rb_iv_set(self, "@buffer", buffer);
+
+  return Qnil;
 }
 
-VALUE zstds_ext_allocate_dictionary(VALUE klass)
+VALUE zstds_ext_get_dictionary_id(VALUE self)
 {
-  zstds_ext_dictionary_t* dictionary_ptr;
+  VALUE buffer = rb_attr_get(self, rb_intern("@buffer"));
 
-  VALUE self = Data_Make_Struct(klass, zstds_ext_dictionary_t, NULL, free_dictionary, dictionary_ptr);
+  unsigned int id = ZDICT_getDictID(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
+  if (id == 0) {
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
+  }
 
-  dictionary_ptr->buffer = NULL;
-  dictionary_ptr->size   = 0;
-
-  return self;
+  return UINT2NUM(id);
 }
 
-#define GET_DICTIONARY(self)              \
-  zstds_ext_dictionary_t* dictionary_ptr; \
-  Data_Get_Struct(self, zstds_ext_dictionary_t, dictionary_ptr);
-
-VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
+VALUE zstds_ext_train_dictionary(VALUE self, VALUE samples, VALUE options)
 {
-  GET_DICTIONARY(self);
   Check_Type(samples, T_ARRAY);
 
   size_t       sample_index;
@@ -62,25 +59,20 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
     capacity = ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY;
   }
 
-  uint8_t* buffer = dictionary_ptr->buffer;
-  if (buffer != NULL) {
-    free(buffer);
-  }
+  int exception;
 
-  buffer = malloc(capacity);
-  if (buffer == NULL) {
+  ZSTDS_EXT_CREATE_STRING_BUFFER(buffer, capacity, exception);
+  if (exception != 0) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
   uint8_t* samples_buffer = malloc(samples_size);
   if (samples_buffer == NULL) {
-    free(buffer);
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
   size_t* samples_sizes = malloc(samples_length * sizeof(size_t));
   if (samples_sizes == NULL) {
-    free(buffer);
     free(samples_buffer);
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
@@ -98,56 +90,32 @@ VALUE zstds_ext_initialize_dictionary(VALUE self, VALUE samples, VALUE options)
     samples_sizes[sample_index] = sample_size;
   }
 
-  zstds_result_t result = ZDICT_trainFromBuffer(buffer, capacity, samples_buffer, samples_sizes, samples_length);
+  zstds_result_t result = ZDICT_trainFromBuffer(
+    RSTRING_PTR(buffer), capacity,
+    samples_buffer, samples_sizes, samples_length);
 
   free(samples_buffer);
   free(samples_sizes);
 
   if (ZSTD_isError(result)) {
-    free(buffer);
     zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
   }
 
-  uint8_t* new_buffer = realloc(buffer, result);
-  if (new_buffer == NULL) {
-    free(buffer);
+  ZSTDS_EXT_RESIZE_STRING_BUFFER(buffer, result, exception);
+  if (exception != 0) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  dictionary_ptr->buffer = new_buffer;
-  dictionary_ptr->size   = result;
-
-  return Qnil;
-}
-
-VALUE zstds_ext_get_dictionary_size(VALUE self)
-{
-  GET_DICTIONARY(self);
-
-  return SIZET2NUM(dictionary_ptr->size);
-}
-
-VALUE zstds_ext_get_dictionary_id(VALUE self)
-{
-  GET_DICTIONARY(self);
-
-  if (dictionary_ptr->buffer == NULL) {
-    return Qnil;
-  }
-
-  unsigned int id = ZDICT_getDictID(dictionary_ptr->buffer, dictionary_ptr->size);
-  if (id == 0) {
-    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
-  }
-
-  return UINT2NUM(id);
+  return rb_class_new_instance(1, &buffer, RCLASS_SUPER(self));
 }
 
 void zstds_ext_dictionary_exports(VALUE root_module)
 {
   VALUE dictionary = rb_define_class_under(root_module, "NativeDictionary", rb_cObject);
-  rb_define_alloc_func(dictionary, zstds_ext_allocate_dictionary);
-  rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 2);
-  rb_define_method(dictionary, "size", zstds_ext_get_dictionary_size, 0);
+
+  rb_attr(dictionary, rb_intern("buffer"), 1, 0, 0);
+
+  rb_define_method(dictionary, "initialize", zstds_ext_initialize_dictionary, 1);
   rb_define_method(dictionary, "id", zstds_ext_get_dictionary_id, 0);
+  rb_define_singleton_method(dictionary, "train", zstds_ext_train_dictionary, 2);
 }

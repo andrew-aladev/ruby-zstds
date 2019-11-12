@@ -260,7 +260,7 @@ module ZSTDS
 
       DICTIONARIES = [
         nil,
-        Dictionary.new(DICTIONARY_SAMPLES)
+        Dictionary.train(DICTIONARY_SAMPLES)
       ]
       .freeze
 

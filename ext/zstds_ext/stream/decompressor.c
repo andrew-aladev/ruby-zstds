@@ -174,6 +174,7 @@ void zstds_ext_decompressor_exports(VALUE root_module)
   VALUE module = rb_define_module_under(root_module, "Stream");
 
   VALUE decompressor = rb_define_class_under(module, "NativeDecompressor", rb_cObject);
+
   rb_define_alloc_func(decompressor, zstds_ext_allocate_decompressor);
   rb_define_method(decompressor, "initialize", zstds_ext_initialize_decompressor, 1);
   rb_define_method(decompressor, "read", zstds_ext_decompress, 1);

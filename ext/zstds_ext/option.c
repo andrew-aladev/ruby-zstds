@@ -166,10 +166,6 @@ size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
 #define SET_COMPRESSOR_PARAM(ctx, param, option) \
   SET_OPTION_VALUE(ZSTD_CCtx_setParameter, ctx, param, option);
 
-#define GET_DICTIONARY(dictionary)        \
-  zstds_ext_dictionary_t* dictionary_ptr; \
-  Data_Get_Struct(dictionary, zstds_ext_dictionary_t, dictionary_ptr);
-
 zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_compressor_options_t* options)
 {
   zstds_result_t result;
@@ -202,8 +198,9 @@ zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_co
   }
 
   if (options->dictionary != Qnil) {
-    GET_DICTIONARY(options->dictionary);
-    result = ZSTD_CCtx_loadDictionary(ctx, dictionary_ptr->buffer, dictionary_ptr->size);
+    VALUE dictionary_buffer = rb_attr_get(options->dictionary, rb_intern("@buffer"));
+
+    result = ZSTD_CCtx_loadDictionary(ctx, RSTRING_PTR(dictionary_buffer), RSTRING_LEN(dictionary_buffer));
     if (ZSTD_isError(result)) {
       return zstds_ext_get_error(ZSTD_getErrorCode(result));
     }
@@ -222,8 +219,9 @@ zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_
   SET_DECOMPRESSOR_PARAM(ctx, ZSTD_d_windowLogMax, options->window_log_max);
 
   if (options->dictionary != Qnil) {
-    GET_DICTIONARY(options->dictionary);
-    result = ZSTD_DCtx_loadDictionary(ctx, dictionary_ptr->buffer, dictionary_ptr->size);
+    VALUE dictionary_buffer = rb_attr_get(options->dictionary, rb_intern("@buffer"));
+
+    result = ZSTD_DCtx_loadDictionary(ctx, RSTRING_PTR(dictionary_buffer), RSTRING_LEN(dictionary_buffer));
     if (ZSTD_isError(result)) {
       return zstds_ext_get_error(ZSTD_getErrorCode(result));
     }
@@ -234,14 +232,13 @@ zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_
 
 // -- exports --
 
-#define EXPORT_PARAM_BOUNDS(function, module, param, type, name)       \
-  bounds = function(param);                                            \
-  if (ZSTD_isError(bounds.error)) {                                    \
-    ext_result = zstds_ext_get_error(ZSTD_getErrorCode(bounds.error)); \
-    zstds_ext_raise_error(ext_result);                                 \
-  }                                                                    \
-                                                                       \
-  rb_define_const(module, "MIN_" name, type##2NUM(bounds.lowerBound)); \
+#define EXPORT_PARAM_BOUNDS(function, module, param, type, name)                 \
+  bounds = function(param);                                                      \
+  if (ZSTD_isError(bounds.error)) {                                              \
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(bounds.error))); \
+  }                                                                              \
+                                                                                 \
+  rb_define_const(module, "MIN_" name, type##2NUM(bounds.lowerBound));           \
   rb_define_const(module, "MAX_" name, type##2NUM(bounds.upperBound));
 
 #define EXPORT_COMPRESSOR_PARAM_BOUNDS(module, param, type, name) \
@@ -254,8 +251,7 @@ void zstds_ext_option_exports(VALUE root_module)
 {
   VALUE module = rb_define_module_under(root_module, "Option");
 
-  zstds_ext_result_t ext_result;
-  ZSTD_bounds        bounds;
+  ZSTD_bounds bounds;
 
   EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_compressionLevel, INT, "COMPRESSION_LEVEL");
   EXPORT_COMPRESSOR_PARAM_BOUNDS(module, ZSTD_c_windowLog, UINT, "WINDOW_LOG");
