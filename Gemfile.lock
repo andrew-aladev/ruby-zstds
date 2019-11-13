@@ -10,7 +10,7 @@ GEM
     jaro_winkler (1.5.4)
     minitar (0.9)
     minitest (5.13.0)
-    ocg (1.1.0)
+    ocg (1.1.1)
     parallel (1.18.0)
     parser (2.6.5.0)
       ast (~> 2.4.0)
