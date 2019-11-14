@@ -1,6 +1,8 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "English"
+
 require_relative "../error"
 require_relative "../validation"
 
@@ -12,11 +14,6 @@ module ZSTDS
       end
 
       def print(*objects)
-        if objects.empty?
-          write $LAST_READ_LINE unless $LAST_READ_LINE.nil?
-          return nil
-        end
-
         objects.each do |object|
           write object
           write $OUTPUT_FIELD_SEPARATOR unless $OUTPUT_FIELD_SEPARATOR.nil?

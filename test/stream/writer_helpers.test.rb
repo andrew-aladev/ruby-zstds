@@ -1,6 +1,7 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "English"
 require "zstds/stream/writer"
 require "zstds/string"
 
@@ -25,28 +26,7 @@ module ZSTDS
         BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
 
         def test_print
-          TEXTS.each do |text|
-            get_compressor_options do |compressor_options|
-              Target.open ARCHIVE_PATH, compressor_options do |instance|
-                $LAST_READ_LINE = text
-
-                begin
-                  instance.print
-                ensure
-                  $LAST_READ_LINE = nil
-                end
-              end
-
-              compressed_text = ::File.read ARCHIVE_PATH
-
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                check_text text, compressed_text, decompressor_options
-              end
-            end
-
-            # This part of test is for not empty texts only.
-            next if text.empty?
-
+          TEXTS.reject(&:empty?).each do |text|
             PORTION_LENGTHS.each do |portion_length|
               sources = get_sources text, portion_length
 
