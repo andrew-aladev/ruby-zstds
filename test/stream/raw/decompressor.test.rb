@@ -1,8 +1,6 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
-require_relative "../../helper"
-
 require "zstds/stream/raw/decompressor"
 require "zstds/string"
 
