@@ -1,9 +1,11 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require_relative "../helper"
+
+require "minitar"
 require "zstds/stream/reader"
 require "zstds/stream/writer"
-require "minitar"
 
 require_relative "../common"
 require_relative "../minitest"

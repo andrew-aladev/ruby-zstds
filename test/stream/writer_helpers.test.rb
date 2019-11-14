@@ -1,6 +1,8 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require_relative "../helper"
+
 require "English"
 require "zstds/stream/writer"
 require "zstds/string"
