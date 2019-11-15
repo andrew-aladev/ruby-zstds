@@ -25,6 +25,26 @@ module ZSTDS
         BUFFER_LENGTH_NAMES   = %i[destination_buffer_length].freeze
         BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
 
+        def test_write
+          TEXTS.each do |text|
+            PORTION_LENGTHS.each do |portion_length|
+              sources = get_sources text, portion_length
+
+              get_compressor_options do |compressor_options|
+                Target.open ARCHIVE_PATH, compressor_options do |instance|
+                  sources.each { |current_source| instance << current_source }
+                end
+
+                compressed_text = ::File.read ARCHIVE_PATH
+
+                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  check_text text, compressed_text, decompressor_options
+                end
+              end
+            end
+          end
+        end
+
         def test_print
           TEXTS.reject(&:empty?).each do |text|
             PORTION_LENGTHS.each do |portion_length|

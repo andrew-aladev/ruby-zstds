@@ -1,9 +1,9 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "ocg"
 require "zstds/dictionary"
 require "zstds/option"
-require "ocg"
 
 require_relative "common"
 require_relative "validation"

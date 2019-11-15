@@ -2,7 +2,6 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 require "socket"
-
 require "zstds/stream/reader"
 require "zstds/string"
 
