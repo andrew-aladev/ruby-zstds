@@ -184,7 +184,7 @@ module ZSTDS
             end
           end
 
-          (Validation::INVALID_POSITIVE_INTEGERS - [nil]).map do |invalid_integer|
+          (Validation::INVALID_POSITIVE_INTEGERS - [nil]).each do |invalid_integer|
             assert_raises ValidateError do
               instance.gets nil, invalid_integer
             end

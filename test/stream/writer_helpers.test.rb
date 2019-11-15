@@ -95,7 +95,7 @@ module ZSTDS
             get_compressor_options do |compressor_options|
               Target.open ARCHIVE_PATH, compressor_options do |instance|
                 # Putc should process numbers and strings.
-                text.chars.map.with_index do |char, index|
+                text.chars.each.with_index do |char, index|
                   if index.even?
                     instance.putc char.ord, :encoding => text.encoding
                   else

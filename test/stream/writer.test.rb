@@ -168,82 +168,90 @@ module ZSTDS
 
                 get_compressor_options do |compressor_options|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                    compressed_text = "".b
-
-                    server_thread = ::Thread.new do
-                      socket = server.accept
-
-                      begin
-                        loop do
-                          compressed_text << socket.read_nonblock(portion_length)
-                        rescue ::IO::WaitReadable
-                          ::IO.select [socket]
-                        rescue ::EOFError
-                          break
-                        end
-                      ensure
-                        socket.close
-                      end
-                    end
-
-                    TCPSocket.open "localhost", PORT do |socket|
-                      instance = target.new socket, compressor_options
-
-                      begin
-                        sources.each do |source|
-                          loop do
-                            begin
-                              bytes_written = instance.write_nonblock source
-                            rescue ::IO::WaitWritable
-                              ::IO.select nil, [socket]
-                              retry
-                            end
-
-                            source = source.byteslice bytes_written, source.bytesize - bytes_written
-                            break if source.bytesize == 0
-                          end
-                        end
-
+                    server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance|
+                      sources.each do |source|
                         loop do
                           begin
-                            is_flushed = instance.flush_nonblock
+                            bytes_written = instance.write_nonblock source
                           rescue ::IO::WaitWritable
                             ::IO.select nil, [socket]
                             retry
                           end
 
-                          break if is_flushed
+                          source = source.byteslice bytes_written, source.bytesize - bytes_written
+                          break if source.bytesize == 0
                         end
-
-                        assert_equal instance.pos, text.bytesize
-                        assert_equal instance.pos, instance.tell
-
-                      ensure
-                        refute instance.closed?
-
-                        loop do
-                          begin
-                            is_closed = instance.close_nonblock
-                          rescue ::IO::WaitWritable
-                            ::IO.select nil, [socket]
-                            retry
-                          end
-
-                          break if is_closed
-                        end
-
-                        assert instance.closed?
                       end
+
+                      loop do
+                        begin
+                          is_flushed = instance.flush_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
+
+                        break if is_flushed
+                      end
+
+                      assert_equal instance.pos, text.bytesize
+                      assert_equal instance.pos, instance.tell
+
+                    ensure
+                      refute instance.closed?
+
+                      loop do
+                        begin
+                          is_closed = instance.close_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
+
+                        break if is_closed
+                      end
+
+                      assert instance.closed?
                     end
-
-                    server_thread.join
-
-                    check_text text, compressed_text, decompressor_options
                   end
                 end
               end
             end
           end
+        end
+
+        def server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options, &_block)
+          compressed_text = "".b
+
+          server_thread = ::Thread.new do
+            socket = server.accept
+
+            begin
+              loop do
+                compressed_text << socket.read_nonblock(portion_length)
+              rescue ::IO::WaitReadable
+                ::IO.select [socket]
+              rescue ::EOFError
+                break
+              end
+            ensure
+              socket.close
+            end
+          end
+
+          TCPSocket.open "localhost", PORT do |socket|
+            instance = target.new socket, compressor_options
+
+            begin
+              yield instance
+            ensure
+              instance.close
+            end
+          end
+
+          server_thread.join
+
+          check_text text, compressed_text, decompressor_options
         end
 
         def test_rewind_nonblock
