@@ -263,7 +263,7 @@ module ZSTDS
         end
 
         def test_readpartial
-          ::TCPServer.open PORT do |server|
+          start_server do |server|
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
                 [true, false].each do |with_buffer|
@@ -296,7 +296,41 @@ module ZSTDS
           end
         end
 
-        def server_block_test(server, text, compressor_options, decompressor_options, &_block)
+        # -- asynchronous --
+
+        def test_read_nonblock
+          start_server do |server|
+            TEXTS.each do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                get_compressor_options do |compressor_options|
+                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                    server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
+                      decompressed_text = "".b
+
+                      loop do
+                        decompressed_text << instance.read_nonblock(portion_length)
+                      rescue ::IO::WaitReadable
+                        ::IO.select [socket]
+                      rescue ::EOFError
+                        break
+                      end
+
+                      decompressed_text
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+
+        # -----
+
+        protected def start_server(&block)
+          ::TCPServer.open PORT, &block
+        end
+
+        protected def server_block_test(server, text, compressor_options, decompressor_options, &_block)
           compressed_text = String.compress text, compressor_options
 
           server_thread = ::Thread.new do
@@ -326,35 +360,7 @@ module ZSTDS
           assert_equal text, decompressed_text
         end
 
-        # -- asynchronous --
-
-        def test_read_nonblock
-          ::TCPServer.open PORT do |server|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                get_compressor_options do |compressor_options|
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                    server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
-                      decompressed_text = "".b
-
-                      loop do
-                        decompressed_text << instance.read_nonblock(portion_length)
-                      rescue ::IO::WaitReadable
-                        ::IO.select [socket]
-                      rescue ::EOFError
-                        break
-                      end
-
-                      decompressed_text
-                    end
-                  end
-                end
-              end
-            end
-          end
-        end
-
-        def server_nonblock_test(server, text, compressor_options, decompressor_options, &_block)
+        protected def server_nonblock_test(server, text, compressor_options, decompressor_options, &_block)
           compressed_text = String.compress text, compressor_options
 
           server_thread = ::Thread.new do
@@ -393,8 +399,6 @@ module ZSTDS
           decompressed_text.force_encoding text.encoding
           assert_equal text, decompressed_text
         end
-
-        # -----
 
         protected def write_archive(text, compressor_options)
           compressed_text = String.compress text, compressor_options

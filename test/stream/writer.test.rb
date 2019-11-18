@@ -160,7 +160,7 @@ module ZSTDS
         # -- asynchronous --
 
         def test_write_nonblock
-          ::TCPServer.open PORT do |server|
+          start_server do |server|
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
                 sources = get_sources text, portion_length
@@ -219,40 +219,6 @@ module ZSTDS
           end
         end
 
-        def server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options, &_block)
-          compressed_text = "".b
-
-          server_thread = ::Thread.new do
-            socket = server.accept
-
-            begin
-              loop do
-                compressed_text << socket.read_nonblock(portion_length)
-              rescue ::IO::WaitReadable
-                ::IO.select [socket]
-              rescue ::EOFError
-                break
-              end
-            ensure
-              socket.close
-            end
-          end
-
-          TCPSocket.open "localhost", PORT do |socket|
-            instance = target.new socket, compressor_options
-
-            begin
-              yield instance
-            ensure
-              instance.close
-            end
-          end
-
-          server_thread.join
-
-          check_text text, compressed_text, decompressor_options
-        end
-
         def test_rewind_nonblock
           get_compressor_options do |compressor_options|
             compressed_texts = []
@@ -302,6 +268,44 @@ module ZSTDS
         end
 
         # -----
+
+        protected def start_server(&block)
+          ::TCPServer.open PORT, &block
+        end
+
+        protected def server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options, &_block)
+          compressed_text = "".b
+
+          server_thread = ::Thread.new do
+            socket = server.accept
+
+            begin
+              loop do
+                compressed_text << socket.read_nonblock(portion_length)
+              rescue ::IO::WaitReadable
+                ::IO.select [socket]
+              rescue ::EOFError
+                break
+              end
+            ensure
+              socket.close
+            end
+          end
+
+          TCPSocket.open "localhost", PORT do |socket|
+            instance = target.new socket, compressor_options
+
+            begin
+              yield instance
+            ensure
+              instance.close
+            end
+          end
+
+          server_thread.join
+
+          check_text text, compressed_text, decompressor_options
+        end
 
         protected def get_sources(text, portion_length)
           sources = text
