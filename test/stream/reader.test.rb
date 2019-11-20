@@ -269,7 +269,7 @@ module ZSTDS
                 [true, false].each do |with_buffer|
                   get_compressor_options do |compressor_options|
                     get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                      server_block_test(server, text, compressor_options, decompressor_options) do |instance|
+                      server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
                         prev_result       = "".b
                         decompressed_text = "".b
 
@@ -324,40 +324,10 @@ module ZSTDS
           end
         end
 
-        # -----
+        # -- server --
 
         protected def start_server(&block)
           ::TCPServer.open PORT, &block
-        end
-
-        protected def server_block_test(server, text, compressor_options, decompressor_options, &_block)
-          compressed_text = String.compress text, compressor_options
-
-          server_thread = ::Thread.new do
-            socket = server.accept
-
-            begin
-              socket.write compressed_text
-            ensure
-              socket.close
-            end
-          end
-
-          decompressed_text =
-            ::TCPSocket.open "localhost", PORT do |socket|
-              instance = target.new socket, decompressor_options
-
-              begin
-                yield instance
-              ensure
-                instance.close
-              end
-            end
-
-          server_thread.join
-
-          decompressed_text.force_encoding text.encoding
-          assert_equal text, decompressed_text
         end
 
         protected def server_nonblock_test(server, text, compressor_options, decompressor_options, &_block)
@@ -399,6 +369,8 @@ module ZSTDS
           decompressed_text.force_encoding text.encoding
           assert_equal text, decompressed_text
         end
+
+        # -----
 
         protected def write_archive(text, compressor_options)
           compressed_text = String.compress text, compressor_options
