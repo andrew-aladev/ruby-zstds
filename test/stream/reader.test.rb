@@ -306,7 +306,7 @@ module ZSTDS
               PORTION_LENGTHS.each do |portion_length|
                 get_compressor_options do |compressor_options|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                    server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
+                    server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance, socket|
                       decompressed_text = "".b
 
                       loop do
@@ -344,7 +344,7 @@ module ZSTDS
           start_server do |server|
             LARGE_TEXTS.each do |text|
               LARGE_PORTION_LENGTHS.each do |portion_length|
-                server_nonblock_test(server, text) do |instance|
+                server_nonblock_test(server, text) do |instance, socket|
                   decompressed_text = "".b
 
                   loop do
@@ -410,7 +410,7 @@ module ZSTDS
               instance = target.new socket, decompressor_options
 
               begin
-                yield instance
+                yield instance, socket
               ensure
                 instance.close
               end

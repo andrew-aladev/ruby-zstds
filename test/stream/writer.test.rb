@@ -176,7 +176,7 @@ module ZSTDS
                 get_compressor_options do |compressor_options|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                     modes.each do |mode|
-                      server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance|
+                      server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance, socket|
                         # write
 
                         sources.each.with_index do |source, index|
@@ -260,7 +260,7 @@ module ZSTDS
                 sources = get_sources text, portion_length
 
                 modes.each do |mode|
-                  server_nonblock_test(server, text, portion_length) do |instance|
+                  server_nonblock_test(server, text, portion_length) do |instance, socket|
                     # write
 
                     sources.each.with_index do |source, index|
@@ -341,7 +341,7 @@ module ZSTDS
                     begin
                       is_rewinded = instance.rewind_nonblock
                     rescue ::IO::WaitWritable
-                      ::IO.select nil, [socket]
+                      ::IO.select nil, [file]
                       retry
                     end
 
@@ -399,7 +399,7 @@ module ZSTDS
             instance = target.new socket, compressor_options
 
             begin
-              yield instance
+              yield instance, socket
             ensure
               instance.close
             end
