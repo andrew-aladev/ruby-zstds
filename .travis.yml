@@ -18,10 +18,3 @@ before_install:
 
 script:
   - scripts/ci_test.sh
-
-env:
-  global:
-    - COVERALLS_PARALLEL=true
-
-notifications:
-  webhooks: https://coveralls.io/webhook

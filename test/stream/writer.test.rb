@@ -161,12 +161,10 @@ module ZSTDS
 
         def test_write_nonblock
           modes = OCG.new(
-            :write_nonblock => [true, false],
             :flush_nonblock => [true, false],
             :close_nonblock => [true, false]
           )
           .to_a
-          .reject { |mode| mode[:write_nonblock] && mode[:flush_nonblock] && mode[:close_nonblock] }
 
           start_server do |server|
             TEXTS.each do |text|
@@ -177,8 +175,10 @@ module ZSTDS
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                     modes.each do |mode|
                       server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance|
-                        if mode[:write_nonblock]
-                          sources.each do |source|
+                        # write
+
+                        sources.each.with_index do |source, index|
+                          if index.even?
                             loop do
                               begin
                                 bytes_written = instance.write_nonblock source
@@ -190,10 +190,12 @@ module ZSTDS
                               source = source.byteslice bytes_written, source.bytesize - bytes_written
                               break if source.bytesize == 0
                             end
+                          else
+                            instance.write source
                           end
-                        else
-                          sources.each { |source| instance.write source }
                         end
+
+                        # flush
 
                         if mode[:flush_nonblock]
                           loop do
@@ -214,6 +216,8 @@ module ZSTDS
                         assert_equal instance.pos, instance.tell
 
                       ensure
+                        # close
+
                         refute instance.closed?
 
                         if mode[:close_nonblock]

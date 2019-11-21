@@ -262,6 +262,8 @@ module ZSTDS
           end
         end
 
+        # -- asynchronous --
+
         def test_readpartial
           start_server do |server|
             TEXTS.each do |text|
@@ -296,8 +298,6 @@ module ZSTDS
           end
         end
 
-        # -- asynchronous --
-
         def test_read_nonblock
           start_server do |server|
             TEXTS.each do |text|
@@ -308,11 +308,25 @@ module ZSTDS
                       decompressed_text = "".b
 
                       loop do
-                        decompressed_text << instance.read_nonblock(portion_length)
-                      rescue ::IO::WaitReadable
-                        ::IO.select [socket]
-                      rescue ::EOFError
-                        break
+                        begin
+                          decompressed_text << instance.read_nonblock(portion_length)
+                        rescue ::IO::WaitReadable
+                          ::IO.select [socket]
+                          retry
+                        rescue ::EOFError
+                          break
+                        end
+
+                        begin
+                          decompressed_text << instance.readpartial(portion_length)
+                        rescue ::EOFError
+                          break
+                        end
+
+                        result = instance.read portion_length
+                        break if result.nil?
+
+                        decompressed_text << result
                       end
 
                       decompressed_text
