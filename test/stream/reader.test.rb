@@ -18,12 +18,14 @@ module ZSTDS
         Target = ZSTDS::Stream::Reader
         String = ZSTDS::String
 
-        ARCHIVE_PATH      = Common::ARCHIVE_PATH
-        PORT              = Common::PORT
-        ENCODINGS         = Common::ENCODINGS
-        TRANSCODE_OPTIONS = Common::TRANSCODE_OPTIONS
-        TEXTS             = Common::TEXTS
-        PORTION_LENGTHS   = Common::PORTION_LENGTHS
+        ARCHIVE_PATH          = Common::ARCHIVE_PATH
+        PORT                  = Common::PORT
+        ENCODINGS             = Common::ENCODINGS
+        TRANSCODE_OPTIONS     = Common::TRANSCODE_OPTIONS
+        TEXTS                 = Common::TEXTS
+        LARGE_TEXTS           = Common::LARGE_TEXTS
+        PORTION_LENGTHS       = Common::PORTION_LENGTHS
+        LARGE_PORTION_LENGTHS = Common::LARGE_PORTION_LENGTHS
 
         BUFFER_LENGTH_NAMES   = %i[source_buffer_length destination_buffer_length].freeze
         BUFFER_LENGTH_MAPPING = {
@@ -338,13 +340,49 @@ module ZSTDS
           end
         end
 
+        def test_read_nonblock_with_large_texts
+          start_server do |server|
+            LARGE_TEXTS.each do |text|
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                server_nonblock_test(server, text) do |instance|
+                  decompressed_text = "".b
+
+                  loop do
+                    begin
+                      decompressed_text << instance.read_nonblock(portion_length)
+                    rescue ::IO::WaitReadable
+                      ::IO.select [socket]
+                      retry
+                    rescue ::EOFError
+                      break
+                    end
+
+                    begin
+                      decompressed_text << instance.readpartial(portion_length)
+                    rescue ::EOFError
+                      break
+                    end
+
+                    result = instance.read portion_length
+                    break if result.nil?
+
+                    decompressed_text << result
+                  end
+
+                  decompressed_text
+                end
+              end
+            end
+          end
+        end
+
         # -- server --
 
         protected def start_server(&block)
           ::TCPServer.open PORT, &block
         end
 
-        protected def server_nonblock_test(server, text, compressor_options, decompressor_options, &_block)
+        protected def server_nonblock_test(server, text, compressor_options = {}, decompressor_options = {}, &_block)
           compressed_text = String.compress text, compressor_options
 
           server_thread = ::Thread.new do

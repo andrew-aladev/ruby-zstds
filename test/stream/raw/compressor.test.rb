@@ -18,9 +18,10 @@ module ZSTDS
           Target = ZSTDS::Stream::Raw::Compressor
           String = ZSTDS::String
 
-          TEXTS           = Common::TEXTS
-          LARGE_TEXTS     = Common::LARGE_TEXTS
-          PORTION_LENGTHS = Common::PORTION_LENGTHS
+          TEXTS                 = Common::TEXTS
+          LARGE_TEXTS           = Common::LARGE_TEXTS
+          PORTION_LENGTHS       = Common::PORTION_LENGTHS
+          LARGE_PORTION_LENGTHS = Common::LARGE_PORTION_LENGTHS
 
           BUFFER_LENGTH_NAMES   = %i[destination_buffer_length].freeze
           BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
@@ -110,32 +111,39 @@ module ZSTDS
 
           def test_large_texts
             LARGE_TEXTS.each do |text|
-              compressed_buffer = ::StringIO.new
-              compressed_buffer.set_encoding ::Encoding::BINARY
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                compressed_buffer = ::StringIO.new
+                compressed_buffer.set_encoding ::Encoding::BINARY
 
-              writer = proc { |portion| compressed_buffer << portion }
+                writer = proc { |portion| compressed_buffer << portion }
 
-              compressor = Target.new
+                compressor = Target.new
 
-              begin
-                source = text.dup
+                begin
+                  source      = "".b
+                  text_offset = 0
 
-                loop do
-                  bytes_written = compressor.write source, &writer
-                  source        = source.byteslice bytes_written, source.bytesize - bytes_written
+                  loop do
+                    portion = text.byteslice text_offset, portion_length
+                    break if portion.nil?
 
-                  break if source.empty?
+                    text_offset += portion_length
+                    source << portion
+
+                    bytes_written = compressor.write source, &writer
+                    source        = source.byteslice bytes_written, source.bytesize - bytes_written
+                  end
+                ensure
+                  compressor.close(&writer)
                 end
-              ensure
-                compressor.close(&writer)
+
+                compressed_text = compressed_buffer.string
+
+                decompressed_text = String.decompress compressed_text
+                decompressed_text.force_encoding text.encoding
+
+                assert_equal text, decompressed_text
               end
-
-              compressed_text = compressed_buffer.string
-
-              decompressed_text = String.decompress compressed_text
-              decompressed_text.force_encoding text.encoding
-
-              assert_equal text, decompressed_text
             end
           end
 

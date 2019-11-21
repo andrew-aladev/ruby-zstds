@@ -18,9 +18,10 @@ module ZSTDS
           Target = ZSTDS::Stream::Raw::Decompressor
           String = ZSTDS::String
 
-          TEXTS           = Common::TEXTS
-          LARGE_TEXTS     = Common::LARGE_TEXTS
-          PORTION_LENGTHS = Common::PORTION_LENGTHS
+          TEXTS                 = Common::TEXTS
+          LARGE_TEXTS           = Common::LARGE_TEXTS
+          PORTION_LENGTHS       = Common::PORTION_LENGTHS
+          LARGE_PORTION_LENGTHS = Common::LARGE_PORTION_LENGTHS
 
           BUFFER_LENGTH_NAMES   = %i[destination_buffer_length].freeze
           BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
@@ -110,32 +111,39 @@ module ZSTDS
 
           def test_large_texts
             LARGE_TEXTS.each do |text|
-              compressed_text = String.compress text
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                compressed_text = String.compress text
 
-              decompressed_buffer = ::StringIO.new
-              decompressed_buffer.set_encoding ::Encoding::BINARY
+                decompressed_buffer = ::StringIO.new
+                decompressed_buffer.set_encoding ::Encoding::BINARY
 
-              writer = proc { |portion| decompressed_buffer << portion }
+                writer = proc { |portion| decompressed_buffer << portion }
 
-              decompressor = Target.new
+                decompressor = Target.new
 
-              begin
-                source = compressed_text.dup
+                begin
+                  source                 = "".b
+                  compressed_text_offset = 0
 
-                loop do
-                  bytes_read = decompressor.read source, &writer
-                  source     = source.byteslice bytes_read, source.bytesize - bytes_read
+                  loop do
+                    portion = compressed_text.byteslice compressed_text_offset, portion_length
+                    break if portion.nil?
 
-                  break if source.empty?
+                    compressed_text_offset += portion_length
+                    source << portion
+
+                    bytes_read = decompressor.read source, &writer
+                    source     = source.byteslice bytes_read, source.bytesize - bytes_read
+                  end
+                ensure
+                  decompressor.close(&writer)
                 end
-              ensure
-                decompressor.close(&writer)
+
+                decompressed_text = decompressed_buffer.string
+                decompressed_text.force_encoding text.encoding
+
+                assert_equal text, decompressed_text
               end
-
-              decompressed_text = decompressed_buffer.string
-              decompressed_text.force_encoding text.encoding
-
-              assert_equal text, decompressed_text
             end
           end
 

@@ -17,12 +17,14 @@ module ZSTDS
         Target = ZSTDS::Stream::Writer
         String = ZSTDS::String
 
-        ARCHIVE_PATH      = Common::ARCHIVE_PATH
-        PORT              = Common::PORT
-        ENCODINGS         = Common::ENCODINGS
-        TRANSCODE_OPTIONS = Common::TRANSCODE_OPTIONS
-        TEXTS             = Common::TEXTS
-        PORTION_LENGTHS   = Common::PORTION_LENGTHS
+        ARCHIVE_PATH          = Common::ARCHIVE_PATH
+        PORT                  = Common::PORT
+        ENCODINGS             = Common::ENCODINGS
+        TRANSCODE_OPTIONS     = Common::TRANSCODE_OPTIONS
+        TEXTS                 = Common::TEXTS
+        LARGE_TEXTS           = Common::LARGE_TEXTS
+        PORTION_LENGTHS       = Common::PORTION_LENGTHS
+        LARGE_PORTION_LENGTHS = Common::LARGE_PORTION_LENGTHS
 
         BUFFER_LENGTH_NAMES   = %i[destination_buffer_length].freeze
         BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
@@ -245,6 +247,81 @@ module ZSTDS
           end
         end
 
+        def test_write_nonblock_with_large_texts
+          modes = OCG.new(
+            :flush_nonblock => [true, false],
+            :close_nonblock => [true, false]
+          )
+          .to_a
+
+          start_server do |server|
+            LARGE_TEXTS.each do |text|
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                sources = get_sources text, portion_length
+
+                modes.each do |mode|
+                  server_nonblock_test(server, text, portion_length) do |instance|
+                    # write
+
+                    sources.each.with_index do |source, index|
+                      if index.even?
+                        loop do
+                          begin
+                            bytes_written = instance.write_nonblock source
+                          rescue ::IO::WaitWritable
+                            ::IO.select nil, [socket]
+                            retry
+                          end
+
+                          source = source.byteslice bytes_written, source.bytesize - bytes_written
+                          break if source.bytesize == 0
+                        end
+                      else
+                        instance.write source
+                      end
+                    end
+
+                    # flush
+
+                    if mode[:flush_nonblock]
+                      loop do
+                        begin
+                          is_flushed = instance.flush_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
+
+                        break if is_flushed
+                      end
+                    else
+                      instance.flush
+                    end
+
+                  ensure
+                    # close
+
+                    if mode[:close_nonblock]
+                      loop do
+                        begin
+                          is_closed = instance.close_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
+
+                        break if is_closed
+                      end
+                    else
+                      instance.close
+                    end
+                  end
+                end
+              end
+            end
+          end
+        end
+
         def test_rewind_nonblock
           get_compressor_options do |compressor_options|
             compressed_texts = []
@@ -299,7 +376,7 @@ module ZSTDS
           ::TCPServer.open PORT, &block
         end
 
-        protected def server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options, &_block)
+        protected def server_nonblock_test(server, text, portion_length, compressor_options = {}, decompressor_options = {}, &_block)
           compressed_text = "".b
 
           server_thread = ::Thread.new do
