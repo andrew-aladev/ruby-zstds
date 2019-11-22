@@ -53,12 +53,12 @@ module ZSTDS
         unless bytes_to_read.nil?
           return nil if eof?
 
-          read_more_from_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
+          read_more_to_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
 
           return read_bytes_from_buffer bytes_to_read, out_buffer
         end
 
-        read_more_from_buffer until @io.eof?
+        read_more_to_buffer until @io.eof?
 
         result = @buffer
         reset_buffer
@@ -71,7 +71,7 @@ module ZSTDS
         result
       end
 
-      protected def read_more_from_buffer
+      protected def read_more_to_buffer
         io_data = @io.read @source_buffer_length
         append_io_data_to_buffer io_data
       end
@@ -79,12 +79,12 @@ module ZSTDS
       def readpartial(bytes_to_read = nil, out_buffer = nil)
         raise ::EOFError if eof?
 
-        readpartial_from_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
+        readpartial_to_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
 
         read_bytes_from_buffer bytes_to_read, out_buffer
       end
 
-      protected def readpartial_from_buffer
+      protected def readpartial_to_buffer
         io_data = @io.readpartial @source_buffer_length
         append_io_data_to_buffer io_data
       end
@@ -108,12 +108,12 @@ module ZSTDS
       def read_nonblock(bytes_to_read, out_buffer = nil, *options)
         raise ::EOFError if eof?
 
-        read_more_from_buffer_nonblock(*options) until @buffer.bytesize >= bytes_to_read || @io.eof?
+        read_more_to_buffer_nonblock(*options) until @buffer.bytesize >= bytes_to_read || @io.eof?
 
         read_bytes_from_buffer bytes_to_read, out_buffer
       end
 
-      protected def read_more_from_buffer_nonblock(*options)
+      protected def read_more_to_buffer_nonblock(*options)
         io_data = @io.read_nonblock @source_buffer_length, *options
         append_io_data_to_buffer io_data
       end
