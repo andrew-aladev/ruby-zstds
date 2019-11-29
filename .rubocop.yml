@@ -15,7 +15,7 @@ Layout/EmptyLinesAroundArguments:
 Layout/EmptyLinesAroundExceptionHandlingKeywords:
   Enabled: false
 
-Layout/AlignHash:
+Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 
 Layout/MultilineMethodCallIndentation:

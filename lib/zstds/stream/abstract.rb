@@ -51,7 +51,7 @@ module ZSTDS
       protected def reset_io_advise
         # Both compressor and decompressor need sequential io access.
         @io.advise :sequential
-      rescue ::Errno::ESPIPE # rubocop:disable Lint/HandleExceptions
+      rescue ::Errno::ESPIPE # rubocop:disable Lint/SuppressedException
         # ok
       end
 
