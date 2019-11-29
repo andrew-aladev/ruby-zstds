@@ -37,7 +37,7 @@ export LIBRARY_PATH="$C_INCLUDE_PATH:/usr/local/lib"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/lib"
 
 # Compiling library from source.
-ZSTD_BRANCH="v1.4.3"
+ZSTD_BRANCH="v1.4.4"
 
 build="build"
 mkdir -p "$build"
