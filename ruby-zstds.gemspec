@@ -26,8 +26,8 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "rubocop-rails", "~> 2.3"
   gem.add_development_dependency "simplecov"
 
-  gem.files = \
-    `git ls-files -z --directory {ext,lib}`.split("\x0") + \
+  gem.files =
+    `git ls-files -z --directory {ext,lib}`.split("\x0") +
     %w[AUTHORS LICENSE README.md]
   gem.require_paths = %w[lib]
   gem.extensions    = %w[ext/extconf.rb]
