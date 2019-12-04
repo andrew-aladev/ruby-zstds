@@ -75,7 +75,13 @@ $srcs = %w[
 .map { |name| "src/#{extension_name}/#{name}.c" }
 .freeze
 
+if ENV["CI"] || ENV["COVERAGE"]
+  $CFLAGS << " --coverage"
+  $LDFLAGS << " --coverage"
+end
+
 $CFLAGS << " -Wno-declaration-after-statement"
+
 $VPATH << "$(srcdir)/#{extension_name}:$(srcdir)/#{extension_name}/stream"
 # rubocop:enable Style/GlobalVars
 
