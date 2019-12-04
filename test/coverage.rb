@@ -12,18 +12,17 @@ SimpleCov.formatters = SimpleCov::Formatter::MultiFormatter.new(
 )
 
 # Workaround for https://bugs.ruby-lang.org/issues/15980
-SimpleCov.module_eval do |mod|
-  def mod.start(profile = nil, &block)
-    require "coverage"
+require "coverage"
 
-    load_profile profile if profile
-    configure(&block) if block_given?
+Coverage.module_eval do
+  singleton_class.send :alias_method, :original_start, :start
+  def self.start
+    original_start :lines => true, :branches => true
+  end
 
-    @result  = nil
-    @running = true
-    @pid     = Process.pid
-
-    Coverage.start :lines => true, :branches => true
+  singleton_class.send :alias_method, :original_result, :result
+  def self.result
+    original_result.transform_values { |coverage| coverage[:lines] }
   end
 end
 
