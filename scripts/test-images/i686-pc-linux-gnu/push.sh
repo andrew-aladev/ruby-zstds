@@ -1,9 +1,10 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
-source "../env.sh"
-source "../utils.sh"
+source "../../utils.sh"
+source "./env.sh"
 
-docker_push "${DOCKER_IMAGE_PREFIX}_i686-pc-linux-gnu"
+docker_push

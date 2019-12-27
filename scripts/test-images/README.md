@@ -1,4 +1,4 @@
-# Gentoo images for testing.
+# Gentoo images for software testing
 
 You can find them on https://hub.docker.com/u/puchuu.
 
@@ -23,7 +23,6 @@ Than open [`env.sh`](env.sh) and update variables.
 
 ```sh
 ./build.sh
-./push.sh
 ```
 
 Build is rootless, just use your regular `my_user`.

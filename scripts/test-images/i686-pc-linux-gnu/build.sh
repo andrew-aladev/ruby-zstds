@@ -1,6 +1,7 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
-buildah unshare ./buildah.sh
+buildah unshare "./buildah.sh"

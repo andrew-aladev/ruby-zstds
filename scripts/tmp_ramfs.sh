@@ -1,23 +1,24 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
 cd ".."
 
 SIZE=10 # MB
-DIRECTORY="tmp"
+TMP_DIR="tmp"
 
 kernel_name=$(uname -s)
 if [ $kernel_name = "Darwin" ]; then
-  umount -f "$DIRECTORY" || true
-  hdiutil detach "$DIRECTORY" || true
+  umount -f "$TMP_DIR" || true
+  hdiutil detach "$TMP_DIR" || true
 
   sectors=$((2048 * $SIZE))
   disk_id=$(hdiutil attach -nomount ram://$sectors)
-  diskutil erasevolume HFS+ "$DIRECTORY" $disk_id
+  diskutil erasevolume HFS+ "$TMP_DIR" $disk_id
 
 else
-  umount -f "$DIRECTORY" || true
-  mount -t ramfs -o size=${SIZE}M,mode=777 ramfs "$DIRECTORY"
+  umount -f "$TMP_DIR" || true
+  mount -t ramfs -o size=${SIZE}M,mode=777 ramfs "$TMP_DIR"
 fi

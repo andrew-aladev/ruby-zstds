@@ -1,9 +1,9 @@
 require: rubocop-performance
 
-Documentation:
+Style/Documentation:
   Enabled: false
 
-HashSyntax:
+Style/HashSyntax:
   EnforcedStyle: hash_rockets
 
 Layout/EmptyLines:
@@ -33,7 +33,7 @@ Metrics/ClassLength:
 Metrics/CyclomaticComplexity:
   Enabled: false
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 200
 
 Metrics/MethodLength:
@@ -57,7 +57,7 @@ Naming/RescuedExceptionsVariableName:
 Naming/VariableNumber:
   EnforcedStyle: snake_case
 
-StringLiterals:
+Style/StringLiterals:
   EnforcedStyle: double_quotes
 
 Style/AccessModifierDeclarations:

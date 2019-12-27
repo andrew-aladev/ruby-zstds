@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
 # This script is for CI machines only, it provides junk and changes some config files.
 # Please do not use it on your machine.

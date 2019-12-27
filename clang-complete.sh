@@ -1,7 +1,8 @@
 #!/bin/bash
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
 ruby_version=$(< ".ruby-version")
 ruby_major_version="${ruby_version%.*}"

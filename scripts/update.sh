@@ -1,7 +1,8 @@
 #!/bin/bash -l
 set -e
 
-cd "$(dirname $0)"
+DIR=$(dirname "${BASH_SOURCE[0]}")
+cd "$DIR"
 
 git fetch --all || true
 git fetch --tags || true
