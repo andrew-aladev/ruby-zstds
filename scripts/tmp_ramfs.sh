@@ -15,8 +15,8 @@ if [ $kernel_name = "Darwin" ]; then
   hdiutil detach "$TMP_DIR" || true
 
   sectors=$((2048 * $SIZE))
-  disk_id=$(hdiutil attach -nomount ram://$sectors)
-  diskutil erasevolume HFS+ "$TMP_DIR" $disk_id
+  disk_id=$(hdiutil attach -nomount "ram://${sectors}")
+  diskutil erasevolume HFS+ "$TMP_DIR" "$disk_id"
 
 else
   umount -f "$TMP_DIR" || true
