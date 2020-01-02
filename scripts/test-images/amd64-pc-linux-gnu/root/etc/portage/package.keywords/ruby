@@ -1,4 +1,4 @@
-dev-lang/ruby:2.6 ~amd64
+dev-lang/ruby:2.7 ~amd64
 
 virtual/rubygems ~amd64
 dev-ruby/rubygems ~amd64

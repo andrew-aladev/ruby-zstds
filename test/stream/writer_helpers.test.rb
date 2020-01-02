@@ -60,15 +60,8 @@ module ZSTDS
 
               get_compressor_options do |compressor_options|
                 Target.open ARCHIVE_PATH, compressor_options do |instance|
-                  $OUTPUT_FIELD_SEPARATOR  = field_separator
-                  $OUTPUT_RECORD_SEPARATOR = record_separator
-
-                  begin
-                    instance.print(*sources)
-                  ensure
-                    $OUTPUT_FIELD_SEPARATOR  = nil
-                    $OUTPUT_RECORD_SEPARATOR = nil
-                  end
+                  keyword_args = { :field_separator => field_separator, :record_separator => record_separator }
+                  instance.print(*sources, **keyword_args)
                 end
 
                 compressed_text = ::File.read ARCHIVE_PATH

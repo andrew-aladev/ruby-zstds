@@ -38,7 +38,7 @@ module ZSTDS
       def self.generate_texts(*sources)
         sources.flat_map do |source|
           ENCODINGS.map do |encoding|
-            source.encode encoding, TRANSCODE_OPTIONS
+            source.encode encoding, **TRANSCODE_OPTIONS
           end
         end
       end

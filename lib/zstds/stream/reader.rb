@@ -147,7 +147,7 @@ module ZSTDS
       end
 
       protected def transcode_to_internal(data)
-        data = data.encode @internal_encoding, @transcode_options unless @internal_encoding.nil?
+        data = data.encode @internal_encoding, **@transcode_options unless @internal_encoding.nil?
         data
       end
 

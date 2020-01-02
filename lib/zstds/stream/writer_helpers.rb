@@ -13,13 +13,13 @@ module ZSTDS
         write object
       end
 
-      def print(*objects)
+      def print(*objects, field_separator: $OUTPUT_FIELD_SEPARATOR, record_separator: $OUTPUT_RECORD_SEPARATOR)
         objects.each do |object|
           write object
-          write $OUTPUT_FIELD_SEPARATOR unless $OUTPUT_FIELD_SEPARATOR.nil?
+          write field_separator unless field_separator.nil?
         end
 
-        write $OUTPUT_RECORD_SEPARATOR unless $OUTPUT_RECORD_SEPARATOR.nil?
+        write record_separator unless record_separator.nil?
 
         nil
       end

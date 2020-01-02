@@ -137,7 +137,7 @@ module ZSTDS
       # -- common --
 
       protected def transcode(data)
-        data = data.encode @external_encoding, @transcode_options unless @external_encoding.nil?
+        data = data.encode @external_encoding, **@transcode_options unless @external_encoding.nil?
         data
       end
     end

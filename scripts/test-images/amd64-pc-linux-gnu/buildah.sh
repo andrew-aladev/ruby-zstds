@@ -14,7 +14,7 @@ run mkdir -p /home
 copy ../entrypoint.sh /home/
 
 copy root/ /
-build emerge -v dev-vcs/git dev-lang/ruby:2.6 virtual/rubygems
+build emerge -v dev-vcs/git dev-lang/ruby:2.7 virtual/rubygems
 
 run update
 build upgrade

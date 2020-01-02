@@ -190,7 +190,7 @@ module ZSTDS
 
               # We don't need to transcode between same encodings.
               (ENCODINGS - [external_encoding]).each do |internal_encoding|
-                target_text = text.encode internal_encoding, TRANSCODE_OPTIONS
+                target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
                 write_archive text, compressor_options
 
