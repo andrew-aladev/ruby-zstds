@@ -25,7 +25,7 @@ module ZSTDS
       attr_reader :pos
       alias tell pos
 
-      def initialize(io, external_encoding: nil, internal_encoding: nil, transcode_options: {})
+      def initialize(io, options = {})
         @raw_stream = create_raw_stream
 
         Validation.validate_io io
@@ -33,7 +33,7 @@ module ZSTDS
 
         @stat = Stat.new @io.stat
 
-        set_encoding external_encoding, internal_encoding, transcode_options
+        set_encoding options[:external_encoding], options[:internal_encoding], options[:transcode_options]
         reset_buffer
         reset_io_advise
 
