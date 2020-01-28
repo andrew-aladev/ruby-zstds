@@ -2,7 +2,7 @@ image: Ubuntu
 
 environment:
   matrix:
-    - RUBY_VERSION: 26
+    - RUBY_VERSION: 27
 
 test_script:
   - sh: scripts/ci_test.sh

@@ -4,5 +4,5 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$DIR"
 
-./native/build.sh
-./cross/build.sh
+./native/run.sh
+./cross/run.sh
