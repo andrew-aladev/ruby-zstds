@@ -43,7 +43,11 @@ docker_push () {
   docker_username="${2:-${DOCKER_USERNAME}}"
   docker_image_name="docker://docker.io/${docker_username}/${image_name}"
 
-  docker login --username "$docker_username"
+  logged_docker_username=$(buildah login --get-login "docker.io" || :)
+  if [ "$logged_docker_username" != "$docker_username" ]; then
+    buildah login --username "$docker_username" "docker.io"
+  fi
+
   buildah push "$image_name" "$docker_image_name"
 }
 
