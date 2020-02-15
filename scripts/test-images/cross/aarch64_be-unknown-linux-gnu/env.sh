@@ -6,3 +6,5 @@ source "${DIR}/../../env.sh"
 
 FROM_IMAGE_NAME="test_aarch64_be-unknown-linux-gnu"
 IMAGE_NAME="${IMAGE_PREFIX}_aarch64_be-unknown-linux-gnu"
+
+REBUILD_DATE=$(< "${DIR}/.rebuild_date") || :

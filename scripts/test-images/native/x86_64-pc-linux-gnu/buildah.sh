@@ -8,6 +8,7 @@ source "../../utils.sh"
 source "./env.sh"
 
 docker_pull "$FROM_IMAGE_NAME"
+check_up_to_date
 
 CONTAINER=$(buildah from "$FROM_IMAGE_NAME")
 buildah config --label maintainer="$MAINTAINER" --entrypoint "/home/entrypoint.sh" "$CONTAINER"
