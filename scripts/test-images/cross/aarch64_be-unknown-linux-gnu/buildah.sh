@@ -7,11 +7,11 @@ cd "$DIR"
 source "../../utils.sh"
 source "./env.sh"
 
-docker_pull "$FROM_IMAGE_NAME"
+pull "$FROM_IMAGE_NAME"
 check_up_to_date
 
-CONTAINER=$(buildah from "$FROM_IMAGE_NAME")
-buildah config --label maintainer="$MAINTAINER" --entrypoint "/home/entrypoint.sh" "$CONTAINER"
+CONTAINER=$(from "$FROM_IMAGE_NAME")
+config --arch="arm64" --entrypoint "/home/entrypoint.sh"
 
 run mkdir -p /home
 copy ../../entrypoint.sh /home/

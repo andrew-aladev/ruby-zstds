@@ -4,4 +4,7 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$DIR"
 
-buildah unshare "./buildah.sh"
+source "../../utils.sh"
+source "./env.sh"
+
+unshare "./buildah.sh"
