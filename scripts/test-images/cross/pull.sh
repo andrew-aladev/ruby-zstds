@@ -8,3 +8,4 @@ cd "$DIR"
 ./aarch64_be-unknown-linux-gnu/pull.sh
 
 ./arm-unknown-linux-gnueabi/pull.sh
+./armeb-unknown-linux-gnueabi/pull.sh

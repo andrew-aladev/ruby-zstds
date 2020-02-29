@@ -8,3 +8,4 @@ cd "$DIR"
 ./aarch64_be-unknown-linux-gnu/build.sh
 
 ./arm-unknown-linux-gnueabi/build.sh
+./armeb-unknown-linux-gnueabi/build.sh

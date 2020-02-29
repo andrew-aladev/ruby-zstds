@@ -143,5 +143,7 @@ check_up_to_date () {
 
 run_image () {
   echo "running image: ${IMAGE_NAME}"
-  run $(from "$IMAGE_NAME") "/home/entrypoint.sh"
+
+  CONTAINER=$(from "$IMAGE_NAME")
+  run "/home/entrypoint.sh"
 }

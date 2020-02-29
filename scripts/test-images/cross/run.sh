@@ -8,3 +8,4 @@ cd "$DIR"
 ./aarch64_be-unknown-linux-gnu/run.sh
 
 ./arm-unknown-linux-gnueabi/run.sh
+./armeb-unknown-linux-gnueabi/run.sh

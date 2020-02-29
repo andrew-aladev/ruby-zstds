@@ -8,3 +8,4 @@ cd "$DIR"
 ./aarch64_be-unknown-linux-gnu/push.sh
 
 ./arm-unknown-linux-gnueabi/push.sh
+./armeb-unknown-linux-gnueabi/push.sh

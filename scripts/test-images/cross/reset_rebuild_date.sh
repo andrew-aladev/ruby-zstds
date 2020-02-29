@@ -8,3 +8,4 @@ cd "$DIR"
 ./aarch64_be-unknown-linux-gnu/reset_rebuild_date.sh
 
 ./arm-unknown-linux-gnueabi/reset_rebuild_date.sh
+./armeb-unknown-linux-gnueabi/reset_rebuild_date.sh
