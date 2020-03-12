@@ -13,4 +13,7 @@
 typedef size_t       zstds_result_t;
 typedef uint_fast8_t zstds_ext_result_t;
 
+typedef uint8_t      zstds_ext_symbol_t;
+typedef uint_fast8_t zstds_ext_symbol_fast_t;
+
 #endif // ZSTDS_EXT_COMMON_H

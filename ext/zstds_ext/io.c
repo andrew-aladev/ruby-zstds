@@ -3,14 +3,11 @@
 
 #include "ruby/io.h"
 
-#include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <zstd.h>
 
 #include "ruby.h"
-#include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/io.h"
 #include "zstds_ext/macro.h"
@@ -23,7 +20,7 @@ enum {
 
 // -- file --
 
-static inline zstds_ext_result_t read_file(FILE* source_file, uint8_t* source_buffer, size_t* source_length_ptr, size_t source_buffer_length)
+static inline zstds_ext_result_t read_file(FILE* source_file, zstds_ext_symbol_t* source_buffer, size_t* source_length_ptr, size_t source_buffer_length)
 {
   size_t read_length = fread(source_buffer, 1, source_buffer_length, source_file);
   if (read_length == 0 && feof(source_file)) {
@@ -39,7 +36,7 @@ static inline zstds_ext_result_t read_file(FILE* source_file, uint8_t* source_bu
   return 0;
 }
 
-static inline zstds_ext_result_t write_file(FILE* destination_file, uint8_t* destination_buffer, size_t destination_length)
+static inline zstds_ext_result_t write_file(FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t destination_length)
 {
   size_t written_length = fwrite(destination_buffer, 1, destination_length, destination_file);
   if (written_length != destination_length) {
@@ -52,15 +49,15 @@ static inline zstds_ext_result_t write_file(FILE* destination_file, uint8_t* des
 // -- buffer --
 
 static inline zstds_ext_result_t create_buffers(
-  uint8_t** source_buffer_ptr, size_t source_buffer_length,
-  uint8_t** destination_buffer_ptr, size_t destination_buffer_length)
+  zstds_ext_symbol_t** source_buffer_ptr, size_t source_buffer_length,
+  zstds_ext_symbol_t** destination_buffer_ptr, size_t destination_buffer_length)
 {
-  uint8_t* source_buffer = malloc(source_buffer_length);
+  zstds_ext_symbol_t* source_buffer = malloc(source_buffer_length);
   if (source_buffer == NULL) {
     return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
   }
 
-  uint8_t* destination_buffer = malloc(destination_buffer_length);
+  zstds_ext_symbol_t* destination_buffer = malloc(destination_buffer_length);
   if (destination_buffer == NULL) {
     free(source_buffer);
     return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
@@ -79,12 +76,12 @@ static inline zstds_ext_result_t create_buffers(
 // Algorithm can use same buffer again.
 
 static inline zstds_ext_result_t read_more_source(
-  FILE*           source_file,
-  const uint8_t** source_ptr, size_t* source_length_ptr,
-  uint8_t* source_buffer, size_t source_buffer_length)
+  FILE*                      source_file,
+  const zstds_ext_symbol_t** source_ptr, size_t* source_length_ptr,
+  zstds_ext_symbol_t* source_buffer, size_t source_buffer_length)
 {
-  const uint8_t* source        = *source_ptr;
-  size_t         source_length = *source_length_ptr;
+  const zstds_ext_symbol_t* source        = *source_ptr;
+  size_t                    source_length = *source_length_ptr;
 
   if (source != source_buffer) {
     if (source_length != 0) {
@@ -101,8 +98,8 @@ static inline zstds_ext_result_t read_more_source(
     return ZSTDS_EXT_ERROR_NOT_ENOUGH_SOURCE_BUFFER;
   }
 
-  uint8_t* remaining_source_buffer = source_buffer + source_length;
-  size_t   new_source_length;
+  zstds_ext_symbol_t* remaining_source_buffer = source_buffer + source_length;
+  size_t              new_source_length;
 
   zstds_ext_result_t ext_result = read_file(source_file, remaining_source_buffer, &new_source_length, remaining_source_buffer_length);
   if (ext_result != 0) {
@@ -157,8 +154,8 @@ static inline zstds_ext_result_t read_more_source(
 // Than algorithm can use same buffer again.
 
 static inline zstds_ext_result_t flush_destination_buffer(
-  FILE*    destination_file,
-  uint8_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  FILE*               destination_file,
+  zstds_ext_symbol_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
 {
   if (*destination_length_ptr == 0) {
     // We want to write more data at once, than buffer has.
@@ -175,7 +172,7 @@ static inline zstds_ext_result_t flush_destination_buffer(
   return 0;
 }
 
-static inline zstds_ext_result_t write_remaining_destination(FILE* destination_file, uint8_t* destination_buffer, size_t destination_length)
+static inline zstds_ext_result_t write_remaining_destination(FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t destination_length)
 {
   if (destination_length == 0) {
     return 0;
@@ -200,9 +197,9 @@ static inline zstds_ext_result_t write_remaining_destination(FILE* destination_f
 // -- compress --
 
 static inline zstds_ext_result_t buffered_compress(
-  ZSTD_CCtx*      ctx,
-  const uint8_t** source_ptr, size_t* source_length_ptr,
-  FILE* destination_file, uint8_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  ZSTD_CCtx*                 ctx,
+  const zstds_ext_symbol_t** source_ptr, size_t* source_length_ptr,
+  FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -249,7 +246,7 @@ static inline zstds_ext_result_t buffered_compress(
 
 static inline zstds_ext_result_t buffered_compressor_finish(
   ZSTD_CCtx* ctx,
-  FILE* destination_file, uint8_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -293,14 +290,14 @@ static inline zstds_ext_result_t buffered_compressor_finish(
 
 static inline zstds_ext_result_t compress(
   ZSTD_CCtx* ctx,
-  FILE* source_file, uint8_t* source_buffer, size_t source_buffer_length,
-  FILE* destination_file, uint8_t* destination_buffer, size_t destination_buffer_length)
+  FILE* source_file, zstds_ext_symbol_t* source_buffer, size_t source_buffer_length,
+  FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t destination_buffer_length)
 {
   zstds_ext_result_t ext_result;
 
-  const uint8_t* source             = source_buffer;
-  size_t         source_length      = 0;
-  size_t         destination_length = 0;
+  const zstds_ext_symbol_t* source             = source_buffer;
+  size_t                    source_length      = 0;
+  size_t                    destination_length = 0;
 
   BUFFERED_READ_SOURCE(
     buffered_compress,
@@ -346,8 +343,8 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
     destination_buffer_length = ZSTD_CStreamOutSize();
   }
 
-  uint8_t* source_buffer;
-  uint8_t* destination_buffer;
+  zstds_ext_symbol_t* source_buffer;
+  zstds_ext_symbol_t* destination_buffer;
 
   ext_result = create_buffers(
     &source_buffer, source_buffer_length,
@@ -380,9 +377,9 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
 // -- decompress --
 
 static inline zstds_ext_result_t buffered_decompress(
-  ZSTD_DCtx*      ctx,
-  const uint8_t** source_ptr, size_t* source_length_ptr,
-  FILE* destination_file, uint8_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  ZSTD_DCtx*                 ctx,
+  const zstds_ext_symbol_t** source_ptr, size_t* source_length_ptr,
+  FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -429,14 +426,14 @@ static inline zstds_ext_result_t buffered_decompress(
 
 static inline zstds_ext_result_t decompress(
   ZSTD_DCtx* ctx,
-  FILE* source_file, uint8_t* source_buffer, size_t source_buffer_length,
-  FILE* destination_file, uint8_t* destination_buffer, size_t destination_buffer_length)
+  FILE* source_file, zstds_ext_symbol_t* source_buffer, size_t source_buffer_length,
+  FILE* destination_file, zstds_ext_symbol_t* destination_buffer, size_t destination_buffer_length)
 {
   zstds_ext_result_t ext_result;
 
-  const uint8_t* source             = source_buffer;
-  size_t         source_length      = 0;
-  size_t         destination_length = 0;
+  const zstds_ext_symbol_t* source             = source_buffer;
+  size_t                    source_length      = 0;
+  size_t                    destination_length = 0;
 
   BUFFERED_READ_SOURCE(
     buffered_decompress,
@@ -474,8 +471,8 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
     destination_buffer_length = ZSTD_DStreamOutSize();
   }
 
-  uint8_t* source_buffer;
-  uint8_t* destination_buffer;
+  zstds_ext_symbol_t* source_buffer;
+  zstds_ext_symbol_t* destination_buffer;
 
   ext_result = create_buffers(
     &source_buffer, source_buffer_length,

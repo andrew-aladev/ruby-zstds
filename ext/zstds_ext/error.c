@@ -6,7 +6,6 @@
 #include <zstd_errors.h>
 
 #include "ruby.h"
-#include "zstds_ext/common.h"
 
 zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
 {

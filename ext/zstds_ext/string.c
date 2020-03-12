@@ -3,13 +3,10 @@
 
 #include "zstds_ext/string.h"
 
-#include <stdint.h>
-#include <stdlib.h>
 #include <zstd.h>
 
 #include "ruby.h"
 #include "zstds_ext/buffer.h"
-#include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
@@ -65,7 +62,7 @@ static inline zstds_ext_result_t compress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_symbol_t*)RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 
@@ -166,7 +163,7 @@ static inline zstds_ext_result_t decompress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (uint8_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_symbol_t*)RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 

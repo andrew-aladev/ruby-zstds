@@ -3,14 +3,11 @@
 
 #include "zstds_ext/dictionary.h"
 
-#include <stdint.h>
-#include <stdlib.h>
 #include <string.h>
 #include <zdict.h>
 
 #include "ruby.h"
 #include "zstds_ext/buffer.h"
-#include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
@@ -54,7 +51,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  uint8_t* samples_buffer = malloc(samples_size);
+  zstds_ext_symbol_t* samples_buffer = malloc(samples_size);
   if (samples_buffer == NULL) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }

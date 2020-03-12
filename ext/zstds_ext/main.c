@@ -3,7 +3,6 @@
 
 #include "ruby.h"
 #include "zstds_ext/buffer.h"
-#include "zstds_ext/common.h"
 #include "zstds_ext/dictionary.h"
 #include "zstds_ext/io.h"
 #include "zstds_ext/option.h"

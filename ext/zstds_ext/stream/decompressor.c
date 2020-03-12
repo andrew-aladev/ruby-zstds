@@ -3,12 +3,9 @@
 
 #include "zstds_ext/stream/decompressor.h"
 
-#include <stdint.h>
-#include <stdlib.h>
 #include <zstd.h>
 
 #include "ruby.h"
-#include "zstds_ext/common.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/option.h"
 
@@ -19,7 +16,7 @@ static void free_decompressor(zstds_ext_decompressor_t* decompressor_ptr)
     ZSTD_freeDCtx(ctx);
   }
 
-  uint8_t* destination_buffer = decompressor_ptr->destination_buffer;
+  zstds_ext_symbol_t* destination_buffer = decompressor_ptr->destination_buffer;
   if (destination_buffer != NULL) {
     free(destination_buffer);
   }
@@ -68,7 +65,7 @@ VALUE zstds_ext_initialize_decompressor(VALUE self, VALUE options)
     destination_buffer_length = ZSTD_DStreamOutSize();
   }
 
-  uint8_t* destination_buffer = malloc(destination_buffer_length);
+  zstds_ext_symbol_t* destination_buffer = malloc(destination_buffer_length);
   if (destination_buffer == NULL) {
     ZSTD_freeDCtx(ctx);
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
@@ -129,9 +126,9 @@ VALUE zstds_ext_decompressor_read_result(VALUE self)
   GET_DECOMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(decompressor_ptr);
 
-  uint8_t* destination_buffer                  = decompressor_ptr->destination_buffer;
-  size_t   destination_buffer_length           = decompressor_ptr->destination_buffer_length;
-  size_t   remaining_destination_buffer_length = decompressor_ptr->remaining_destination_buffer_length;
+  zstds_ext_symbol_t* destination_buffer                  = decompressor_ptr->destination_buffer;
+  size_t              destination_buffer_length           = decompressor_ptr->destination_buffer_length;
+  size_t              remaining_destination_buffer_length = decompressor_ptr->remaining_destination_buffer_length;
 
   const char* result        = (const char*)destination_buffer;
   size_t      result_length = destination_buffer_length - remaining_destination_buffer_length;
@@ -156,7 +153,7 @@ VALUE zstds_ext_decompressor_close(VALUE self)
     decompressor_ptr->ctx = NULL;
   }
 
-  uint8_t* destination_buffer = decompressor_ptr->destination_buffer;
+  zstds_ext_symbol_t* destination_buffer = decompressor_ptr->destination_buffer;
   if (destination_buffer != NULL) {
     free(destination_buffer);
 
