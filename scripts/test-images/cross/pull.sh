@@ -9,3 +9,6 @@ cd "$DIR"
 
 ./arm-unknown-linux-gnueabi/pull.sh
 ./armeb-unknown-linux-gnueabi/pull.sh
+
+./mips-unknown-linux-gnu/pull.sh
+./mipsel-unknown-linux-gnu/pull.sh

@@ -9,3 +9,6 @@ cd "$DIR"
 
 ./arm-unknown-linux-gnueabi/build.sh
 ./armeb-unknown-linux-gnueabi/build.sh
+
+./mips-unknown-linux-gnu/build.sh
+./mipsel-unknown-linux-gnu/build.sh

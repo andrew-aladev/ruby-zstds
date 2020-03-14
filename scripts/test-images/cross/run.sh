@@ -9,3 +9,6 @@ cd "$DIR"
 
 ./arm-unknown-linux-gnueabi/run.sh
 ./armeb-unknown-linux-gnueabi/run.sh
+
+./mips-unknown-linux-gnu/run.sh
+./mipsel-unknown-linux-gnu/run.sh

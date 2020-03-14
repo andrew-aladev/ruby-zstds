@@ -9,3 +9,6 @@ cd "$DIR"
 
 ./arm-unknown-linux-gnueabi/reset_rebuild_date.sh
 ./armeb-unknown-linux-gnueabi/reset_rebuild_date.sh
+
+./mips-unknown-linux-gnu/reset_rebuild_date.sh
+./mipsel-unknown-linux-gnu/reset_rebuild_date.sh
