@@ -1,11 +1,5 @@
 require: rubocop-performance
 
-Style/Documentation:
-  Enabled: false
-
-Style/HashSyntax:
-  EnforcedStyle: hash_rockets
-
 Layout/EmptyLines:
   Enabled: false
 
@@ -18,8 +12,20 @@ Layout/EmptyLinesAroundExceptionHandlingKeywords:
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 
+Layout/LineLength:
+  Max: 200
+
 Layout/MultilineMethodCallIndentation:
   Enabled: false
+
+Layout/SpaceAroundMethodCallOperator:
+  Enabled: true
+
+Lint/RaiseException:
+  Enabled: true
+
+Lint/StructNewOverride:
+  Enabled: true
 
 Metrics/AbcSize:
   Enabled: false
@@ -32,9 +38,6 @@ Metrics/ClassLength:
 
 Metrics/CyclomaticComplexity:
   Enabled: false
-
-Layout/LineLength:
-  Max: 200
 
 Metrics/MethodLength:
   Enabled: false
@@ -57,9 +60,6 @@ Naming/RescuedExceptionsVariableName:
 Naming/VariableNumber:
   EnforcedStyle: snake_case
 
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
-
 Style/AccessModifierDeclarations:
   EnforcedStyle: inline
 
@@ -72,11 +72,29 @@ Style/ClassAndModuleChildren:
 Style/ClassVars:
   Enabled: false
 
+Style/Documentation:
+  Enabled: false
+
+Style/ExponentialNotation:
+  Enabled: true
+
 Style/FormatStringToken:
   EnforcedStyle: template
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Style/HashEachMethods:
+  Enabled: true
+
+Style/HashSyntax:
+  EnforcedStyle: hash_rockets
+
+Style/HashTransformKeys:
+  Enabled: true
+
+Style/HashTransformValues:
+  Enabled: true
 
 Style/MultipleComparison:
   Enabled: false
@@ -89,6 +107,9 @@ Style/RegexpLiteral:
 
 Style/SafeNavigation:
   Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
 
 Style/YodaCondition:
   Enabled: false

@@ -6,8 +6,8 @@ cd "$DIR"
 
 cd ".."
 
-SIZE=10 # MB
-TMP_DIR="tmp"
+SIZE=$1 # MB
+TMP_DIR="./tmp"
 
 kernel_name=$(uname -s)
 if [ $kernel_name = "Darwin" ]; then
