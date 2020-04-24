@@ -9,7 +9,10 @@ CPU_COUNT=$(grep -c "^processor" "/proc/cpuinfo" || sysctl -n "hw.ncpu")
 # This script is for CI machines only, it provides junk and changes some config files.
 # Please do not use it on your machine.
 
-./mount_tmp.sh "16"
+TMP_PATH="$(pwd)/../tmp"
+TMP_SIZE="64"
+
+./mount_tmp.sh "$TMP_PATH" "$TMP_SIZE"
 
 cd ".."
 
@@ -37,9 +40,7 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 # Compiling library from source.
 ZSTD_BRANCH="v1.4.4"
 
-build="build"
-mkdir -p "$build"
-cd "$build"
+cd "tmp"
 
 # Remove orphaned directory.
 rm -rf "zstd"
