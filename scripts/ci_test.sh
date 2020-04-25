@@ -12,7 +12,7 @@ CPU_COUNT=$(grep -c "^processor" "/proc/cpuinfo" || sysctl -n "hw.ncpu")
 TMP_PATH="$(pwd)/../tmp"
 TMP_SIZE="64"
 
-./mount_tmp.sh "$TMP_PATH" "$TMP_SIZE"
+./temp/mount.sh "$TMP_PATH" "$TMP_SIZE"
 
 cd ".."
 
