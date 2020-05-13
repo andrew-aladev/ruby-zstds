@@ -23,6 +23,7 @@ module ZSTDS
       attr_reader :internal_encoding
       attr_reader :transcode_options
       attr_reader :pos
+
       alias tell pos
 
       def initialize(io, options = {})

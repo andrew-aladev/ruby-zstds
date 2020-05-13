@@ -6,6 +6,9 @@ Layout/EmptyLines:
 Layout/EmptyLinesAroundArguments:
   Enabled: false
 
+Layout/EmptyLinesAroundAttributeAccessor:
+  Enabled: true
+
 Layout/EmptyLinesAroundExceptionHandlingKeywords:
   Enabled: false
 
@@ -107,6 +110,9 @@ Style/RegexpLiteral:
 
 Style/SafeNavigation:
   Enabled: false
+
+Style/SlicingWithRange:
+  Enabled: true
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes
