@@ -2,16 +2,15 @@ language: ruby
 rvm:
   - 2.7
 
-os:
-  - linux
-  - osx
-
 dist: bionic
 osx_image: xcode11.2
 
-arch:
-  - amd64
-  - arm64
+jobs:
+  include:
+    - os: linux
+      arch: amd64
+    - os: osx
+      arch: amd64
 
 before_install:
   - gem install bundler
