@@ -3,7 +3,7 @@ rvm:
   - 2.7
 
 dist: bionic
-osx_image: xcode11.2
+osx_image: xcode11.5
 
 jobs:
   include:
