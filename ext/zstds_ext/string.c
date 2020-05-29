@@ -62,7 +62,7 @@ static inline zstds_ext_result_t compress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_symbol_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_byte_t*)RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 
@@ -163,7 +163,7 @@ static inline zstds_ext_result_t decompress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_symbol_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_byte_t*)RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 

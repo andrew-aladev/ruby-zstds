@@ -51,7 +51,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  zstds_ext_symbol_t* samples_buffer = malloc(samples_size);
+  zstds_ext_byte_t* samples_buffer = malloc(samples_size);
   if (samples_buffer == NULL) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }

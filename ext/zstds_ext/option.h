@@ -20,9 +20,9 @@ enum {
   ZSTDS_EXT_OPTION_TYPE_STRATEGY
 };
 
-typedef zstds_ext_symbol_fast_t zstds_ext_option_type_t;
-typedef int                     zstds_ext_option_value_t;
-typedef unsigned long long      zstds_ext_ull_option_value_t;
+typedef zstds_ext_byte_fast_t zstds_ext_option_type_t;
+typedef int                   zstds_ext_option_value_t;
+typedef unsigned long long    zstds_ext_ull_option_value_t;
 
 typedef struct {
   bool                     has_value;

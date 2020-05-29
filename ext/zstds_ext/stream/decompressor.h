@@ -10,11 +10,11 @@
 #include "zstds_ext/common.h"
 
 typedef struct {
-  ZSTD_DCtx*          ctx;
-  zstds_ext_symbol_t* destination_buffer;
-  size_t              destination_buffer_length;
-  zstds_ext_symbol_t* remaining_destination_buffer;
-  size_t              remaining_destination_buffer_length;
+  ZSTD_DCtx*        ctx;
+  zstds_ext_byte_t* destination_buffer;
+  size_t            destination_buffer_length;
+  zstds_ext_byte_t* remaining_destination_buffer;
+  size_t            remaining_destination_buffer_length;
 } zstds_ext_decompressor_t;
 
 VALUE zstds_ext_allocate_decompressor(VALUE klass);
