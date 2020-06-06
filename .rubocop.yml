@@ -24,6 +24,12 @@ Layout/MultilineMethodCallIndentation:
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
+Lint/DeprecatedOpenSSLConstant:
+  Enabled: true
+
+Lint/MixedRegexpCaptureTypes:
+  Enabled: true
+
 Lint/RaiseException:
   Enabled: true
 
@@ -104,6 +110,12 @@ Style/MultipleComparison:
 
 Style/NumericPredicate:
   Enabled: false
+
+Style/RedundantRegexpCharacterClass:
+  Enabled: true
+
+Style/RedundantRegexpEscape:
+  Enabled: true
 
 Style/RegexpLiteral:
   EnforcedStyle: percent_r
