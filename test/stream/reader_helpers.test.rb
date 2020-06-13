@@ -2,6 +2,7 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 require "English"
+require "stringio"
 require "zstds/stream/reader"
 require "zstds/string"
 
@@ -33,7 +34,7 @@ module ZSTDS
         LIMITS = [nil, 1].freeze
 
         def test_invalid_ungetbyte
-          instance = target.new ::STDIN
+          instance = target.new ::StringIO.new
 
           Validation::INVALID_STRINGS.each do |invalid_string|
             assert_raises ValidateError do
@@ -79,7 +80,7 @@ module ZSTDS
         # -- char --
 
         def test_invalid_ungetc
-          instance = target.new ::STDIN
+          instance = target.new ::StringIO.new
 
           Validation::INVALID_STRINGS.each do |invalid_string|
             assert_raises ValidateError do
@@ -176,7 +177,7 @@ module ZSTDS
         # -- lines --
 
         def test_invalid_gets
-          instance = target.new ::STDIN
+          instance = target.new ::StringIO.new
 
           (Validation::INVALID_STRINGS - [nil, 1, 1.1]).each do |invalid_string|
             assert_raises ValidateError do
@@ -192,7 +193,7 @@ module ZSTDS
         end
 
         def test_invalid_ungetline
-          instance = target.new ::STDIN
+          instance = target.new ::StringIO.new
 
           Validation::INVALID_STRINGS.each do |invalid_string|
             assert_raises ValidateError do

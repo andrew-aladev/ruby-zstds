@@ -1,6 +1,8 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "stringio"
+
 module ZSTDS
   module Test
     module Validation
@@ -17,6 +19,7 @@ module ZSTDS
         {},
         [],
         ::STDOUT,
+        ::StringIO,
         NOOP_PROC
       ]
       .freeze
@@ -28,7 +31,7 @@ module ZSTDS
       INVALID_SYMBOLS  = (TYPES - %i[a]).freeze
       INVALID_ARRAYS   = (TYPES - [[]]).freeze
       INVALID_HASHES   = (TYPES - [{}]).freeze
-      INVALID_IOS      = (TYPES - [::STDOUT]).freeze
+      INVALID_IOS      = (TYPES - [::STDOUT, ::StringIO]).freeze
       INVALID_CHARS    = (INVALID_NUMBERS & INVALID_STRINGS).freeze
 
       INVALID_POSITIVE_INTEGERS     = (INVALID_INTEGERS + [0, -1]).freeze

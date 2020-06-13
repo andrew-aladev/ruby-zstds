@@ -4,6 +4,7 @@
 require "socket"
 require "zstds/stream/reader"
 require "zstds/string"
+require "stringio"
 
 require_relative "abstract"
 require_relative "../common"
@@ -37,7 +38,7 @@ module ZSTDS
         def test_invalid_initialize
           get_invalid_decompressor_options do |invalid_options|
             assert_raises ValidateError do
-              target.new ::STDIN, invalid_options
+              target.new ::StringIO.new, invalid_options
             end
           end
 
@@ -47,7 +48,7 @@ module ZSTDS
         # -- synchronous --
 
         def test_invalid_read
-          instance = target.new ::STDIN
+          instance = target.new ::StringIO.new
 
           (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
             assert_raises ValidateError do
@@ -61,15 +62,11 @@ module ZSTDS
             end
           end
 
-          corrupted_compressed_text = String.compress("1111").reverse
-          ::File.write ARCHIVE_PATH, corrupted_compressed_text
+          corrupted_compressed_io = ::StringIO.new String.compress("1111").reverse
+          instance                = target.new corrupted_compressed_io
 
-          ::File.open ARCHIVE_PATH, "rb" do |file|
-            instance = target.new file
-
-            assert_raises DecompressorCorruptedSourceError do
-              instance.read
-            end
+          assert_raises DecompressorCorruptedSourceError do
+            instance.read
           end
         end
 
@@ -77,63 +74,30 @@ module ZSTDS
           TEXTS.each do |text|
             [true, false].each do |with_buffer|
               get_compressor_options do |compressor_options|
+                archive     = get_archive text, compressor_options
                 prev_result = "".b
 
                 PORTION_LENGTHS.each do |portion_length|
-                  write_archive text, compressor_options
-
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                    instance          = target.new ::StringIO.new(archive), decompressor_options
                     decompressed_text = "".b
 
-                    ::File.open ARCHIVE_PATH, "rb" do |file|
-                      instance = target.new file, decompressor_options
-
-                      begin
-                        result = instance.read 0
-                        assert_equal result, ""
-
-                        loop do
-                          result =
-                            if with_buffer
-                              instance.read portion_length, prev_result
-                            else
-                              instance.read portion_length
-                            end
-
-                          break if result.nil?
-
-                          assert_equal result, prev_result if with_buffer
-                          decompressed_text << result
-                        end
-
-                        assert_equal instance.pos, decompressed_text.bytesize
-                        assert_equal instance.pos, instance.tell
-                      ensure
-                        refute instance.closed?
-                        instance.close
-                        assert instance.closed?
-                      end
-                    end
-
-                    decompressed_text.force_encoding text.encoding
-                    assert_equal text, decompressed_text
-                  end
-                end
-
-                write_archive text, compressor_options
-
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                  decompressed_text = nil
-
-                  ::File.open ARCHIVE_PATH, "rb" do |file|
-                    instance = target.new file, decompressor_options
-
                     begin
-                      if with_buffer
-                        decompressed_text = instance.read nil, prev_result
-                        assert_equal decompressed_text, prev_result
-                      else
-                        decompressed_text = instance.read
+                      result = instance.read 0
+                      assert_equal result, ""
+
+                      loop do
+                        result =
+                          if with_buffer
+                            instance.read portion_length, prev_result
+                          else
+                            instance.read portion_length
+                          end
+
+                        break if result.nil?
+
+                        assert_equal result, prev_result if with_buffer
+                        decompressed_text << result
                       end
 
                       assert_equal instance.pos, decompressed_text.bytesize
@@ -143,6 +107,30 @@ module ZSTDS
                       instance.close
                       assert instance.closed?
                     end
+
+                    decompressed_text.force_encoding text.encoding
+                    assert_equal text, decompressed_text
+                  end
+                end
+
+                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  instance          = target.new ::StringIO.new(archive), decompressor_options
+                  decompressed_text = nil
+
+                  begin
+                    if with_buffer
+                      decompressed_text = instance.read nil, prev_result
+                      assert_equal decompressed_text, prev_result
+                    else
+                      decompressed_text = instance.read
+                    end
+
+                    assert_equal instance.pos, decompressed_text.bytesize
+                    assert_equal instance.pos, instance.tell
+                  ensure
+                    refute instance.closed?
+                    instance.close
+                    assert instance.closed?
                   end
 
                   decompressed_text.force_encoding text.encoding
@@ -158,29 +146,26 @@ module ZSTDS
             external_encoding = text.encoding
 
             get_compressor_options do |compressor_options|
-              PORTION_LENGTHS.each do |portion_length|
-                write_archive text, compressor_options
+              archive = get_archive text, compressor_options
 
+              PORTION_LENGTHS.each do |portion_length|
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  instance          = target.new ::StringIO.new(archive), decompressor_options
                   decompressed_text = "".b
 
-                  ::File.open ARCHIVE_PATH, "rb" do |file|
-                    instance = target.new file, decompressor_options
+                  begin
+                    result = instance.read 0
+                    assert_equal result.encoding, Encoding::BINARY
 
-                    begin
-                      result = instance.read 0
+                    loop do
+                      result = instance.read portion_length
+                      break if result.nil?
+
                       assert_equal result.encoding, Encoding::BINARY
-
-                      loop do
-                        result = instance.read portion_length
-                        break if result.nil?
-
-                        assert_equal result.encoding, Encoding::BINARY
-                        decompressed_text << result
-                      end
-                    ensure
-                      instance.close
+                      decompressed_text << result
                     end
+                  ensure
+                    instance.close
                   end
 
                   decompressed_text.force_encoding external_encoding
@@ -192,34 +177,31 @@ module ZSTDS
               (ENCODINGS - [external_encoding]).each do |internal_encoding|
                 target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
-                write_archive text, compressor_options
-
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  instance = target.new(
+                    ::StringIO.new(archive),
+                    decompressor_options,
+                    :external_encoding => external_encoding,
+                    :internal_encoding => internal_encoding,
+                    :transcode_options => TRANSCODE_OPTIONS
+                  )
+
+                  assert_equal instance.external_encoding, external_encoding
+                  assert_equal instance.internal_encoding, internal_encoding
+                  assert_equal instance.transcode_options, TRANSCODE_OPTIONS
+
                   decompressed_text = nil
 
-                  ::File.open ARCHIVE_PATH, "rb" do |file|
-                    instance = target.new(
-                      file,
-                      decompressor_options,
-                      :external_encoding => external_encoding,
-                      :internal_encoding => internal_encoding,
-                      :transcode_options => TRANSCODE_OPTIONS
-                    )
+                  begin
+                    instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
                     assert_equal instance.external_encoding, external_encoding
                     assert_equal instance.internal_encoding, internal_encoding
                     assert_equal instance.transcode_options, TRANSCODE_OPTIONS
 
-                    begin
-                      instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
-                      assert_equal instance.external_encoding, external_encoding
-                      assert_equal instance.internal_encoding, internal_encoding
-                      assert_equal instance.transcode_options, TRANSCODE_OPTIONS
-
-                      decompressed_text = instance.read
-                      assert_equal decompressed_text.encoding, internal_encoding
-                    ensure
-                      instance.close
-                    end
+                    decompressed_text = instance.read
+                    assert_equal decompressed_text.encoding, internal_encoding
+                  ensure
+                    instance.close
                   end
 
                   assert_equal target_text, decompressed_text
@@ -423,6 +405,10 @@ module ZSTDS
         end
 
         # -----
+
+        protected def get_archive(text, compressor_options)
+          String.compress text, compressor_options
+        end
 
         protected def write_archive(text, compressor_options)
           compressed_text = String.compress text, compressor_options

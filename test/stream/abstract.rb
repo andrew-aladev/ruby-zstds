@@ -2,6 +2,7 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 require "fcntl"
+require "stringio"
 
 require_relative "../common"
 require_relative "../minitest"
@@ -22,23 +23,23 @@ module ZSTDS
 
           (Validation::INVALID_STRINGS - [nil] + Validation::INVALID_ENCODINGS).each do |invalid_encoding|
             assert_raises ValidateError do
-              target.new ::STDOUT, {}, :external_encoding => invalid_encoding
+              target.new ::StringIO.new, {}, :external_encoding => invalid_encoding
             end
 
             assert_raises ValidateError do
-              target.new ::STDOUT, {}, :internal_encoding => invalid_encoding
+              target.new ::StringIO.new, {}, :internal_encoding => invalid_encoding
             end
           end
 
           (Validation::INVALID_HASHES - [nil]).each do |invalid_hash|
             assert_raises ValidateError do
-              target.new ::STDOUT, {}, :transcode_options => invalid_hash
+              target.new ::StringIO.new, {}, :transcode_options => invalid_hash
             end
           end
         end
 
         def test_invalid_set_encoding
-          instance = target.new ::STDOUT
+          instance = target.new ::StringIO.new
 
           (Validation::INVALID_STRINGS - [nil] + Validation::INVALID_ENCODINGS).each do |invalid_encoding|
             assert_raises ValidateError do
@@ -72,7 +73,7 @@ module ZSTDS
         end
 
         def test_to_io
-          instance = target.new ::STDOUT
+          instance = target.new ::StringIO.new
           assert_equal instance.to_io, instance
         end
 

@@ -32,7 +32,7 @@ module ZSTDS
         Validation.validate_io io
         @io = io
 
-        @stat = Stat.new @io.stat
+        @stat = Stat.new @io.stat if @io.respond_to? :stat
 
         set_encoding options[:external_encoding], options[:internal_encoding], options[:transcode_options]
         reset_buffer
@@ -51,7 +51,7 @@ module ZSTDS
 
       protected def reset_io_advise
         # Both compressor and decompressor need sequential io access.
-        @io.advise :sequential
+        @io.advise :sequential if @io.respond_to? :advise
       rescue ::Errno::ESPIPE
         # ok
       end
@@ -127,7 +127,8 @@ module ZSTDS
       def rewind
         @raw_stream = create_raw_stream
 
-        @io.rewind
+        @io.rewind if @io.respond_to? :rewind
+
         reset_buffer
         reset_io_advise
 

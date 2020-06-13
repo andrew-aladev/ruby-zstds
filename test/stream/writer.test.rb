@@ -2,6 +2,7 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 require "socket"
+require "stringio"
 require "zstds/stream/writer"
 require "zstds/string"
 
@@ -32,13 +33,13 @@ module ZSTDS
         def test_invalid_initialize
           get_invalid_compressor_options do |invalid_options|
             assert_raises ValidateError do
-              target.new ::STDOUT, invalid_options
+              target.new ::StringIO.new, invalid_options
             end
           end
 
           (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
             assert_raises ValidateError do
-              target.new ::STDOUT, :pledged_size => invalid_integer
+              target.new ::StringIO.new, :pledged_size => invalid_integer
             end
           end
 
@@ -53,25 +54,24 @@ module ZSTDS
               sources = get_sources text, portion_length
 
               get_compressor_options do |compressor_options|
-                ::File.open ARCHIVE_PATH, "wb" do |file|
-                  instance = target.new file, compressor_options.merge(:pledged_size => text.bytesize)
+                io       = ::StringIO.new
+                instance = target.new io, compressor_options.merge(:pledged_size => text.bytesize)
 
-                  begin
-                    sources.each_slice(2) do |current_sources|
-                      instance.write(*current_sources)
-                      instance.flush
-                    end
-
-                    assert_equal instance.pos, text.bytesize
-                    assert_equal instance.pos, instance.tell
-                  ensure
-                    refute instance.closed?
-                    instance.close
-                    assert instance.closed?
+                begin
+                  sources.each_slice(2) do |current_sources|
+                    instance.write(*current_sources)
+                    instance.flush
                   end
+
+                  assert_equal instance.pos, text.bytesize
+                  assert_equal instance.pos, instance.tell
+                ensure
+                  refute instance.closed?
+                  instance.close
+                  assert instance.closed?
                 end
 
-                compressed_text = ::File.read ARCHIVE_PATH
+                compressed_text = io.string
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text text, compressed_text, decompressor_options
@@ -88,28 +88,29 @@ module ZSTDS
               target_text = text.encode external_encoding, **TRANSCODE_OPTIONS
 
               get_compressor_options do |compressor_options|
-                ::File.open ARCHIVE_PATH, "wb" do |file|
-                  instance = target.new(
-                    file,
-                    compressor_options.merge(:pledged_size => target_text.bytesize),
-                    :external_encoding => external_encoding,
-                    :transcode_options => TRANSCODE_OPTIONS
-                  )
+                io = ::StringIO.new
+
+                instance = target.new(
+                  io,
+                  compressor_options.merge(:pledged_size => target_text.bytesize),
+                  :external_encoding => external_encoding,
+                  :transcode_options => TRANSCODE_OPTIONS
+                )
+
+                assert_equal instance.external_encoding, external_encoding
+                assert_equal instance.transcode_options, TRANSCODE_OPTIONS
+
+                begin
+                  instance.set_encoding external_encoding, nil, TRANSCODE_OPTIONS
                   assert_equal instance.external_encoding, external_encoding
                   assert_equal instance.transcode_options, TRANSCODE_OPTIONS
 
-                  begin
-                    instance.set_encoding external_encoding, nil, TRANSCODE_OPTIONS
-                    assert_equal instance.external_encoding, external_encoding
-                    assert_equal instance.transcode_options, TRANSCODE_OPTIONS
-
-                    instance.write text
-                  ensure
-                    instance.close
-                  end
+                  instance.write text
+                ensure
+                  instance.close
                 end
 
-                compressed_text = ::File.read ARCHIVE_PATH
+                compressed_text = io.string
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text target_text, compressed_text, decompressor_options

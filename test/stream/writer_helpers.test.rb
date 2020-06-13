@@ -2,6 +2,7 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 require "English"
+require "stringio"
 require "zstds/stream/writer"
 require "zstds/string"
 
@@ -95,7 +96,7 @@ module ZSTDS
         end
 
         def test_invalid_putc
-          instance = target.new ::STDOUT
+          instance = target.new ::StringIO.new
 
           Validation::INVALID_CHARS.each do |invalid_char|
             assert_raises ValidateError do
