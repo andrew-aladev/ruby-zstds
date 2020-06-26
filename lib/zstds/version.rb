@@ -2,5 +2,5 @@
 # Copyright (c) 2019 AUTHORS, MIT License.
 
 module ZSTDS
-  VERSION = "1.0.3".freeze
+  VERSION = "1.0.4".freeze
 end
