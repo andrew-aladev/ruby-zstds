@@ -437,8 +437,7 @@ module ZSTDS
         # other
 
         flags_generator = OCG.new(
-          # TODO: content size is broken https://github.com/facebook/zstd/issues/1863.
-          :content_size_flag => [true],
+          :content_size_flag => BOOLS,
           :checksum_flag     => BOOLS,
           :dict_id_flag      => BOOLS
         )
