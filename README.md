@@ -36,6 +36,27 @@ ZSTDS::File.decompress "file.txt.zst", "file.txt"
 
 ZSTDS::Stream::Writer.open("file.txt.zst") { |writer| writer << "sample string" }
 puts ZSTDS::Stream::Reader.open("file.txt.zst") { |reader| reader.read }
+
+writer = ZSTDS::Stream::Writer.new output_socket
+begin
+  bytes_written = writer.write_nonblock "sample string"
+  # handle "bytes_written"
+rescue IO::WaitWritable
+  # handle wait
+ensure
+  writer.close
+end
+
+reader = ZSTDS::Stream::Reader.new input_socket
+begin
+  puts reader.read_nonblock(512)
+rescue IO::WaitReadable
+  # handle wait
+rescue ::EOFError
+  # handle eof
+ensure
+  reader.close
+end
 ```
 
 You can create dictionary using `ZSTDS::Dictionary`.
