@@ -27,7 +27,7 @@ module ZSTDS
     end
 
     def self.validate_positive_integer(value)
-      raise ValidateError, "invalid positive integer" unless value.is_a?(::Integer) && value > 0
+      raise ValidateError, "invalid positive integer" unless value.is_a?(::Integer) && value.positive?
     end
 
     def self.validate_not_negative_integer(value)

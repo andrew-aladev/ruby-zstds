@@ -29,7 +29,7 @@ module ZSTDS
         Validation.validate_not_negative_integer source_buffer_length unless source_buffer_length.nil?
 
         source_buffer_length = Buffer::DEFAULT_SOURCE_BUFFER_LENGTH_FOR_DECOMPRESSOR \
-          if source_buffer_length == 0 || source_buffer_length.nil?
+          if source_buffer_length.nil? || source_buffer_length.zero?
 
         @source_buffer_length = source_buffer_length
       end
@@ -48,7 +48,7 @@ module ZSTDS
         Validation.validate_not_negative_integer bytes_to_read unless bytes_to_read.nil?
         Validation.validate_string out_buffer unless out_buffer.nil?
 
-        return ::String.new :encoding => ::Encoding::BINARY if bytes_to_read == 0
+        return ::String.new :encoding => ::Encoding::BINARY if !bytes_to_read.nil? && bytes_to_read.zero?
 
         unless bytes_to_read.nil?
           return nil if eof?
@@ -121,7 +121,7 @@ module ZSTDS
       # -- common --
 
       def eof?
-        @io.eof? && @buffer.bytesize == 0
+        @io.eof? && @buffer.bytesize.zero?
       end
 
       protected def read_bytes_from_buffer(bytes_to_read, out_buffer)

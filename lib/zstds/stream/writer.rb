@@ -64,7 +64,7 @@ module ZSTDS
       end
 
       protected def write_remaining_buffer
-        return nil if @buffer.bytesize == 0
+        return nil if @buffer.bytesize.zero?
 
         @io.write @buffer
 
@@ -120,14 +120,14 @@ module ZSTDS
       end
 
       protected def write_remaining_buffer_nonblock(*options)
-        return true if @buffer.bytesize == 0
+        return true if @buffer.bytesize.zero?
 
         bytes_written = @io.write_nonblock @buffer, *options
-        return false if bytes_written == 0
+        return false if bytes_written.zero?
 
         @buffer = @buffer.byteslice bytes_written, @buffer.bytesize - bytes_written
 
-        @buffer.bytesize == 0
+        @buffer.bytesize.zero?
       end
 
       protected def raw_nonblock_wrapper(method_name, *args)

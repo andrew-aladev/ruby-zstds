@@ -55,7 +55,7 @@ module ZSTDS
         CAPACITIES.each do |capacity|
           dictionary = Target.train SAMPLES, :capacity => capacity
 
-          assert dictionary.id > 0
+          assert dictionary.id.positive?
           refute dictionary.buffer.nil?
           refute dictionary.buffer.empty?
 

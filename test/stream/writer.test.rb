@@ -191,7 +191,7 @@ module ZSTDS
                               end
 
                               source = source.byteslice bytes_written, source.bytesize - bytes_written
-                              break if source.bytesize == 0
+                              break if source.bytesize.zero?
                             end
                           else
                             instance.write source
@@ -275,7 +275,7 @@ module ZSTDS
                           end
 
                           source = source.byteslice bytes_written, source.bytesize - bytes_written
-                          break if source.bytesize == 0
+                          break if source.bytesize.zero?
                         end
                       else
                         instance.write source

@@ -17,12 +17,7 @@ module ZSTDS
 
       include Delegates
 
-      attr_reader :io
-      attr_reader :stat
-      attr_reader :external_encoding
-      attr_reader :internal_encoding
-      attr_reader :transcode_options
-      attr_reader :pos
+      attr_reader :io, :stat, :external_encoding, :internal_encoding, :transcode_options, :pos
 
       alias tell pos
 

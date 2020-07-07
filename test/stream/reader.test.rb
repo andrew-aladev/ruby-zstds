@@ -380,7 +380,7 @@ module ZSTDS
                 end
 
                 compressed_text = compressed_text.byteslice bytes_written, compressed_text.bytesize - bytes_written
-                break if compressed_text.bytesize == 0
+                break if compressed_text.bytesize.zero?
               end
             ensure
               socket.close

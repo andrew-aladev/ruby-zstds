@@ -6,7 +6,7 @@ require "securerandom"
 module ZSTDS
   module Test
     module Common
-      BASE_PATH = ::File.expand_path ::File.join(::File.dirname(__FILE__), "..").freeze
+      BASE_PATH = ::File.expand_path(::File.join(::File.dirname(__FILE__), "..")).freeze
       TEMP_PATH = ::File.join(BASE_PATH, "tmp").freeze
 
       SOURCE_PATH  = ::File.join(TEMP_PATH, "source").freeze

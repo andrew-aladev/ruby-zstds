@@ -23,7 +23,7 @@ module ZSTDS
 
         protected def flush_destination_buffer(&writer)
           result_bytesize = write_result(&writer)
-          raise NotEnoughDestinationError, "not enough destination" if result_bytesize == 0
+          raise NotEnoughDestinationError, "not enough destination" if result_bytesize.zero?
         end
 
         protected def write_result(&_writer)
