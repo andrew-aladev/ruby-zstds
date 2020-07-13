@@ -31,9 +31,10 @@ module ZSTDS
       end
 
       def putc(object, encoding: ::Encoding::BINARY)
-        if object.is_a? ::Numeric
+        case object
+        when ::Numeric
           write object.chr(encoding)
-        elsif object.is_a? ::String
+        when ::String
           write object[0]
         else
           raise ValidateError, "invalid object: \"#{object}\" for putc"
