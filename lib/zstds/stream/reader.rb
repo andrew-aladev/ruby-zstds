@@ -24,6 +24,10 @@ module ZSTDS
         @lineno = 0
       end
 
+      protected def create_raw_stream
+        Raw::Decompressor.new @options
+      end
+
       protected def initialize_source_buffer_length
         source_buffer_length = @options[:source_buffer_length]
         Validation.validate_not_negative_integer source_buffer_length unless source_buffer_length.nil?
@@ -32,10 +36,6 @@ module ZSTDS
           if source_buffer_length.nil? || source_buffer_length.zero?
 
         @source_buffer_length = source_buffer_length
-      end
-
-      protected def create_raw_stream
-        Raw::Decompressor.new @options
       end
 
       protected def reset_io_remainder
@@ -103,11 +103,13 @@ module ZSTDS
         super
       end
 
+      def eof?
+        @buffer.bytesize.zero? && @io.eof?
+      end
+
       # -- asynchronous --
 
       def read_nonblock(bytes_to_read, out_buffer = nil, *options)
-        raise ::EOFError if eof?
-
         read_more_to_buffer_nonblock(*options) until @buffer.bytesize >= bytes_to_read || @io.eof?
 
         read_bytes_from_buffer bytes_to_read, out_buffer
@@ -120,8 +122,14 @@ module ZSTDS
 
       # -- common --
 
-      def eof?
-        @io.eof? && @buffer.bytesize.zero?
+      protected def append_io_data_to_buffer(io_data)
+        io_portion    = @io_remainder + io_data
+        bytes_read    = raw_wrapper :read, io_portion
+        @io_remainder = io_portion.byteslice bytes_read, io_portion.bytesize - bytes_read
+
+        # We should just ignore case when "io.eof?" appears but "io_remainder" is not empty.
+        # Ancient compress implementations can write bytes from not initialized buffer parts to output.
+        raw_wrapper :flush if @io.eof?
       end
 
       protected def read_bytes_from_buffer(bytes_to_read, out_buffer)
@@ -134,16 +142,6 @@ module ZSTDS
 
         result = out_buffer.replace result unless out_buffer.nil?
         result
-      end
-
-      protected def append_io_data_to_buffer(io_data)
-        io_portion    = @io_remainder + io_data
-        bytes_read    = raw_wrapper :read, io_portion
-        @io_remainder = io_portion.byteslice bytes_read, io_portion.bytesize - bytes_read
-
-        # We should just ignore case when "io.eof?" appears but "io_remainder" is not empty.
-        # Ancient compress implementations can write bytes from not initialized buffer parts to output.
-        raw_wrapper :flush if @io.eof?
       end
 
       protected def transcode_to_internal(data)

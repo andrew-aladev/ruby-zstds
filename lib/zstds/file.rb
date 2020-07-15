@@ -22,6 +22,8 @@ module ZSTDS
       open_files(source, destination) do |source_io, destination_io|
         ZSTDS._native_compress_io source_io, destination_io, options
       end
+
+      nil
     end
 
     def self.decompress(source, destination, options = {})
@@ -33,6 +35,8 @@ module ZSTDS
       open_files(source, destination) do |source_io, destination_io|
         ZSTDS._native_decompress_io source_io, destination_io, options
       end
+
+      nil
     end
 
     private_class_method def self.open_files(source, destination, &_block)

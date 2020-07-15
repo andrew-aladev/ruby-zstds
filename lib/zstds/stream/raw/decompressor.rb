@@ -51,8 +51,6 @@ module ZSTDS
           Validation.validate_proc writer
 
           super
-
-          nil
         end
 
         def close(&writer)
@@ -61,8 +59,6 @@ module ZSTDS
           Validation.validate_proc writer
 
           super
-
-          nil
         end
       end
     end
