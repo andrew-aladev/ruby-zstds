@@ -62,8 +62,8 @@ module ZSTDS
             end
           end
 
-          corrupted_compressed_io = ::StringIO.new String.compress("1111").reverse
-          instance                = target.new corrupted_compressed_io
+          corrupted_compressed_text = String.compress("1111").reverse
+          instance                  = target.new ::StringIO.new(corrupted_compressed_text)
 
           assert_raises DecompressorCorruptedSourceError do
             instance.read
@@ -87,6 +87,8 @@ module ZSTDS
                       assert_equal result, ""
 
                       loop do
+                        prev_eof = instance.eof?
+
                         result =
                           if with_buffer
                             instance.read portion_length, prev_result
@@ -94,7 +96,12 @@ module ZSTDS
                             instance.read portion_length
                           end
 
-                        break if result.nil?
+                        if result.nil?
+                          assert instance.eof?
+                          break
+                        end
+
+                        refute prev_eof unless archive.bytesize.zero?
 
                         assert_equal result, prev_result if with_buffer
                         decompressed_text << result
@@ -118,12 +125,17 @@ module ZSTDS
                   decompressed_text = nil
 
                   begin
+                    prev_eof = instance.eof?
+
                     if with_buffer
                       decompressed_text = instance.read nil, prev_result
                       assert_equal decompressed_text, prev_result
                     else
                       decompressed_text = instance.read
                     end
+
+                    assert instance.eof?
+                    refute prev_eof unless archive.bytesize.zero?
 
                     assert_equal instance.pos, decompressed_text.bytesize
                     assert_equal instance.pos, instance.tell
@@ -246,9 +258,69 @@ module ZSTDS
           end
         end
 
+        def test_eof
+          compressed_text = String.compress "ab"
+          instance        = target.new ::StringIO.new(compressed_text)
+
+          refute instance.eof?
+
+          byte = instance.read 1
+          refute instance.eof?
+          assert_equal byte, "a"
+
+          byte = instance.read 1
+          assert instance.eof?
+          assert_equal byte, "b"
+        end
+
         # -- asynchronous --
 
+        def test_invalid_readpartial_and_read_nonblock
+          instance = target.new ::StringIO.new
+
+          Validation::INVALID_NOT_NEGATIVE_INTEGERS.each do |invalid_integer|
+            assert_raises ValidateError do
+              instance.readpartial invalid_integer
+            end
+            assert_raises ValidateError do
+              instance.read_nonblock invalid_integer
+            end
+          end
+
+          (Validation::INVALID_STRINGS - [nil]).each do |invalid_string|
+            assert_raises ValidateError do
+              instance.readpartial 0, invalid_string
+            end
+            assert_raises ValidateError do
+              instance.read_nonblock 0, invalid_string
+            end
+          end
+
+          corrupted_compressed_text = String.compress("1111").reverse
+
+          instance = target.new ::StringIO.new(corrupted_compressed_text)
+
+          assert_raises DecompressorCorruptedSourceError do
+            instance.readpartial 1
+          end
+
+          instance = target.new ::StringIO.new(corrupted_compressed_text)
+
+          assert_raises DecompressorCorruptedSourceError do
+            instance.read_nonblock 1
+          end
+        end
+
         def test_readpartial
+          IO.pipe do |read_io, write_io|
+            instance = target.new read_io
+            write_io.close
+
+            assert_raises ::EOFError do
+              instance.readpartial 1
+            end
+          end
+
           start_server do |server|
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
@@ -283,6 +355,20 @@ module ZSTDS
         end
 
         def test_read_nonblock
+          IO.pipe do |read_io, write_io|
+            instance = target.new read_io
+
+            assert_raises ::IO::WaitReadable do
+              instance.read_nonblock 1
+            end
+
+            write_io.close
+
+            assert_raises ::EOFError do
+              instance.read_nonblock 1
+            end
+          end
+
           start_server do |server|
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|

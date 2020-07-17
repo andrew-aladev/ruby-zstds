@@ -77,6 +77,11 @@ module ZSTDS
 
       # -- asynchronous --
 
+      # IO write nonblock can raise wait writable error.
+      # After resolving this error user may provide same content again.
+      # It is not possible to revert accepted content after error.
+      # So we have to accept content after processing IO write nonblock.
+      # It means that first write nonblock won't call IO write nonblock.
       def write_nonblock(object, *options)
         return 0 unless write_remaining_buffer_nonblock(*options)
 

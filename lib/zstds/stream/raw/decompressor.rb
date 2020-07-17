@@ -34,7 +34,7 @@ module ZSTDS
 
             if need_more_destination
               source = source.byteslice bytes_read, source.bytesize - bytes_read
-              flush_destination_buffer(&writer)
+              more_destination(&writer)
               next
             end
 

@@ -39,7 +39,7 @@ module ZSTDS
 
             if need_more_destination
               source = source.byteslice bytes_written, source.bytesize - bytes_written
-              flush_destination_buffer(&writer)
+              more_destination(&writer)
               next
             end
 
@@ -65,7 +65,7 @@ module ZSTDS
             need_more_destination = @native_stream.flush
 
             if need_more_destination
-              flush_destination_buffer(&writer)
+              more_destination(&writer)
               next
             end
 
@@ -84,7 +84,7 @@ module ZSTDS
             need_more_destination = @native_stream.finish
 
             if need_more_destination
-              flush_destination_buffer(&writer)
+              more_destination(&writer)
               next
             end
 

@@ -20,6 +20,7 @@ module ZSTDS
 
         initialize_source_buffer_length
         reset_io_remainder
+        reset_need_to_flush
 
         @lineno = 0
       end
@@ -42,57 +43,37 @@ module ZSTDS
         @io_remainder = ::String.new :encoding => ::Encoding::BINARY
       end
 
+      protected def reset_need_to_flush
+        @need_to_flush = false
+      end
+
       # -- synchronous --
 
       def read(bytes_to_read = nil, out_buffer = nil)
         Validation.validate_not_negative_integer bytes_to_read unless bytes_to_read.nil?
         Validation.validate_string out_buffer unless out_buffer.nil?
 
-        return ::String.new :encoding => ::Encoding::BINARY if !bytes_to_read.nil? && bytes_to_read.zero?
-
         unless bytes_to_read.nil?
+          return ::String.new :encoding => ::Encoding::BINARY if bytes_to_read.zero?
           return nil if eof?
 
-          read_more_to_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
+          append_io_data @io.read(@source_buffer_length) while @buffer.bytesize < bytes_to_read && !@io.eof?
+          flush_io_data if @buffer.bytesize < bytes_to_read
 
           return read_bytes_from_buffer bytes_to_read, out_buffer
         end
 
-        read_more_to_buffer until @io.eof?
+        append_io_data @io.read(@source_buffer_length) until @io.eof?
+        flush_io_data
 
-        result = @buffer
-        reset_buffer
-        @pos += result.bytesize
-
-        result.force_encoding @external_encoding unless @external_encoding.nil?
-        result = transcode_to_internal result
-        result = out_buffer.replace result unless out_buffer.nil?
-
-        result
-      end
-
-      protected def read_more_to_buffer
-        io_data = @io.read @source_buffer_length
-        append_io_data_to_buffer io_data
-      end
-
-      def readpartial(bytes_to_read = nil, out_buffer = nil)
-        raise ::EOFError if eof?
-
-        readpartial_to_buffer until @buffer.bytesize >= bytes_to_read || @io.eof?
-
-        read_bytes_from_buffer bytes_to_read, out_buffer
-      end
-
-      protected def readpartial_to_buffer
-        io_data = @io.readpartial @source_buffer_length
-        append_io_data_to_buffer io_data
+        read_buffer out_buffer
       end
 
       def rewind
         raw_wrapper :close
 
         reset_io_remainder
+        reset_need_to_flush
 
         super
       end
@@ -104,32 +85,60 @@ module ZSTDS
       end
 
       def eof?
-        @buffer.bytesize.zero? && @io.eof?
+        empty? && @io.eof?
       end
 
       # -- asynchronous --
 
+      def readpartial(bytes_to_read, out_buffer = nil)
+        read_more_nonblock(bytes_to_read, out_buffer) { @io.readpartial @source_buffer_length }
+      end
+
       def read_nonblock(bytes_to_read, out_buffer = nil, *options)
-        read_more_to_buffer_nonblock(*options) until @buffer.bytesize >= bytes_to_read || @io.eof?
+        read_more_nonblock(bytes_to_read, out_buffer) { @io.read_nonblock(@source_buffer_length, *options) }
+      end
+
+      protected def read_more_nonblock(bytes_to_read, out_buffer, &_block)
+        Validation.validate_not_negative_integer bytes_to_read
+        Validation.validate_string out_buffer unless out_buffer.nil?
+
+        return ::String.new :encoding => ::Encoding::BINARY if bytes_to_read.zero?
+
+        io_provided_eof_error = false
+
+        if @buffer.bytesize < bytes_to_read
+          begin
+            append_io_data yield
+          rescue ::EOFError
+            io_provided_eof_error = true
+          end
+        end
+
+        flush_io_data if @buffer.bytesize < bytes_to_read
+        raise ::EOFError if empty? && io_provided_eof_error
 
         read_bytes_from_buffer bytes_to_read, out_buffer
       end
 
-      protected def read_more_to_buffer_nonblock(*options)
-        io_data = @io.read_nonblock @source_buffer_length, *options
-        append_io_data_to_buffer io_data
-      end
-
       # -- common --
 
-      protected def append_io_data_to_buffer(io_data)
+      protected def append_io_data(io_data)
         io_portion    = @io_remainder + io_data
         bytes_read    = raw_wrapper :read, io_portion
         @io_remainder = io_portion.byteslice bytes_read, io_portion.bytesize - bytes_read
 
-        # We should just ignore case when "io.eof?" appears but "io_remainder" is not empty.
-        # Ancient compress implementations can write bytes from not initialized buffer parts to output.
-        raw_wrapper :flush if @io.eof?
+        # Even empty io data may require flush.
+        @need_to_flush = true
+      end
+
+      protected def flush_io_data
+        raw_wrapper :flush
+
+        @need_to_flush = false
+      end
+
+      protected def empty?
+        !@need_to_flush && @buffer.bytesize.zero?
       end
 
       protected def read_bytes_from_buffer(bytes_to_read, out_buffer)
@@ -139,6 +148,18 @@ module ZSTDS
         result   = @buffer.byteslice 0, bytes_read
         @buffer  = @buffer.byteslice bytes_read, @buffer.bytesize - bytes_read
         @pos    += bytes_read
+
+        result = out_buffer.replace result unless out_buffer.nil?
+        result
+      end
+
+      protected def read_buffer(out_buffer)
+        result = @buffer
+        reset_buffer
+        @pos += result.bytesize
+
+        result.force_encoding @external_encoding unless @external_encoding.nil?
+        result = transcode_to_internal result
 
         result = out_buffer.replace result unless out_buffer.nil?
         result
