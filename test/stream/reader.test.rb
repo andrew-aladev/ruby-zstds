@@ -153,6 +153,58 @@ module ZSTDS
           end
         end
 
+        def test_read_with_large_texts
+          LARGE_TEXTS.each do |text|
+            [true, false].each do |with_buffer|
+              archive     = get_archive text
+              prev_result = "".b
+
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                instance          = target.new ::StringIO.new(archive)
+                decompressed_text = "".b
+
+                begin
+                  loop do
+                    result =
+                      if with_buffer
+                        instance.read portion_length, prev_result
+                      else
+                        instance.read portion_length
+                      end
+
+                    break if result.nil?
+
+                    assert_equal result, prev_result if with_buffer
+                    decompressed_text << result
+                  end
+                ensure
+                  instance.close
+                end
+
+                decompressed_text.force_encoding text.encoding
+                assert_equal text, decompressed_text
+              end
+
+              instance          = target.new ::StringIO.new(archive)
+              decompressed_text = nil
+
+              begin
+                if with_buffer
+                  decompressed_text = instance.read nil, prev_result
+                  assert_equal decompressed_text, prev_result
+                else
+                  decompressed_text = instance.read
+                end
+              ensure
+                instance.close
+              end
+
+              decompressed_text.force_encoding text.encoding
+              assert_equal text, decompressed_text
+            end
+          end
+        end
+
         def test_encoding
           TEXTS.each do |text|
             external_encoding = text.encoding
@@ -492,11 +544,11 @@ module ZSTDS
 
         # -----
 
-        protected def get_archive(text, compressor_options)
+        protected def get_archive(text, compressor_options = {})
           String.compress text, compressor_options
         end
 
-        protected def write_archive(text, compressor_options)
+        protected def write_archive(text, compressor_options = {})
           compressed_text = String.compress text, compressor_options
           ::File.write ARCHIVE_PATH, compressed_text
         end

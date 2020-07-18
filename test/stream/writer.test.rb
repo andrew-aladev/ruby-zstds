@@ -81,6 +81,28 @@ module ZSTDS
           end
         end
 
+        def test_write_with_large_texts
+          LARGE_TEXTS.each do |text|
+            LARGE_PORTION_LENGTHS.each do |portion_length|
+              sources  = get_sources text, portion_length
+              io       = ::StringIO.new
+              instance = target.new io
+
+              begin
+                sources.each_slice(2) do |current_sources|
+                  instance.write(*current_sources)
+                  instance.flush
+                end
+              ensure
+                instance.close
+              end
+
+              compressed_text = io.string
+              check_text text, compressed_text
+            end
+          end
+        end
+
         def test_encoding
           TEXTS.each do |text|
             # We don't need to transcode between same encodings.
@@ -424,7 +446,7 @@ module ZSTDS
           sources
         end
 
-        protected def check_text(text, compressed_text, decompressor_options)
+        protected def check_text(text, compressed_text, decompressor_options = {})
           decompressed_text = String.decompress compressed_text, decompressor_options
           decompressed_text.force_encoding text.encoding
 
