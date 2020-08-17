@@ -110,7 +110,7 @@ module ZSTDS
         end
 
         def test_stat
-          instance = target.new ::STDOUT
+          instance = target.new $stdout
 
           refute instance.stat.file?
           refute instance.stat.pipe?

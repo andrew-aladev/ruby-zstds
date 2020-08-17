@@ -18,7 +18,7 @@ module ZSTDS
         :a,
         {},
         [],
-        ::STDOUT,
+        $stdout,
         ::StringIO,
         NOOP_PROC
       ]
@@ -31,7 +31,7 @@ module ZSTDS
       INVALID_SYMBOLS  = (TYPES - %i[a]).freeze
       INVALID_ARRAYS   = (TYPES - [[]]).freeze
       INVALID_HASHES   = (TYPES - [{}]).freeze
-      INVALID_IOS      = (TYPES - [::STDOUT, ::StringIO]).freeze
+      INVALID_IOS      = (TYPES - [$stdout, ::StringIO]).freeze
       INVALID_CHARS    = (INVALID_NUMBERS & INVALID_STRINGS).freeze
 
       INVALID_POSITIVE_INTEGERS     = (INVALID_INTEGERS + [0, -1]).freeze

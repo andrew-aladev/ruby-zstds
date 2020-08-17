@@ -30,4 +30,6 @@ GEMSPEC = Gem::Specification.new do |gem|
     %w[AUTHORS LICENSE README.md]
   gem.require_paths = %w[lib]
   gem.extensions    = %w[ext/extconf.rb]
+
+  gem.required_ruby_version = "~> 2.7"
 end

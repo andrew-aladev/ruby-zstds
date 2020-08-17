@@ -15,6 +15,6 @@ module Minitest
   end
 
   Runnable.instance_eval do
-    def self.inherited(_klass); end
+    def self.inherited(_klass); end # rubocop:disable Lint/MissingSuper
   end
 end
