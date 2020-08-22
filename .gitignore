@@ -7,4 +7,3 @@ tmp
 .clang_complete
 Gemfile.lock
 coverage
-.rebuild_date
