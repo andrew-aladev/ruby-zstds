@@ -1,4 +1,5 @@
 dev-lang/ruby:2.7 ~arm64
+app-eselect/eselect-ruby ~arm64
 
 virtual/rubygems ~arm64
 dev-ruby/rubygems ~arm64

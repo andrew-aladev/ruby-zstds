@@ -1,4 +1,5 @@
 dev-lang/ruby:2.7 ~amd64
+app-eselect/eselect-ruby ~amd64
 
 virtual/rubygems ~amd64
 dev-ruby/rubygems ~amd64

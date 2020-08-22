@@ -7,4 +7,4 @@ cd "$DIR"
 source "../../utils.sh"
 source "./env.sh"
 
-unshare "./buildah.sh"
+build "FROM_IMAGE"

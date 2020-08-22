@@ -4,18 +4,21 @@ You can find them on https://hub.docker.com/u/puchuu.
 
 ## Dependencies
 
-- `"CONFIG_X86_X32=y"` in kernel config
-- docker
-- buildah
-- qemu `QEMU_USER_TARGETS="aarch64 aarch64_be arm armeb mips64 mips64el mips mipsel"`
+- [docker cli](https://github.com/docker/cli)
+- [buildah](https://github.com/containers/buildah)
+- [qemu](https://github.com/qemu/qemu) `QEMU_USER_TARGETS="aarch64 aarch64_be arm armeb mips mipsel"`
 
 ## Build
+
+Packages for cross architectures are building using qemu static user, compilation is heavy.
+Recommended CPU is any modern one with >= `4 cores`.
+Max required RAM ~ `2 GB` per core.
 
 Please start `docker` and `qemu-binfmt` services.
 
 Than add your local user to `/etc/subuid` and `/etc/subgid`:
 
-```sh
+```
 my_user:100000:65536
 ```
 
@@ -31,3 +34,8 @@ Than open [`env.sh`](env.sh) and update variables.
 ```
 
 Build is rootless, just use your regular `my_user`.
+
+## Related bugs
+
+- [virtual/ruby-ssl: unmask for ruby27](https://bugs.gentoo.org/722566)
+- [sys-libs/musl: undefined reference to __stack_chk_fail_local (x86)](https://www.openwall.com/lists/musl/2018/09/11/2)

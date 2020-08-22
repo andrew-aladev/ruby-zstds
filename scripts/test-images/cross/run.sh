@@ -6,9 +6,5 @@ cd "$DIR"
 
 ./aarch64-unknown-linux-gnu/run.sh
 ./aarch64_be-unknown-linux-gnu/run.sh
-
-./arm-unknown-linux-gnueabi/run.sh
-./armeb-unknown-linux-gnueabi/run.sh
-
-./mips-unknown-linux-gnu/run.sh
-./mipsel-unknown-linux-gnu/run.sh
+./aarch64-gentoo-linux-musl/run.sh
+./aarch64_be-gentoo-linux-musl/run.sh

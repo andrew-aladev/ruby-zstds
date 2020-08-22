@@ -4,7 +4,6 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 source "${DIR}/../../env.sh"
 
-FROM_IMAGE_NAME="test_i686-pc-linux-gnu"
+FROM_IMAGE="docker.io/${DOCKER_USERNAME}/test_i686-pc-linux-gnu"
 IMAGE_NAME="${IMAGE_PREFIX}_i686-pc-linux-gnu"
-
-REBUILD_DATE=$(< "${DIR}/.rebuild_date") || :
+IMAGE_PLATFORM="linux/x86"
