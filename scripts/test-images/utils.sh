@@ -95,7 +95,10 @@ pull () {
 }
 
 run () {
-  tool run "$@"
+  tool run \
+    --cap-add=CAP_SYS_PTRACE \
+    --cap-add=CAP_SETFCAP \
+    "$@"
 }
 
 run_image () {
