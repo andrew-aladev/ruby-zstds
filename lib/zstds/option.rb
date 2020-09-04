@@ -166,9 +166,8 @@ module ZSTDS
       end
 
       dictionary = options[:dictionary]
-      unless dictionary.nil?
-        raise ValidateError, "invalid dictionary" unless dictionary.is_a? Dictionary
-      end
+      raise ValidateError, "invalid dictionary" unless
+        dictionary.nil? || dictionary.is_a?(Dictionary)
 
       options
     end

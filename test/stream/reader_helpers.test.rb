@@ -236,9 +236,9 @@ module ZSTDS
 
                     instance.ungetline line
                     assert_equal instance.lineno, 0
-                  end
 
-                  LIMITS.each do |limit|
+                    # Same test with separator.
+
                     line = instance.gets separator, limit
                     next if line.nil?
 

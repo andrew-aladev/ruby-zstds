@@ -72,7 +72,7 @@ module ZSTDS
 
         def test_read
           TEXTS.each do |text|
-            [true, false].each do |with_buffer|
+            Option::BOOLS.each do |with_buffer|
               get_compressor_options do |compressor_options|
                 archive     = get_archive text, compressor_options
                 prev_result = "".b
@@ -155,7 +155,7 @@ module ZSTDS
 
         def test_read_with_large_texts
           LARGE_TEXTS.each do |text|
-            [true, false].each do |with_buffer|
+            Option::BOOLS.each do |with_buffer|
               archive     = get_archive text
               prev_result = "".b
 
@@ -376,7 +376,7 @@ module ZSTDS
           start_server do |server|
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
-                [true, false].each do |with_buffer|
+                Option::BOOLS.each do |with_buffer|
                   get_compressor_options do |compressor_options|
                     get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                       server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|

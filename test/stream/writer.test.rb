@@ -186,8 +186,8 @@ module ZSTDS
 
         def test_write_nonblock
           modes = OCG.new(
-            :flush_nonblock => [true, false],
-            :close_nonblock => [true, false]
+            :flush_nonblock => Option::BOOLS,
+            :close_nonblock => Option::BOOLS
           )
           .to_a
 
@@ -272,8 +272,8 @@ module ZSTDS
 
         def test_write_nonblock_with_large_texts
           modes = OCG.new(
-            :flush_nonblock => [true, false],
-            :close_nonblock => [true, false]
+            :flush_nonblock => Option::BOOLS,
+            :close_nonblock => Option::BOOLS
           )
           .to_a
 

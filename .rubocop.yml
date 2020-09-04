@@ -73,9 +73,13 @@ Lint/DeprecatedOpenSSLConstant:
   Enabled: true
 Lint/DuplicateElsifCondition:
   Enabled: true
+Lint/DuplicateRequire:
+  Enabled: true
 Lint/DuplicateRescueException:
   Enabled: true
 Lint/EmptyConditionalBody:
+  Enabled: true
+Lint/EmptyFile:
   Enabled: true
 Lint/FloatComparison:
   Enabled: true
@@ -93,7 +97,11 @@ Lint/StructNewOverride:
   Enabled: true
 Lint/TopLevelReturnWithArgument:
   Enabled: true
+Lint/TrailingCommaInAttributeDeclaration:
+  Enabled: true
 Lint/UnreachableLoop:
+  Enabled: true
+Lint/UselessMethodDefinition:
   Enabled: true
 
 Style/ArrayCoercion:
@@ -101,6 +109,8 @@ Style/ArrayCoercion:
 Style/BisectedAttrAccessor:
   Enabled: true
 Style/CaseLikeIf:
+  Enabled: true
+Style/CombinableLoops:
   Enabled: true
 Style/ExplicitBlockArgument:
   Enabled: true
@@ -118,6 +128,8 @@ Style/HashTransformKeys:
   Enabled: true
 Style/HashTransformValues:
   Enabled: true
+Style/KeywordParametersOrder:
+  Enabled: true
 Style/OptionalBooleanParameter:
   Enabled: true
 Style/RedundantAssignment:
@@ -130,9 +142,13 @@ Style/RedundantRegexpCharacterClass:
   Enabled: true
 Style/RedundantRegexpEscape:
   Enabled: true
+Style/RedundantSelfAssignment:
+  Enabled: true
 Style/SingleArgumentDig:
   Enabled: true
 Style/SlicingWithRange:
+  Enabled: true
+Style/SoleNestedConditional:
   Enabled: true
 Style/StringConcatenation:
   Enabled: true
@@ -152,4 +168,6 @@ Performance/SortReverse:
 Performance/Squeeze:
   Enabled: true
 Performance/StringInclude:
+  Enabled: true
+Performance/Sum:
   Enabled: true
