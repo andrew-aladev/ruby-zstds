@@ -105,7 +105,7 @@ run () {
 
 run_image () {
   container=$(from "$IMAGE_NAME")
-  run "$container" "/home/entrypoint.sh" || error=$?
+  run "$container" "/home/entrypoint.sh" "$@" || error=$?
 
   remove "$container" || true
 
