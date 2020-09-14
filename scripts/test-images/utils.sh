@@ -35,8 +35,8 @@ attach () {
 
   (
     container_root=$(mount "$container")
-    fusermount -zu attached_root || true
-    bindfs -r -o nonempty "${container_root}$1" attached_root
+    fusermount -zu attached-root || true
+    bindfs -r -o nonempty "${container_root}$1" attached-root
   ) || error=$?
 
   if [ ! -z "$error" ]; then
@@ -48,7 +48,7 @@ attach () {
 }
 
 detach () {
-  fusermount -zu attached_root || true
+  fusermount -zu attached-root || true
 
   unmount "$1" || true
   remove "$1" || true
