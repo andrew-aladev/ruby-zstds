@@ -8,4 +8,4 @@ jobs:
       only:
         - master
     steps:
-      - run: /home/entrypoint.sh
+      - run: /home/ci_test.sh

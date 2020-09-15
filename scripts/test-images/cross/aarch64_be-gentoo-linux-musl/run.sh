@@ -7,4 +7,4 @@ cd "$DIR"
 source "../../utils.sh"
 source "./env.sh"
 
-run_image
+run_image "/home/ci_test.sh"

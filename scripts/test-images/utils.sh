@@ -10,8 +10,31 @@ tool () {
 
 # -----
 
+bud () {
+  tool bud \
+    --cap-add=CAP_SYS_PTRACE \
+    --cap-add=CAP_SETFCAP \
+    --security-opt="seccomp=unconfined" \
+    --isolation="rootless" \
+    "$@"
+}
+
 from () {
-  tool from "$1"
+  tool from \
+    --cap-add=CAP_SYS_PTRACE \
+    --cap-add=CAP_SETFCAP \
+    --security-opt="seccomp=unconfined" \
+    --isolation="rootless" \
+    "$1"
+}
+
+run () {
+  tool run \
+    --cap-add=CAP_SYS_PTRACE \
+    --cap-add=CAP_SETFCAP \
+    --security-opt="seccomp=unconfined" \
+    --isolation="rootless" \
+    "$@"
 }
 
 mount () {
@@ -64,15 +87,11 @@ build () {
   # Layers are enabled by default.
   layers=${IMAGE_LAYERS:-"true"}
 
-  tool bud \
+  bud \
     "${args[@]}" \
     --tag "$IMAGE_NAME" \
     --platform="$IMAGE_PLATFORM" \
     --label maintainer="$MAINTAINER" \
-    --cap-add=CAP_SYS_PTRACE \
-    --cap-add=CAP_SETFCAP \
-    --security-opt="seccomp=unconfined" \
-    --isolation="rootless" \
     --layers="$layers" \
     "."
 }
@@ -95,17 +114,9 @@ pull () {
   tool tag "$docker_image_name" "$IMAGE_NAME"
 }
 
-run () {
-  tool run \
-    --cap-add=CAP_SYS_PTRACE \
-    --cap-add=CAP_SETFCAP \
-    --security-opt="seccomp=unconfined" \
-    "$@"
-}
-
 run_image () {
   container=$(from "$IMAGE_NAME")
-  run "$container" "/home/entrypoint.sh" "$@" || error=$?
+  run $CONTAINER_OPTIONS "$container" "$@" || error=$?
 
   remove "$container" || true
 

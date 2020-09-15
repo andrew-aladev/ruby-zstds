@@ -7,3 +7,4 @@ tmp
 .clang_complete
 Gemfile.lock
 coverage
+attached-common-root/*
