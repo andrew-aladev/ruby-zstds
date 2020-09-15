@@ -62,12 +62,16 @@ Style/YodaCondition:
 
 # -- others --
 
+Layout/BeginEndAlignment:
+  Enabled: true
 Layout/EmptyLinesAroundAttributeAccessor:
   Enabled: true
 Layout/SpaceAroundMethodCallOperator:
   Enabled: true
 
 Lint/BinaryOperatorWithIdenticalOperands:
+  Enabled: true
+Lint/ConstantDefinitionInBlock:
   Enabled: true
 Lint/DeprecatedOpenSSLConstant:
   Enabled: true
@@ -82,6 +86,8 @@ Lint/EmptyConditionalBody:
 Lint/EmptyFile:
   Enabled: true
 Lint/FloatComparison:
+  Enabled: true
+Lint/IdentityComparison:
   Enabled: true
 Lint/MissingSuper:
   Enabled: true
@@ -102,6 +108,8 @@ Lint/TrailingCommaInAttributeDeclaration:
 Lint/UnreachableLoop:
   Enabled: true
 Lint/UselessMethodDefinition:
+  Enabled: true
+Lint/UselessTimes:
   Enabled: true
 
 Style/ArrayCoercion:
