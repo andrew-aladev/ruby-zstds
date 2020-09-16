@@ -1,12 +1,12 @@
 #!/bin/bash
 set -e
 
+env-update
+source "/etc/profile"
+
 DIR="/mnt/data"
 mkdir -p "$DIR"
 cd "$DIR"
-
-env-update
-source "/etc/profile"
 
 git clone "https://github.com/andrew-aladev/ruby-zstds.git" \
   --single-branch \
