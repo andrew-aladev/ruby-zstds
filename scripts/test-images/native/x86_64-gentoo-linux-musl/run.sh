@@ -7,4 +7,7 @@ cd "$DIR"
 source "../../utils.sh"
 source "./env.sh"
 
-run_image "/home/ci_test.sh"
+SOURCE_PATH=$(realpath "../../../..")
+VOLUME_OPTIONS="--volume ${SOURCE_PATH}:/mnt/data"
+
+CONTAINER_OPTIONS="$VOLUME_OPTIONS" run_image "/home/ci_test.sh"
