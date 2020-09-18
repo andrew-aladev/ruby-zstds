@@ -116,11 +116,6 @@ pull () {
 
 run_image () {
   container=$(from "$IMAGE_NAME")
-  run $CONTAINER_OPTIONS "$container" "$@" || error=$?
-
-  remove "$container" || true
-
-  if [ ! -z "$error" ]; then
-    exit "$error"
-  fi
+  run $CONTAINER_OPTIONS "$container" "$@"
+  remove "$container"
 }
