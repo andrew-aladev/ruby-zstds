@@ -101,32 +101,32 @@ end
 
 ## Options
 
-| Option                          | Values         | Default               | Description |
-|---------------------------------|----------------|-----------------------|-------------|
-| `source_buffer_length`          | 0 - infinity   | 0 (auto selection)    | internal buffer length for source data |
-| `destination_buffer_length`     | 0 - infinity   | 0 (auto selection)    | internal buffer length for description data |
-| `compression_level`             | -131072 - 22   | 0 (auto selection)    | compression level |
-| `window_log`                    | 10 - 31        | 0 (auto selection)    | maximum back-reference distance (power of 2) |
-| `hash_log`                      | 6 - 30         | 0 (auto selection)    | size of the initial probe table (power of 2) |
-| `chain_log`                     | 6 - 30         | 0 (auto selection)    | size of the multi-probe search table (power of 2) |
-| `search_log`                    | 1 - 30         | 0 (auto selection)    | number of search attempts (power of 2) |
-| `min_match`                     | 3 - 7          | 0 (auto selection)    | minimum size of searched matches |
-| `target_length`                 | 0 - 131072     | 0 (auto selection)    | distance between match sampling (for `:fast` strategy), length of match considered "good enough" for (for other strategies) |
-| `strategy`                      | `STRATEGIES`   | none (auto selection) | choses strategy |
-| `enable_long_distance_matching` | true/false     | none (auto selection) | enables long distance matching |
-| `ldm_hash_log`                  | 6 - 30         | 0 (auto selection)    | size of the table for long distance matching (power of 2) |
-| `ldm_min_match`                 | 4 - 4096       | 0 (auto selection)    | minimum match size for long distance matcher |
-| `ldm_bucket_size_log`           | 1 - 8          | 0 (auto selection)    | log size of each bucket in the LDM hash table for collision resolution |
-| `ldm_hash_rate_log`             | 0 - 25         | 0 (auto selection)    | frequency of inserting/looking up entries into the LDM hash table |
-| `content_size_flag`             | true/false     | true                  | enables writing of content size into frame header (if known) |
-| `checksum_flag`                 | true/false     | false                 | enables writing of 32-bits checksum of content at end of frame |
-| `dict_id_flag`                  | true/false     | true                  | enables writing of dictionary id into frame header |
-| `nb_workers`                    | 0 - 200        | 0 (auto selection)    | number of threads spawned in parallel |
-| `job_size`                      | 0 - 1073741824 | 0 (auto selection)    | size of job (nb_workers >= 1) |
-| `overlap_log`                   | 0 - 9          | 0 (auto selection)    | overlap size, as a fraction of window size |
-| `window_log_max`                | 10 - 31        | 0 (auto selection)    | size limit (power of 2) |
-| `dictionary`                    | `Dictionary`   | none                  | chose dictionary |
-| `pledged_size`                  | 0 - infinity   | 0 (auto selection)    | size of input (if known) |
+| Option                          | Values           | Default      | Description |
+|---------------------------------|------------------|--------------|-------------|
+| `source_buffer_length`          | `0 - inf`        | `0 (auto)`   | internal buffer length for source data |
+| `destination_buffer_length`     | `0 - inf`        | `0 (auto)`   | internal buffer length for description data |
+| `compression_level`             | `-131072 - 22`   | `0 (auto)`   | compression level |
+| `window_log`                    | `10 - 31`        | `0 (auto)`   | maximum back-reference distance (power of 2) |
+| `hash_log`                      | `6 - 30`         | `0 (auto)`   | size of the initial probe table (power of 2) |
+| `chain_log`                     | `6 - 30`         | `0 (auto)`   | size of the multi-probe search table (power of 2) |
+| `search_log`                    | `1 - 30`         | `0 (auto)`   | number of search attempts (power of 2) |
+| `min_match`                     | `3 - 7`          | `0 (auto)`   | minimum size of searched matches |
+| `target_length`                 | `0 - 131072`     | `0 (auto)`   | distance between match sampling (for `:fast` strategy), length of match considered "good enough" for (for other strategies) |
+| `strategy`                      | `STRATEGIES`     | `nil (auto)` | choses strategy |
+| `enable_long_distance_matching` | `true/false`     | `nil (auto)` | enables long distance matching |
+| `ldm_hash_log`                  | `6 - 30`         | `0 (auto)`   | size of the table for long distance matching (power of 2) |
+| `ldm_min_match`                 | `4 - 4096`       | `0 (auto)`   | minimum match size for long distance matcher |
+| `ldm_bucket_size_log`           | `1 - 8`          | `0 (auto)`   | log size of each bucket in the LDM hash table for collision resolution |
+| `ldm_hash_rate_log`             | `0 - 25`         | `0 (auto)`   | frequency of inserting/looking up entries into the LDM hash table |
+| `content_size_flag`             | `true/false`     | `true`       | enables writing of content size into frame header (if known) |
+| `checksum_flag`                 | `true/false`     | `false`      | enables writing of 32-bits checksum of content at end of frame |
+| `dict_id_flag`                  | `true/false`     | `true`       | enables writing of dictionary id into frame header |
+| `nb_workers`                    | `0 - 200`        | `0 (auto)`   | number of threads spawned in parallel |
+| `job_size`                      | `0 - 1073741824` | `0 (auto)`   | size of job (nb_workers >= 1) |
+| `overlap_log`                   | `0 - 9`          | `0 (auto)`   | overlap size, as a fraction of window size |
+| `window_log_max`                | `10 - 31`        | `0 (auto)`   | size limit (power of 2) |
+| `dictionary`                    | `Dictionary`     | `nil`        | chose dictionary |
+| `pledged_size`                  | `0 - inf`        | `0 (auto)`   | size of input (if known) |
 
 There are internal buffers for compressed and decompressed data.
 For example you want to use 1 KB as `source_buffer_length` for compressor - please use 256 B as `destination_buffer_length`.
@@ -138,22 +138,22 @@ You can also read zstd docs for more info about options.
 
 | Option                | Related constants |
 |-----------------------|-------------------|
-| `compression_level`   | `ZSTDS::Option::MIN_COMPRESSION_LEVEL` = -131072, `ZSTDS::Option::MAX_COMPRESSION_LEVEL` = 22 |
-| `window_log`          | `ZSTDS::Option::MIN_WINDOW_LOG` = 10, `ZSTDS::Option::MAX_WINDOW_LOG` = 31 |
-| `hash_log`            | `ZSTDS::Option::MIN_HASH_LOG` = 6, `ZSTDS::Option::MAX_HASH_LOG` = 30 |
-| `chain_log`           | `ZSTDS::Option::MIN_CHAIN_LOG` = 6, `ZSTDS::Option::MAX_CHAIN_LOG` = 30 |
-| `search_log`          | `ZSTDS::Option::MIN_SEARCH_LOG` = 1, `ZSTDS::Option::MAX_SEARCH_LOG` = 30 |
-| `min_match`           | `ZSTDS::Option::MIN_MIN_MATCH` = 3, `ZSTDS::Option::MAX_MIN_MATCH` = 7 |
-| `target_length`       | `ZSTDS::Option::MIN_TARGET_LENGTH` = 0, `ZSTDS::Option::MAX_TARGET_LENGTH` = 131072 |
+| `compression_level`   | `ZSTDS::Option::MIN_COMPRESSION_LEVEL = -131072`, `ZSTDS::Option::MAX_COMPRESSION_LEVEL = 22` |
+| `window_log`          | `ZSTDS::Option::MIN_WINDOW_LOG = 10`, `ZSTDS::Option::MAX_WINDOW_LOG = 31` |
+| `hash_log`            | `ZSTDS::Option::MIN_HASH_LOG = 6`, `ZSTDS::Option::MAX_HASH_LOG = 30` |
+| `chain_log`           | `ZSTDS::Option::MIN_CHAIN_LOG = 6`, `ZSTDS::Option::MAX_CHAIN_LOG = 30` |
+| `search_log`          | `ZSTDS::Option::MIN_SEARCH_LOG = 1`, `ZSTDS::Option::MAX_SEARCH_LOG = 30` |
+| `min_match`           | `ZSTDS::Option::MIN_MIN_MATCH = 3`, `ZSTDS::Option::MAX_MIN_MATCH = 7` |
+| `target_length`       | `ZSTDS::Option::MIN_TARGET_LENGTH = 0`, `ZSTDS::Option::MAX_TARGET_LENGTH = 131072` |
 | `strategy`            | `ZSTDS::Option::STRATEGIES` = [`:fast`, `:dfast`, `:greedy`, `:lazy`, `:lazy2`, `:btlazy2`, `:btopt`, `:btultra`, `:btultra2`] |
-| `ldm_hash_log`        | `ZSTDS::Option::MIN_LDM_HASH_LOG` = 6, `ZSTDS::Option::MAX_LDM_HASH_LOG` = 30 |
-| `ldm_min_match`       | `ZSTDS::Option::MIN_LDM_MIN_MATCH` = 4, `ZSTDS::Option::MAX_LDM_MIN_MATCH` = 4096 |
-| `ldm_bucket_size_log` | `ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG` = 1, `ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG` = 8 |
-| `ldm_hash_rate_log`   | `ZSTDS::Option::MIN_LDM_HASH_RATE_LOG` = 0, `ZSTDS::Option::MAX_LDM_HASH_RATE_LOG` = 25 |
-| `nb_workers`          | `ZSTDS::Option::MIN_NB_WORKERS` = 0, `ZSTDS::Option::MAX_NB_WORKERS` = 200 |
-| `job_size`            | `ZSTDS::Option::MIN_JOB_SIZE`= 0, `ZSTDS::Option::MAX_JOB_SIZE` = 1073741824 |
-| `overlap_log`         | `ZSTDS::Option::MIN_OVERLAP_LOG` = 0, `ZSTDS::Option::MAX_OVERLAP_LOG` = 9 |
-| `window_log_max`      | `ZSTDS::Option::MIN_WINDOW_LOG_MAX` = 10, `ZSTDS::Option::MAX_WINDOW_LOG_MAX` = 31 |
+| `ldm_hash_log`        | `ZSTDS::Option::MIN_LDM_HASH_LOG = 6`, `ZSTDS::Option::MAX_LDM_HASH_LOG = 30` |
+| `ldm_min_match`       | `ZSTDS::Option::MIN_LDM_MIN_MATCH = 4`, `ZSTDS::Option::MAX_LDM_MIN_MATCH = 4096` |
+| `ldm_bucket_size_log` | `ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG = 1`, `ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG = 8` |
+| `ldm_hash_rate_log`   | `ZSTDS::Option::MIN_LDM_HASH_RATE_LOG = 0`, `ZSTDS::Option::MAX_LDM_HASH_RATE_LOG = 25` |
+| `nb_workers`          | `ZSTDS::Option::MIN_NB_WORKERS = 0`, `ZSTDS::Option::MAX_NB_WORKERS = 200` |
+| `job_size`            | `ZSTDS::Option::MIN_JOB_SIZE = 0`, `ZSTDS::Option::MAX_JOB_SIZE = 1073741824` |
+| `overlap_log`         | `ZSTDS::Option::MIN_OVERLAP_LOG = 0`, `ZSTDS::Option::MAX_OVERLAP_LOG = 9` |
+| `window_log_max`      | `ZSTDS::Option::MIN_WINDOW_LOG_MAX = 10`, `ZSTDS::Option::MAX_WINDOW_LOG_MAX = 31` |
 
 Possible compressor options:
 ```
