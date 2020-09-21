@@ -145,7 +145,7 @@ You can also read zstd docs for more info about options.
 | `search_log`          | `ZSTDS::Option::MIN_SEARCH_LOG = 1`, `ZSTDS::Option::MAX_SEARCH_LOG = 30` |
 | `min_match`           | `ZSTDS::Option::MIN_MIN_MATCH = 3`, `ZSTDS::Option::MAX_MIN_MATCH = 7` |
 | `target_length`       | `ZSTDS::Option::MIN_TARGET_LENGTH = 0`, `ZSTDS::Option::MAX_TARGET_LENGTH = 131072` |
-| `strategy`            | `ZSTDS::Option::STRATEGIES` = [`:fast`, `:dfast`, `:greedy`, `:lazy`, `:lazy2`, `:btlazy2`, `:btopt`, `:btultra`, `:btultra2`] |
+| `strategy`            | `ZSTDS::Option::STRATEGIES = %i[fast dfast greedy lazy lazy2 btlazy2 btopt btultra btultra2]` |
 | `ldm_hash_log`        | `ZSTDS::Option::MIN_LDM_HASH_LOG = 6`, `ZSTDS::Option::MAX_LDM_HASH_LOG = 30` |
 | `ldm_min_match`       | `ZSTDS::Option::MIN_LDM_MIN_MATCH = 4`, `ZSTDS::Option::MAX_LDM_MIN_MATCH = 4096` |
 | `ldm_bucket_size_log` | `ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG = 1`, `ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG = 8` |
