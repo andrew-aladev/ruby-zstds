@@ -1,9 +1,11 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
-require "date"
+lib_path = File.expand_path "lib", __dir__
+$LOAD_PATH.unshift lib_path unless $LOAD_PATH.include? lib_path
 
-require_relative "lib/zstds/version"
+require "date"
+require "zstds/version"
 
 GEMSPEC = Gem::Specification.new do |gem|
   gem.name     = "ruby-zstds"
