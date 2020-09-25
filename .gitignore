@@ -1,10 +1,10 @@
+attached-common-root/*
 build/*
+coverage
+Gemfile.lock
 pkg
-tmp
+tmp/*
+*.gem
 *.o
 *.so
-*.gem
 .clang_complete
-Gemfile.lock
-coverage
-attached-common-root/*
