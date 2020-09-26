@@ -75,6 +75,13 @@ $srcs = %w[
 .map { |name| "src/#{extension_name}/#{name}.c" }
 .freeze
 
+# Removing library duplicates.
+$libs = $libs.split(%r{\s})
+  .reject(&:empty?)
+  .sort
+  .uniq
+  .join " "
+
 if ENV["CI"] || ENV["COVERAGE"]
   $CFLAGS << " --coverage"
   $LDFLAGS << " --coverage"
