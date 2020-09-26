@@ -21,6 +21,8 @@ rake gem
 gem install pkg/ruby-zstds-*.gem
 ```
 
+You can also use [overlay](https://github.com/andrew-aladev/overlay) for gentoo.
+
 ## Usage
 
 There are simple APIs: `String` and `File`. Also you can use generic streaming API: `Stream::Writer` and `Stream::Reader`.
