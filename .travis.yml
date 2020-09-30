@@ -19,7 +19,6 @@ addons:
   homebrew:
     packages:
       - zstd
-    update: true
 
 before_install:
   - gem install bundler
