@@ -2,6 +2,8 @@ image: Ubuntu2004
 
 environment:
   matrix:
+    - RUBY_VERSION: 25
+    - RUBY_VERSION: 26
     - RUBY_VERSION: 27
 
 init:

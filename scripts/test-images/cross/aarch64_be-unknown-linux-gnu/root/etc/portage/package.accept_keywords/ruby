@@ -1,3 +1,5 @@
+dev-lang/ruby:2.5 ~arm64
+dev-lang/ruby:2.6 ~arm64
 dev-lang/ruby:2.7 ~arm64
 app-eselect/eselect-ruby ~arm64
 

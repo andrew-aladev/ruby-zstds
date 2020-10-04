@@ -1,3 +1,3 @@
 # virtual/ruby-ssl: unmask for ruby27.
 # https://bugs.gentoo.org/722566
-virtual/ruby-ssl -ruby_targets_ruby27
+virtual/ruby-ssl -ruby_targets_ruby26 -ruby_targets_ruby27

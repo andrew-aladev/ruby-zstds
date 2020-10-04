@@ -5,6 +5,11 @@ env-update
 source "/etc/profile"
 
 DIR="/mnt/data"
+RUBY_VERSIONS=(
+  "ruby25"
+  "ruby26"
+  "ruby27"
+)
 
 if [ ! -d "$DIR" ]; then
   mkdir -p "$DIR"
@@ -18,4 +23,8 @@ fi
 
 cd "$DIR"
 
-./scripts/ci_test.sh
+for RUBY_VERSION in "${RUBY_VERSIONS[@]}"; do
+  eselect ruby set "$RUBY_VERSION"
+
+  ./scripts/ci_test.sh
+done
