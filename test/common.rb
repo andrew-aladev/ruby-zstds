@@ -18,9 +18,6 @@ module ZSTDS
       ]
       .each { |path| FileUtils.touch path }
 
-      # Port will be changed each 20 seconds.
-      PORT = 53_000 + (Time.now.to_i / 20) % 1000
-
       ENCODINGS = %w[
         binary
         UTF-8
