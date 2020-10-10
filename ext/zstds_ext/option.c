@@ -54,32 +54,23 @@ static inline ZSTD_strategy get_strategy_option_value(VALUE raw_value)
   ID raw_id = SYM2ID(raw_value);
   if (raw_id == rb_intern("fast")) {
     return ZSTD_fast;
-  }
-  else if (raw_id == rb_intern("dfast")) {
+  } else if (raw_id == rb_intern("dfast")) {
     return ZSTD_dfast;
-  }
-  else if (raw_id == rb_intern("greedy")) {
+  } else if (raw_id == rb_intern("greedy")) {
     return ZSTD_greedy;
-  }
-  else if (raw_id == rb_intern("lazy")) {
+  } else if (raw_id == rb_intern("lazy")) {
     return ZSTD_lazy;
-  }
-  else if (raw_id == rb_intern("lazy2")) {
+  } else if (raw_id == rb_intern("lazy2")) {
     return ZSTD_lazy2;
-  }
-  else if (raw_id == rb_intern("btlazy2")) {
+  } else if (raw_id == rb_intern("btlazy2")) {
     return ZSTD_btlazy2;
-  }
-  else if (raw_id == rb_intern("btopt")) {
+  } else if (raw_id == rb_intern("btopt")) {
     return ZSTD_btopt;
-  }
-  else if (raw_id == rb_intern("btultra")) {
+  } else if (raw_id == rb_intern("btultra")) {
     return ZSTD_btultra;
-  }
-  else if (raw_id == rb_intern("btultra2")) {
+  } else if (raw_id == rb_intern("btultra2")) {
     return ZSTD_btultra2;
-  }
-  else {
+  } else {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
   }
 }
@@ -100,13 +91,13 @@ void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_o
       value = get_bool_option_value(raw_value) ? 1 : 0;
       break;
     case ZSTDS_EXT_OPTION_TYPE_UINT:
-      value = (zstds_ext_option_value_t)get_uint_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_uint_option_value(raw_value);
       break;
     case ZSTDS_EXT_OPTION_TYPE_INT:
-      value = (zstds_ext_option_value_t)get_int_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_int_option_value(raw_value);
       break;
     case ZSTDS_EXT_OPTION_TYPE_STRATEGY:
-      value = (zstds_ext_option_value_t)get_strategy_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_strategy_option_value(raw_value);
       break;
     default:
       zstds_ext_raise_error(ZSTDS_EXT_ERROR_UNEXPECTED);
@@ -121,7 +112,7 @@ void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, con
 
   option->has_value = raw_value != Qnil;
   if (option->has_value) {
-    option->value = (zstds_ext_ull_option_value_t)get_ull_option_value(raw_value);
+    option->value = (zstds_ext_ull_option_value_t) get_ull_option_value(raw_value);
   }
 }
 
@@ -159,8 +150,7 @@ size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
     }                                                        \
   }
 
-#define SET_COMPRESSOR_PARAM(ctx, param, option) \
-  SET_OPTION_VALUE(ZSTD_CCtx_setParameter, ctx, param, option);
+#define SET_COMPRESSOR_PARAM(ctx, param, option) SET_OPTION_VALUE(ZSTD_CCtx_setParameter, ctx, param, option);
 
 zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_compressor_options_t* options)
 {
@@ -205,8 +195,7 @@ zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_co
   return 0;
 }
 
-#define SET_DECOMPRESSOR_PARAM(ctx, param, option) \
-  SET_OPTION_VALUE(ZSTD_DCtx_setParameter, ctx, param, option);
+#define SET_DECOMPRESSOR_PARAM(ctx, param, option) SET_OPTION_VALUE(ZSTD_DCtx_setParameter, ctx, param, option);
 
 zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_decompressor_options_t* options)
 {

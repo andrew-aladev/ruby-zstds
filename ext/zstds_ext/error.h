@@ -11,7 +11,8 @@
 
 // Results for errors listed in "lib/zstds/error" used in c extension.
 
-enum {
+enum
+{
   ZSTDS_EXT_ERROR_ALLOCATE_FAILED = 1,
   ZSTDS_EXT_ERROR_VALIDATE_FAILED,
 

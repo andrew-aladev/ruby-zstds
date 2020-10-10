@@ -1,26 +1,28 @@
 // Ruby bindings for zstd library.
 // Copyright (c) 2019 AUTHORS, MIT License.
 
-#include "ruby/io.h"
+#include "zstds_ext/io.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <zstd.h>
 
 #include "ruby.h"
+#include "ruby/io.h"
 #include "zstds_ext/error.h"
-#include "zstds_ext/io.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
 // Additional possible results:
-enum {
+enum
+{
   ZSTDS_EXT_FILE_READ_FINISHED = 128
 };
 
 // -- file --
 
-static inline zstds_ext_result_t read_file(FILE* source_file, zstds_ext_byte_t* source_buffer, size_t* source_length_ptr, size_t source_buffer_length)
+static inline zstds_ext_result_t
+  read_file(FILE* source_file, zstds_ext_byte_t* source_buffer, size_t* source_length_ptr, size_t source_buffer_length)
 {
   size_t read_length = fread(source_buffer, 1, source_buffer_length, source_file);
   if (read_length == 0 && feof(source_file)) {
@@ -36,7 +38,8 @@ static inline zstds_ext_result_t read_file(FILE* source_file, zstds_ext_byte_t* 
   return 0;
 }
 
-static inline zstds_ext_result_t write_file(FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_length)
+static inline zstds_ext_result_t
+  write_file(FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_length)
 {
   size_t written_length = fwrite(destination_buffer, 1, destination_length, destination_file);
   if (written_length != destination_length) {
@@ -49,8 +52,10 @@ static inline zstds_ext_result_t write_file(FILE* destination_file, zstds_ext_by
 // -- buffer --
 
 static inline zstds_ext_result_t create_buffers(
-  zstds_ext_byte_t** source_buffer_ptr, size_t source_buffer_length,
-  zstds_ext_byte_t** destination_buffer_ptr, size_t destination_buffer_length)
+  zstds_ext_byte_t** source_buffer_ptr,
+  size_t             source_buffer_length,
+  zstds_ext_byte_t** destination_buffer_ptr,
+  size_t             destination_buffer_length)
 {
   zstds_ext_byte_t* source_buffer = malloc(source_buffer_length);
   if (source_buffer == NULL) {
@@ -77,8 +82,10 @@ static inline zstds_ext_result_t create_buffers(
 
 static inline zstds_ext_result_t read_more_source(
   FILE*                    source_file,
-  const zstds_ext_byte_t** source_ptr, size_t* source_length_ptr,
-  zstds_ext_byte_t* source_buffer, size_t source_buffer_length)
+  const zstds_ext_byte_t** source_ptr,
+  size_t*                  source_length_ptr,
+  zstds_ext_byte_t*        source_buffer,
+  size_t                   source_buffer_length)
 {
   const zstds_ext_byte_t* source        = *source_ptr;
   size_t                  source_length = *source_length_ptr;
@@ -101,7 +108,9 @@ static inline zstds_ext_result_t read_more_source(
   zstds_ext_byte_t* remaining_source_buffer = source_buffer + source_length;
   size_t            new_source_length;
 
-  zstds_ext_result_t ext_result = read_file(source_file, remaining_source_buffer, &new_source_length, remaining_source_buffer_length);
+  zstds_ext_result_t ext_result =
+    read_file(source_file, remaining_source_buffer, &new_source_length, remaining_source_buffer_length);
+
   if (ext_result != 0) {
     return ext_result;
   }
@@ -111,42 +120,37 @@ static inline zstds_ext_result_t read_more_source(
   return 0;
 }
 
-#define BUFFERED_READ_SOURCE(function, ...)                 \
-  do {                                                      \
-    bool is_function_called = false;                        \
-                                                            \
-    while (true) {                                          \
-      ext_result = read_more_source(                        \
-        source_file,                                        \
-        &source, &source_length,                            \
-        source_buffer, source_buffer_length);               \
-                                                            \
-      if (ext_result == ZSTDS_EXT_FILE_READ_FINISHED) {     \
-        if (source_length != 0) {                           \
-          /* ZSTD won't provide any remainder by design. */ \
-          return ZSTDS_EXT_ERROR_READ_IO;                   \
-        }                                                   \
-        break;                                              \
-      }                                                     \
-      else if (ext_result != 0) {                           \
-        return ext_result;                                  \
-      }                                                     \
-                                                            \
-      ext_result = function(__VA_ARGS__);                   \
-      if (ext_result != 0) {                                \
-        return ext_result;                                  \
-      }                                                     \
-                                                            \
-      is_function_called = true;                            \
-    }                                                       \
-                                                            \
-    if (!is_function_called) {                              \
-      /* Function should be called at least once. */        \
-      ext_result = function(__VA_ARGS__);                   \
-      if (ext_result != 0) {                                \
-        return ext_result;                                  \
-      }                                                     \
-    }                                                       \
+#define BUFFERED_READ_SOURCE(function, ...)                                                                     \
+  do {                                                                                                          \
+    bool is_function_called = false;                                                                            \
+                                                                                                                \
+    while (true) {                                                                                              \
+      ext_result = read_more_source(source_file, &source, &source_length, source_buffer, source_buffer_length); \
+      if (ext_result == ZSTDS_EXT_FILE_READ_FINISHED) {                                                         \
+        if (source_length != 0) {                                                                               \
+          /* ZSTD won't provide any remainder by design. */                                                     \
+          return ZSTDS_EXT_ERROR_READ_IO;                                                                       \
+        }                                                                                                       \
+        break;                                                                                                  \
+      } else if (ext_result != 0) {                                                                             \
+        return ext_result;                                                                                      \
+      }                                                                                                         \
+                                                                                                                \
+      ext_result = function(__VA_ARGS__);                                                                       \
+      if (ext_result != 0) {                                                                                    \
+        return ext_result;                                                                                      \
+      }                                                                                                         \
+                                                                                                                \
+      is_function_called = true;                                                                                \
+    }                                                                                                           \
+                                                                                                                \
+    if (!is_function_called) {                                                                                  \
+      /* Function should be called at least once. */                                                            \
+      ext_result = function(__VA_ARGS__);                                                                       \
+      if (ext_result != 0) {                                                                                    \
+        return ext_result;                                                                                      \
+      }                                                                                                         \
+    }                                                                                                           \
   } while (false);
 
 // Algorithm has written data into destination buffer.
@@ -155,7 +159,9 @@ static inline zstds_ext_result_t read_more_source(
 
 static inline zstds_ext_result_t flush_destination_buffer(
   FILE*             destination_file,
-  zstds_ext_byte_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  zstds_ext_byte_t* destination_buffer,
+  size_t*           destination_length_ptr,
+  size_t            destination_buffer_length)
 {
   if (*destination_length_ptr == 0) {
     // We want to write more data at once, than buffer has.
@@ -172,7 +178,8 @@ static inline zstds_ext_result_t flush_destination_buffer(
   return 0;
 }
 
-static inline zstds_ext_result_t write_remaining_destination(FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_length)
+static inline zstds_ext_result_t
+  write_remaining_destination(FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_length)
 {
   if (destination_length == 0) {
     return 0;
@@ -198,8 +205,12 @@ static inline zstds_ext_result_t write_remaining_destination(FILE* destination_f
 
 static inline zstds_ext_result_t buffered_compress(
   ZSTD_CCtx*               ctx,
-  const zstds_ext_byte_t** source_ptr, size_t* source_length_ptr,
-  FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  const zstds_ext_byte_t** source_ptr,
+  size_t*                  source_length_ptr,
+  FILE*                    destination_file,
+  zstds_ext_byte_t*        destination_buffer,
+  size_t*                  destination_length_ptr,
+  size_t                   destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -225,8 +236,7 @@ static inline zstds_ext_result_t buffered_compress(
 
     if (*destination_length_ptr == destination_buffer_length) {
       ext_result = flush_destination_buffer(
-        destination_file,
-        destination_buffer, destination_length_ptr, destination_buffer_length);
+        destination_file, destination_buffer, destination_length_ptr, destination_buffer_length);
 
       if (ext_result != 0) {
         return ext_result;
@@ -245,8 +255,11 @@ static inline zstds_ext_result_t buffered_compress(
 }
 
 static inline zstds_ext_result_t buffered_compressor_finish(
-  ZSTD_CCtx* ctx,
-  FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  ZSTD_CCtx*        ctx,
+  FILE*             destination_file,
+  zstds_ext_byte_t* destination_buffer,
+  size_t*           destination_length_ptr,
+  size_t            destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -272,8 +285,7 @@ static inline zstds_ext_result_t buffered_compressor_finish(
 
     if (result != 0) {
       ext_result = flush_destination_buffer(
-        destination_file,
-        destination_buffer, destination_length_ptr, destination_buffer_length);
+        destination_file, destination_buffer, destination_length_ptr, destination_buffer_length);
 
       if (ext_result != 0) {
         return ext_result;
@@ -289,9 +301,13 @@ static inline zstds_ext_result_t buffered_compressor_finish(
 }
 
 static inline zstds_ext_result_t compress(
-  ZSTD_CCtx* ctx,
-  FILE* source_file, zstds_ext_byte_t* source_buffer, size_t source_buffer_length,
-  FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_buffer_length)
+  ZSTD_CCtx*        ctx,
+  FILE*             source_file,
+  zstds_ext_byte_t* source_buffer,
+  size_t            source_buffer_length,
+  FILE*             destination_file,
+  zstds_ext_byte_t* destination_buffer,
+  size_t            destination_buffer_length)
 {
   zstds_ext_result_t ext_result;
 
@@ -302,12 +318,15 @@ static inline zstds_ext_result_t compress(
   BUFFERED_READ_SOURCE(
     buffered_compress,
     ctx,
-    &source, &source_length,
-    destination_file, destination_buffer, &destination_length, destination_buffer_length);
+    &source,
+    &source_length,
+    destination_file,
+    destination_buffer,
+    &destination_length,
+    destination_buffer_length);
 
   ext_result = buffered_compressor_finish(
-    ctx,
-    destination_file, destination_buffer, &destination_length, destination_buffer_length);
+    ctx, destination_file, destination_buffer, &destination_length, destination_buffer_length);
 
   if (ext_result != 0) {
     return ext_result;
@@ -346,10 +365,7 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
   zstds_ext_byte_t* source_buffer;
   zstds_ext_byte_t* destination_buffer;
 
-  ext_result = create_buffers(
-    &source_buffer, source_buffer_length,
-    &destination_buffer, destination_buffer_length);
-
+  ext_result = create_buffers(&source_buffer, source_buffer_length, &destination_buffer, destination_buffer_length);
   if (ext_result != 0) {
     ZSTD_freeCCtx(ctx);
     zstds_ext_raise_error(ext_result);
@@ -357,8 +373,12 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
 
   ext_result = compress(
     ctx,
-    source_file, source_buffer, source_buffer_length,
-    destination_file, destination_buffer, destination_buffer_length);
+    source_file,
+    source_buffer,
+    source_buffer_length,
+    destination_file,
+    destination_buffer,
+    destination_buffer_length);
 
   free(source_buffer);
   free(destination_buffer);
@@ -378,8 +398,12 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
 
 static inline zstds_ext_result_t buffered_decompress(
   ZSTD_DCtx*               ctx,
-  const zstds_ext_byte_t** source_ptr, size_t* source_length_ptr,
-  FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t* destination_length_ptr, size_t destination_buffer_length)
+  const zstds_ext_byte_t** source_ptr,
+  size_t*                  source_length_ptr,
+  FILE*                    destination_file,
+  zstds_ext_byte_t*        destination_buffer,
+  size_t*                  destination_length_ptr,
+  size_t                   destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -405,8 +429,7 @@ static inline zstds_ext_result_t buffered_decompress(
 
     if (*destination_length_ptr == destination_buffer_length) {
       ext_result = flush_destination_buffer(
-        destination_file,
-        destination_buffer, destination_length_ptr, destination_buffer_length);
+        destination_file, destination_buffer, destination_length_ptr, destination_buffer_length);
 
       if (ext_result != 0) {
         return ext_result;
@@ -425,9 +448,13 @@ static inline zstds_ext_result_t buffered_decompress(
 }
 
 static inline zstds_ext_result_t decompress(
-  ZSTD_DCtx* ctx,
-  FILE* source_file, zstds_ext_byte_t* source_buffer, size_t source_buffer_length,
-  FILE* destination_file, zstds_ext_byte_t* destination_buffer, size_t destination_buffer_length)
+  ZSTD_DCtx*        ctx,
+  FILE*             source_file,
+  zstds_ext_byte_t* source_buffer,
+  size_t            source_buffer_length,
+  FILE*             destination_file,
+  zstds_ext_byte_t* destination_buffer,
+  size_t            destination_buffer_length)
 {
   zstds_ext_result_t ext_result;
 
@@ -438,8 +465,12 @@ static inline zstds_ext_result_t decompress(
   BUFFERED_READ_SOURCE(
     buffered_decompress,
     ctx,
-    &source, &source_length,
-    destination_file, destination_buffer, &destination_length, destination_buffer_length);
+    &source,
+    &source_length,
+    destination_file,
+    destination_buffer,
+    &destination_length,
+    destination_buffer_length);
 
   return write_remaining_destination(destination_file, destination_buffer, destination_length);
 }
@@ -474,10 +505,7 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
   zstds_ext_byte_t* source_buffer;
   zstds_ext_byte_t* destination_buffer;
 
-  ext_result = create_buffers(
-    &source_buffer, source_buffer_length,
-    &destination_buffer, destination_buffer_length);
-
+  ext_result = create_buffers(&source_buffer, source_buffer_length, &destination_buffer, destination_buffer_length);
   if (ext_result != 0) {
     ZSTD_freeDCtx(ctx);
     zstds_ext_raise_error(ext_result);
@@ -485,8 +513,12 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
 
   ext_result = decompress(
     ctx,
-    source_file, source_buffer, source_buffer_length,
-    destination_file, destination_buffer, destination_buffer_length);
+    source_file,
+    source_buffer,
+    source_buffer_length,
+    destination_file,
+    destination_buffer,
+    destination_buffer_length);
 
   free(source_buffer);
   free(destination_buffer);

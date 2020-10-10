@@ -9,7 +9,8 @@
 #include "ruby.h"
 #include "zstds_ext/common.h"
 
-typedef struct {
+typedef struct
+{
   ZSTD_CCtx*        ctx;
   zstds_ext_byte_t* destination_buffer;
   size_t            destination_buffer_length;

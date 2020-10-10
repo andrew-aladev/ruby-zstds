@@ -1,10 +1,18 @@
 Language: Cpp
-BasedOnStyle: Google
+BasedOnStyle: Mozilla
 
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveMacros: true
 AlignConsecutiveAssignments: true
 AlignConsecutiveDeclarations: true
-BreakBeforeBraces: Stroustrup
-ColumnLimit: 0
-ConstructorInitializerIndentWidth: 2
-ContinuationIndentWidth: 2
-SpacesBeforeTrailingComments: 1
+AlignEscapedNewlines: Left
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+AlwaysBreakBeforeMultilineStrings: true
+BreakBeforeTernaryOperators: false
+ColumnLimit: 120
+Cpp11BracedListStyle: true
+IndentWrappedFunctionNames: true
+KeepEmptyLinesAtTheStartOfBlocks: false
+SpaceAfterCStyleCast: true
+TabWidth: 2

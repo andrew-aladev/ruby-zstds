@@ -13,7 +13,8 @@
 // Default option values depends on zstd library.
 // We will set only user defined values.
 
-enum {
+enum
+{
   ZSTDS_EXT_OPTION_TYPE_BOOL = 1,
   ZSTDS_EXT_OPTION_TYPE_UINT,
   ZSTDS_EXT_OPTION_TYPE_INT,
@@ -24,17 +25,20 @@ typedef zstds_ext_byte_fast_t zstds_ext_option_type_t;
 typedef int                   zstds_ext_option_value_t;
 typedef unsigned long long    zstds_ext_ull_option_value_t;
 
-typedef struct {
+typedef struct
+{
   bool                     has_value;
   zstds_ext_option_value_t value;
 } zstds_ext_option_t;
 
-typedef struct {
+typedef struct
+{
   bool                         has_value;
   zstds_ext_ull_option_value_t value;
 } zstds_ext_ull_option_t;
 
-typedef struct {
+typedef struct
+{
   zstds_ext_option_t     compression_level;
   zstds_ext_option_t     window_log;
   zstds_ext_option_t     hash_log;
@@ -58,7 +62,8 @@ typedef struct {
   VALUE                  dictionary;
 } zstds_ext_compressor_options_t;
 
-typedef struct {
+typedef struct
+{
   zstds_ext_option_t window_log_max;
   VALUE              dictionary;
 } zstds_ext_decompressor_options_t;
@@ -109,8 +114,7 @@ void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* n
 
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name);
 
-#define ZSTDS_EXT_GET_BUFFER_LENGTH_OPTION(options, name) \
-  size_t name = zstds_ext_get_size_option_value(options, #name);
+#define ZSTDS_EXT_GET_BUFFER_LENGTH_OPTION(options, name) size_t name = zstds_ext_get_size_option_value(options, #name);
 
 zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_compressor_options_t* options);
 zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_decompressor_options_t* options);

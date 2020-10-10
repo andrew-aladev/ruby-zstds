@@ -130,7 +130,7 @@ VALUE zstds_ext_decompressor_read_result(VALUE self)
   size_t            destination_buffer_length           = decompressor_ptr->destination_buffer_length;
   size_t            remaining_destination_buffer_length = decompressor_ptr->remaining_destination_buffer_length;
 
-  const char* result        = (const char*)destination_buffer;
+  const char* result        = (const char*) destination_buffer;
   size_t      result_length = destination_buffer_length - remaining_destination_buffer_length;
 
   VALUE result_value = rb_str_new(result, result_length);

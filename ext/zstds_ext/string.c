@@ -14,8 +14,10 @@
 // -- buffer --
 
 static inline zstds_ext_result_t increase_destination_buffer(
-  VALUE destination_value, size_t destination_length,
-  size_t* remaining_destination_buffer_length_ptr, size_t destination_buffer_length)
+  VALUE   destination_value,
+  size_t  destination_length,
+  size_t* remaining_destination_buffer_length_ptr,
+  size_t  destination_buffer_length)
 {
   if (*remaining_destination_buffer_length_ptr == destination_buffer_length) {
     // We want to write more data at once, than buffer has.
@@ -46,8 +48,10 @@ static inline zstds_ext_result_t increase_destination_buffer(
 
 static inline zstds_ext_result_t compress(
   ZSTD_CCtx*  ctx,
-  const char* source, size_t source_length,
-  VALUE destination_value, size_t destination_buffer_length)
+  const char* source,
+  size_t      source_length,
+  VALUE       destination_value,
+  size_t      destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -62,7 +66,7 @@ static inline zstds_ext_result_t compress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_byte_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 
@@ -76,8 +80,7 @@ static inline zstds_ext_result_t compress(
 
     if (result != 0) {
       ext_result = increase_destination_buffer(
-        destination_value, destination_length,
-        &remaining_destination_buffer_length, destination_buffer_length);
+        destination_value, destination_length, &remaining_destination_buffer_length, destination_buffer_length);
 
       if (ext_result != 0) {
         return ext_result;
@@ -129,10 +132,7 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  ext_result = compress(
-    ctx,
-    source, source_length,
-    destination_value, destination_buffer_length);
+  ext_result = compress(ctx, source, source_length, destination_value, destination_buffer_length);
 
   ZSTD_freeCCtx(ctx);
 
@@ -147,8 +147,10 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
 
 static inline zstds_ext_result_t decompress(
   ZSTD_DCtx*  ctx,
-  const char* source, size_t source_length,
-  VALUE destination_value, size_t destination_buffer_length)
+  const char* source,
+  size_t      source_length,
+  VALUE       destination_value,
+  size_t      destination_buffer_length)
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
@@ -163,7 +165,7 @@ static inline zstds_ext_result_t decompress(
   size_t         remaining_destination_buffer_length = destination_buffer_length;
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_byte_t*)RSTRING_PTR(destination_value) + destination_length;
+    out_buffer.dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length;
     out_buffer.size = remaining_destination_buffer_length;
     out_buffer.pos  = 0;
 
@@ -177,8 +179,7 @@ static inline zstds_ext_result_t decompress(
 
     if (remaining_destination_buffer_length == 0) {
       ext_result = increase_destination_buffer(
-        destination_value, destination_length,
-        &remaining_destination_buffer_length, destination_buffer_length);
+        destination_value, destination_length, &remaining_destination_buffer_length, destination_buffer_length);
 
       if (ext_result != 0) {
         return ext_result;
@@ -230,10 +231,7 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  ext_result = decompress(
-    ctx,
-    source, source_length,
-    destination_value, destination_buffer_length);
+  ext_result = decompress(ctx, source, source_length, destination_value, destination_buffer_length);
 
   ZSTD_freeDCtx(ctx);
 

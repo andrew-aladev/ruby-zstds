@@ -144,9 +144,7 @@ VALUE zstds_ext_flush_compressor(VALUE self)
   compressor_ptr->remaining_destination_buffer += out_buffer.pos;
   compressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
-  VALUE needs_more_destination = result != 0 ? Qtrue : Qfalse;
-
-  return needs_more_destination;
+  return result != 0 ? Qtrue : Qfalse;
 }
 
 VALUE zstds_ext_finish_compressor(VALUE self)
@@ -172,9 +170,7 @@ VALUE zstds_ext_finish_compressor(VALUE self)
   compressor_ptr->remaining_destination_buffer += out_buffer.pos;
   compressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
-  VALUE needs_more_destination = result != 0 ? Qtrue : Qfalse;
-
-  return needs_more_destination;
+  return result != 0 ? Qtrue : Qfalse;
 }
 
 VALUE zstds_ext_compressor_read_result(VALUE self)
@@ -186,7 +182,7 @@ VALUE zstds_ext_compressor_read_result(VALUE self)
   size_t            destination_buffer_length           = compressor_ptr->destination_buffer_length;
   size_t            remaining_destination_buffer_length = compressor_ptr->remaining_destination_buffer_length;
 
-  const char* result        = (const char*)destination_buffer;
+  const char* result        = (const char*) destination_buffer;
   size_t      result_length = destination_buffer_length - remaining_destination_buffer_length;
 
   VALUE result_value = rb_str_new(result, result_length);

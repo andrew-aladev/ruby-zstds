@@ -27,7 +27,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
   Check_Type(samples, T_ARRAY);
 
   size_t       sample_index;
-  unsigned int samples_length = (unsigned int)RARRAY_LEN(samples);
+  unsigned int samples_length = (unsigned int) RARRAY_LEN(samples);
   size_t       samples_size   = 0;
 
   for (sample_index = 0; sample_index < samples_length; sample_index++) {
@@ -75,9 +75,8 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
     samples_sizes[sample_index] = sample_size;
   }
 
-  zstds_result_t result = ZDICT_trainFromBuffer(
-    RSTRING_PTR(buffer), capacity,
-    samples_buffer, samples_sizes, samples_length);
+  zstds_result_t result =
+    ZDICT_trainFromBuffer(RSTRING_PTR(buffer), capacity, samples_buffer, samples_sizes, samples_length);
 
   free(samples_buffer);
   free(samples_sizes);

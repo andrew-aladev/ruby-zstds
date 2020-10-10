@@ -40,7 +40,7 @@ zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
   }
 }
 
-static inline NORETURN(void raise(const char *name, const char *description))
+static inline NORETURN(void raise(const char* name, const char* description))
 {
   VALUE module = rb_define_module(ZSTDS_EXT_MODULE_NAME);
   VALUE error  = rb_const_get(module, rb_intern(name));
