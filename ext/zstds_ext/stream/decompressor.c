@@ -27,7 +27,6 @@ static void free_decompressor(zstds_ext_decompressor_t* decompressor_ptr)
 VALUE zstds_ext_allocate_decompressor(VALUE klass)
 {
   zstds_ext_decompressor_t* decompressor_ptr;
-
   VALUE self = Data_Make_Struct(klass, zstds_ext_decompressor_t, NULL, free_decompressor, decompressor_ptr);
 
   decompressor_ptr->ctx                                 = NULL;
@@ -132,8 +131,7 @@ VALUE zstds_ext_decompressor_read_result(VALUE self)
 
   const char* result        = (const char*) destination_buffer;
   size_t      result_length = destination_buffer_length - remaining_destination_buffer_length;
-
-  VALUE result_value = rb_str_new(result, result_length);
+  VALUE       result_value  = rb_str_new(result, result_length);
 
   decompressor_ptr->remaining_destination_buffer        = destination_buffer;
   decompressor_ptr->remaining_destination_buffer_length = destination_buffer_length;

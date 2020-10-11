@@ -309,8 +309,7 @@ static inline zstds_ext_result_t compress(
   zstds_ext_byte_t* destination_buffer,
   size_t            destination_buffer_length)
 {
-  zstds_ext_result_t ext_result;
-
+  zstds_ext_result_t      ext_result;
   const zstds_ext_byte_t* source             = source_buffer;
   size_t                  source_length      = 0;
   size_t                  destination_length = 0;
@@ -456,8 +455,7 @@ static inline zstds_ext_result_t decompress(
   zstds_ext_byte_t* destination_buffer,
   size_t            destination_buffer_length)
 {
-  zstds_ext_result_t ext_result;
-
+  zstds_ext_result_t      ext_result;
   const zstds_ext_byte_t* source             = source_buffer;
   size_t                  source_length      = 0;
   size_t                  destination_length = 0;

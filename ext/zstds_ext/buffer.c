@@ -16,6 +16,7 @@ VALUE zstds_ext_resize_string_buffer(VALUE args)
 {
   VALUE buffer = rb_ary_entry(args, 0);
   VALUE length = rb_ary_entry(args, 1);
+
   return rb_str_resize(buffer, NUM2SIZET(length));
 }
 
