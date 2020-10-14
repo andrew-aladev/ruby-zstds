@@ -3,6 +3,10 @@
 
 require "mkmf"
 
+have_func "rb_thread_call_without_gvl", "ruby/thread.h"
+
+# Old zstd versions has bug: underlinking against pthreads.
+# https://bugs.gentoo.org/713940
 $LDFLAGS << " -pthread" # rubocop:disable Style/GlobalVars
 
 def require_header(name, types = [])
