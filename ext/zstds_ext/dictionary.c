@@ -38,7 +38,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
   }
 
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_BUFFER_LENGTH_OPTION(options, capacity);
+  ZSTDS_EXT_GET_SIZE_OPTION(options, capacity);
 
   if (capacity == 0) {
     capacity = ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY;

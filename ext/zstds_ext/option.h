@@ -68,53 +68,60 @@ typedef struct
   VALUE              dictionary;
 } zstds_ext_decompressor_options_t;
 
-void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_option_type_t type, const char* name);
-void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name);
-void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* name);
+void zstds_ext_resolve_option(
+  VALUE                   options,
+  zstds_ext_option_t*     option,
+  zstds_ext_option_type_t type,
+  const char*             name);
 
-#define ZSTDS_EXT_GET_OPTION(options, target_options, type, name) \
-  zstds_ext_get_option(options, &target_options.name, type, #name);
+void zstds_ext_resolve_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name);
+void zstds_ext_resolve_dictionary_option(VALUE options, VALUE* option, const char* name);
 
-#define ZSTDS_EXT_GET_ULL_OPTION(options, target_options, name) \
-  zstds_ext_get_ull_option(options, &target_options.name, #name);
+#define ZSTDS_EXT_RESOLVE_OPTION(options, target_options, type, name) \
+  zstds_ext_resolve_option(options, &target_options.name, type, #name);
 
-#define ZSTDS_EXT_GET_DICTIONARY_OPTION(options, target_options, name) \
-  zstds_ext_get_dictionary_option(options, &target_options.name, #name);
+#define ZSTDS_EXT_RESOLVE_ULL_OPTION(options, target_options, name) \
+  zstds_ext_resolve_ull_option(options, &target_options.name, #name);
 
-#define ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options)                                                               \
-  zstds_ext_compressor_options_t compressor_options;                                                            \
-                                                                                                                \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_INT, compression_level);              \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log);                    \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, hash_log);                      \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, chain_log);                     \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, search_log);                    \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, min_match);                     \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, target_length);                 \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_STRATEGY, strategy);                  \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, enable_long_distance_matching); \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_hash_log);                  \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_min_match);                 \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_bucket_size_log);           \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_hash_rate_log);             \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, content_size_flag);             \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, checksum_flag);                 \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, dict_id_flag);                  \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, nb_workers);                    \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, job_size);                      \
-  ZSTDS_EXT_GET_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, overlap_log);                   \
-  ZSTDS_EXT_GET_ULL_OPTION(options, compressor_options, pledged_size);                                          \
-  ZSTDS_EXT_GET_DICTIONARY_OPTION(options, compressor_options, dictionary);
+#define ZSTDS_EXT_RESOLVE_DICTIONARY_OPTION(options, target_options, name) \
+  zstds_ext_resolve_dictionary_option(options, &target_options.name, #name);
 
-#define ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options)                                                \
-  zstds_ext_decompressor_options_t decompressor_options;                                           \
-                                                                                                   \
-  ZSTDS_EXT_GET_OPTION(options, decompressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log_max); \
-  ZSTDS_EXT_GET_DICTIONARY_OPTION(options, decompressor_options, dictionary);
+#define ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options)                                                                   \
+  zstds_ext_compressor_options_t compressor_options;                                                                \
+                                                                                                                    \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_INT, compression_level);              \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log);                    \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, hash_log);                      \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, chain_log);                     \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, search_log);                    \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, min_match);                     \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, target_length);                 \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_STRATEGY, strategy);                  \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, enable_long_distance_matching); \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_hash_log);                  \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_min_match);                 \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_bucket_size_log);           \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, ldm_hash_rate_log);             \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, content_size_flag);             \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, checksum_flag);                 \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_BOOL, dict_id_flag);                  \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, nb_workers);                    \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, job_size);                      \
+  ZSTDS_EXT_RESOLVE_OPTION(options, compressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, overlap_log);                   \
+  ZSTDS_EXT_RESOLVE_ULL_OPTION(options, compressor_options, pledged_size);                                          \
+  ZSTDS_EXT_RESOLVE_DICTIONARY_OPTION(options, compressor_options, dictionary);
 
+#define ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options)                                                    \
+  zstds_ext_decompressor_options_t decompressor_options;                                               \
+                                                                                                       \
+  ZSTDS_EXT_RESOLVE_OPTION(options, decompressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log_max); \
+  ZSTDS_EXT_RESOLVE_DICTIONARY_OPTION(options, decompressor_options, dictionary);
+
+bool   zstds_ext_get_bool_option_value(VALUE options, const char* name);
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name);
 
-#define ZSTDS_EXT_GET_BUFFER_LENGTH_OPTION(options, name) size_t name = zstds_ext_get_size_option_value(options, #name);
+#define ZSTDS_EXT_GET_BOOL_OPTION(options, name) size_t name = zstds_ext_get_bool_option_value(options, #name);
+#define ZSTDS_EXT_GET_SIZE_OPTION(options, name) size_t name = zstds_ext_get_size_option_value(options, #name);
 
 zstds_ext_result_t zstds_ext_set_compressor_options(ZSTD_CCtx* ctx, zstds_ext_compressor_options_t* options);
 zstds_ext_result_t zstds_ext_set_decompressor_options(ZSTD_DCtx* ctx, zstds_ext_decompressor_options_t* options);

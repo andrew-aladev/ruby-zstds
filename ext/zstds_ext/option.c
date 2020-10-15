@@ -11,12 +11,12 @@
 
 // -- values --
 
-static inline VALUE get_raw_option_value(VALUE options, const char* name)
+static inline VALUE get_raw_value(VALUE options, const char* name)
 {
   return rb_funcall(options, rb_intern("[]"), 1, ID2SYM(rb_intern(name)));
 }
 
-static inline bool get_bool_option_value(VALUE raw_value)
+static inline bool get_bool_value(VALUE raw_value)
 {
   int raw_type = TYPE(raw_value);
   if (raw_type != T_TRUE && raw_type != T_FALSE) {
@@ -26,28 +26,35 @@ static inline bool get_bool_option_value(VALUE raw_value)
   return raw_type == T_TRUE;
 }
 
-static inline unsigned int get_uint_option_value(VALUE raw_value)
+static inline unsigned int get_uint_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_FIXNUM);
 
   return NUM2UINT(raw_value);
 }
 
-static inline int get_int_option_value(VALUE raw_value)
+static inline int get_int_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_FIXNUM);
 
   return NUM2INT(raw_value);
 }
 
-static inline unsigned long long get_ull_option_value(VALUE raw_value)
+static inline unsigned long long get_ull_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_FIXNUM);
 
   return NUM2ULL(raw_value);
 }
 
-static inline ZSTD_strategy get_strategy_option_value(VALUE raw_value)
+static inline size_t get_size_value(VALUE raw_value)
+{
+  Check_Type(raw_value, T_FIXNUM);
+
+  return NUM2SIZET(raw_value);
+}
+
+static inline ZSTD_strategy get_strategy_value(VALUE raw_value)
 {
   Check_Type(raw_value, T_SYMBOL);
 
@@ -75,9 +82,9 @@ static inline ZSTD_strategy get_strategy_option_value(VALUE raw_value)
   }
 }
 
-void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_option_type_t type, const char* name)
+void zstds_ext_resolve_option(VALUE options, zstds_ext_option_t* option, zstds_ext_option_type_t type, const char* name)
 {
-  VALUE raw_value = get_raw_option_value(options, name);
+  VALUE raw_value = get_raw_value(options, name);
 
   option->has_value = raw_value != Qnil;
   if (!option->has_value) {
@@ -88,16 +95,16 @@ void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_o
 
   switch (type) {
     case ZSTDS_EXT_OPTION_TYPE_BOOL:
-      value = get_bool_option_value(raw_value) ? 1 : 0;
+      value = get_bool_value(raw_value) ? 1 : 0;
       break;
     case ZSTDS_EXT_OPTION_TYPE_UINT:
-      value = (zstds_ext_option_value_t) get_uint_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_uint_value(raw_value);
       break;
     case ZSTDS_EXT_OPTION_TYPE_INT:
-      value = (zstds_ext_option_value_t) get_int_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_int_value(raw_value);
       break;
     case ZSTDS_EXT_OPTION_TYPE_STRATEGY:
-      value = (zstds_ext_option_value_t) get_strategy_option_value(raw_value);
+      value = (zstds_ext_option_value_t) get_strategy_value(raw_value);
       break;
     default:
       zstds_ext_raise_error(ZSTDS_EXT_ERROR_UNEXPECTED);
@@ -106,19 +113,19 @@ void zstds_ext_get_option(VALUE options, zstds_ext_option_t* option, zstds_ext_o
   option->value = value;
 }
 
-void zstds_ext_get_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name)
+void zstds_ext_resolve_ull_option(VALUE options, zstds_ext_ull_option_t* option, const char* name)
 {
-  VALUE raw_value = get_raw_option_value(options, name);
+  VALUE raw_value = get_raw_value(options, name);
 
   option->has_value = raw_value != Qnil;
   if (option->has_value) {
-    option->value = (zstds_ext_ull_option_value_t) get_ull_option_value(raw_value);
+    option->value = (zstds_ext_ull_option_value_t) get_ull_value(raw_value);
   }
 }
 
-void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* name)
+void zstds_ext_resolve_dictionary_option(VALUE options, VALUE* option, const char* name)
 {
-  VALUE raw_value = get_raw_option_value(options, name);
+  VALUE raw_value = get_raw_value(options, name);
 
   if (raw_value != Qnil) {
     VALUE root_module = rb_define_module(ZSTDS_EXT_MODULE_NAME);
@@ -131,13 +138,18 @@ void zstds_ext_get_dictionary_option(VALUE options, VALUE* option, const char* n
   *option = raw_value;
 }
 
+bool zstds_ext_get_bool_option_value(VALUE options, const char* name)
+{
+  VALUE raw_value = get_raw_value(options, name);
+
+  return get_bool_value(raw_value);
+}
+
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name)
 {
-  VALUE raw_value = get_raw_option_value(options, name);
+  VALUE raw_value = get_raw_value(options, name);
 
-  Check_Type(raw_value, T_FIXNUM);
-
-  return NUM2SIZET(raw_value);
+  return get_size_value(raw_value);
 }
 
 // -- set params --
