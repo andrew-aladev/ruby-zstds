@@ -12,6 +12,7 @@ module ZSTDS
     DEFAULT_BUFFER_LENGTH = 0
 
     COMPRESSOR_DEFAULTS = {
+      :gvl                           => false,
       :compression_level             => nil,
       :window_log                    => nil,
       :hash_log                      => nil,
@@ -36,6 +37,7 @@ module ZSTDS
     .freeze
 
     DECOMPRESSOR_DEFAULTS = {
+      :gvl            => false,
       :window_log_max => nil,
       :dictionary     => nil
     }
@@ -48,6 +50,8 @@ module ZSTDS
       options                = COMPRESSOR_DEFAULTS.merge(buffer_length_defaults).merge options
 
       buffer_length_names.each { |name| Validation.validate_not_negative_integer options[name] }
+
+      Validation.validate_bool options[:gvl]
 
       compression_level = options[:compression_level]
       unless compression_level.nil?
@@ -179,6 +183,8 @@ module ZSTDS
       options                = DECOMPRESSOR_DEFAULTS.merge(buffer_length_defaults).merge options
 
       buffer_length_names.each { |name| Validation.validate_not_negative_integer options[name] }
+
+      Validation.validate_bool options[:gvl]
 
       window_log_max = options[:window_log_max]
       unless window_log_max.nil?

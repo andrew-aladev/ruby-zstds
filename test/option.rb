@@ -155,20 +155,24 @@ module ZSTDS
       )
       .freeze
 
-      private_class_method def self.get_invalid_buffer_length_options(buffer_length_names, &_block)
+      private_class_method def self.get_common_invalid_options(buffer_length_names, &block)
+        Validation::INVALID_HASHES.each do |invalid_hash|
+          block.call invalid_hash
+        end
+
         buffer_length_names.each do |name|
           (Validation::INVALID_NOT_NEGATIVE_INTEGERS - [nil]).each do |invalid_integer|
             yield({ name => invalid_integer })
           end
         end
+
+        Validation::INVALID_BOOLS.each do |invalid_bool|
+          yield({ :gvl => invalid_bool })
+        end
       end
 
       def self.get_invalid_compressor_options(buffer_length_names, &block)
-        Validation::INVALID_HASHES.each do |invalid_hash|
-          block.call invalid_hash
-        end
-
-        get_invalid_buffer_length_options buffer_length_names, &block
+        get_common_invalid_options buffer_length_names, &block
 
         INVALID_COMPRESSOR_LEVELS.each do |invalid_compression_level|
           yield({ :compression_level => invalid_compression_level })
@@ -243,11 +247,7 @@ module ZSTDS
       end
 
       def self.get_invalid_decompressor_options(buffer_length_names, &block)
-        Validation::INVALID_HASHES.each do |invalid_hash|
-          block.call invalid_hash
-        end
-
-        get_invalid_buffer_length_options buffer_length_names, &block
+        get_common_invalid_options buffer_length_names, &block
 
         INVALID_WINDOW_LOG_MAXES.each do |invalid_window_log_max|
           yield({ :window_log_max => invalid_window_log_max })
@@ -432,15 +432,9 @@ module ZSTDS
           :dictionary => DICTIONARIES
         )
 
-        main_generator = general_generator.and(ldm_generator).and dictionary_generator
+        main_generator = general_generator.mix(ldm_generator).mix dictionary_generator
 
-        # other
-
-        flags_generator = OCG.new(
-          :content_size_flag => BOOLS,
-          :checksum_flag     => BOOLS,
-          :dict_id_flag      => BOOLS
-        )
+        # thread
 
         thread_generator = OCG.new(
           :nb_workers => [NB_WORKERS.first]
@@ -449,17 +443,31 @@ module ZSTDS
         if NB_WORKERS.first != NB_WORKERS.last
           # Multithreaded support is enabled.
           thread_generator = thread_generator.or(
-            :nb_workers  => [NB_WORKERS.last],
+            :nb_workers  => NB_WORKERS[1..-1],
             :job_size    => JOB_SIZES,
             :overlap_log => OVERLAP_LOGS
           )
         end
 
-        other_generator = flags_generator.mix thread_generator
+        thread_generator = thread_generator.mix(
+          :gvl => BOOLS
+        )
+
+        # other
+
+        other_generator = OCG.new(
+          :content_size_flag => BOOLS
+        )
+        .mix(
+          :checksum_flag => BOOLS
+        )
+        .mix(
+          :dict_id_flag => BOOLS
+        )
 
         # complete
 
-        complete_generator = buffer_length_generator.mix(main_generator).mix other_generator
+        complete_generator = buffer_length_generator.mix(main_generator).mix(thread_generator).mix other_generator
 
         yield complete_generator.next until complete_generator.finished?
       end

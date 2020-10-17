@@ -7,7 +7,10 @@
 
 #include "ruby.h"
 #include "zstds_ext/error.h"
+#include "zstds_ext/gvl.h"
 #include "zstds_ext/option.h"
+
+// -- initialization --
 
 static void free_compressor(zstds_ext_compressor_t* compressor_ptr)
 {
@@ -34,6 +37,7 @@ VALUE zstds_ext_allocate_compressor(VALUE klass)
   compressor_ptr->destination_buffer_length           = 0;
   compressor_ptr->remaining_destination_buffer        = NULL;
   compressor_ptr->remaining_destination_buffer_length = 0;
+  compressor_ptr->gvl                                 = false;
 
   return self;
 }
@@ -48,6 +52,7 @@ VALUE zstds_ext_initialize_compressor(VALUE self, VALUE options)
   Check_Type(options, T_HASH);
   ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
 
   ZSTD_CCtx* ctx = ZSTD_createCCtx();
   if (ctx == NULL) {
@@ -75,26 +80,44 @@ VALUE zstds_ext_initialize_compressor(VALUE self, VALUE options)
   compressor_ptr->destination_buffer_length           = destination_buffer_length;
   compressor_ptr->remaining_destination_buffer        = destination_buffer;
   compressor_ptr->remaining_destination_buffer_length = destination_buffer_length;
+  compressor_ptr->gvl                                 = gvl;
 
   return Qnil;
 }
+
+// -- compress --
 
 #define DO_NOT_USE_AFTER_CLOSE(compressor_ptr)                                     \
   if (compressor_ptr->ctx == NULL || compressor_ptr->destination_buffer == NULL) { \
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_USED_AFTER_CLOSE);                       \
   }
 
-#define GET_SOURCE_DATA(source_value)                    \
-  Check_Type(source_value, T_STRING);                    \
-                                                         \
-  const char* source        = RSTRING_PTR(source_value); \
-  size_t      source_length = RSTRING_LEN(source_value);
+typedef struct
+{
+  zstds_ext_compressor_t* compressor_ptr;
+  ZSTD_inBuffer*          in_buffer_ptr;
+  ZSTD_outBuffer*         out_buffer_ptr;
+  zstds_result_t          result;
+} compress_args_t;
+
+static inline void* compress_wrapper(void* data)
+{
+  compress_args_t* args = data;
+
+  args->result =
+    ZSTD_compressStream2(args->compressor_ptr->ctx, args->out_buffer_ptr, args->in_buffer_ptr, ZSTD_e_continue);
+
+  return NULL;
+}
 
 VALUE zstds_ext_compress(VALUE self, VALUE source_value)
 {
   GET_COMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
-  GET_SOURCE_DATA(source_value);
+  Check_Type(source_value, T_STRING);
+
+  const char* source        = RSTRING_PTR(source_value);
+  size_t      source_length = RSTRING_LEN(source_value);
 
   ZSTD_inBuffer in_buffer;
   in_buffer.src  = source;
@@ -106,9 +129,11 @@ VALUE zstds_ext_compress(VALUE self, VALUE source_value)
   out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
   out_buffer.pos  = 0;
 
-  zstds_result_t result = ZSTD_compressStream2(compressor_ptr->ctx, &out_buffer, &in_buffer, ZSTD_e_continue);
-  if (ZSTD_isError(result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  compress_args_t args = {.compressor_ptr = compressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
+
+  ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_wrapper, &args);
+  if (ZSTD_isError(args.result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
   }
 
   compressor_ptr->remaining_destination_buffer += out_buffer.pos;
@@ -120,30 +145,73 @@ VALUE zstds_ext_compress(VALUE self, VALUE source_value)
   return rb_ary_new_from_args(2, bytes_written, needs_more_destination);
 }
 
-VALUE zstds_ext_flush_compressor(VALUE self)
+// -- compressor flush --
+
+typedef struct
 {
-  GET_COMPRESSOR(self);
-  DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
+  zstds_ext_compressor_t* compressor_ptr;
+  ZSTD_outBuffer*         out_buffer_ptr;
+  zstds_result_t          result;
+} compress_flush_args_t;
+
+static inline void* compress_flush_wrapper(void* data)
+{
+  compress_flush_args_t* args = data;
 
   ZSTD_inBuffer in_buffer;
   in_buffer.src  = NULL;
   in_buffer.size = 0;
   in_buffer.pos  = 0;
 
+  args->result = ZSTD_compressStream2(args->compressor_ptr->ctx, args->out_buffer_ptr, &in_buffer, ZSTD_e_flush);
+
+  return NULL;
+}
+
+VALUE zstds_ext_flush_compressor(VALUE self)
+{
+  GET_COMPRESSOR(self);
+  DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
+
   ZSTD_outBuffer out_buffer;
   out_buffer.dst  = compressor_ptr->remaining_destination_buffer;
   out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
   out_buffer.pos  = 0;
 
-  zstds_result_t result = ZSTD_compressStream2(compressor_ptr->ctx, &out_buffer, &in_buffer, ZSTD_e_flush);
-  if (ZSTD_isError(result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  compress_flush_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
+
+  ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_flush_wrapper, &args);
+  if (ZSTD_isError(args.result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
   }
 
   compressor_ptr->remaining_destination_buffer += out_buffer.pos;
   compressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
-  return result != 0 ? Qtrue : Qfalse;
+  return args.result != 0 ? Qtrue : Qfalse;
+}
+
+// -- compressor finish --
+
+typedef struct
+{
+  zstds_ext_compressor_t* compressor_ptr;
+  ZSTD_outBuffer*         out_buffer_ptr;
+  zstds_result_t          result;
+} compress_finish_args_t;
+
+static inline void* compress_finish_wrapper(void* data)
+{
+  compress_finish_args_t* args = data;
+
+  ZSTD_inBuffer in_buffer;
+  in_buffer.src  = NULL;
+  in_buffer.size = 0;
+  in_buffer.pos  = 0;
+
+  args->result = ZSTD_compressStream2(args->compressor_ptr->ctx, args->out_buffer_ptr, &in_buffer, ZSTD_e_end);
+
+  return NULL;
 }
 
 VALUE zstds_ext_finish_compressor(VALUE self)
@@ -151,26 +219,25 @@ VALUE zstds_ext_finish_compressor(VALUE self)
   GET_COMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
 
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = NULL;
-  in_buffer.size = 0;
-  in_buffer.pos  = 0;
-
   ZSTD_outBuffer out_buffer;
   out_buffer.dst  = compressor_ptr->remaining_destination_buffer;
   out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
   out_buffer.pos  = 0;
 
-  zstds_result_t result = ZSTD_compressStream2(compressor_ptr->ctx, &out_buffer, &in_buffer, ZSTD_e_end);
-  if (ZSTD_isError(result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  compress_finish_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
+
+  ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_finish_wrapper, &args);
+  if (ZSTD_isError(args.result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
   }
 
   compressor_ptr->remaining_destination_buffer += out_buffer.pos;
   compressor_ptr->remaining_destination_buffer_length -= out_buffer.pos;
 
-  return result != 0 ? Qtrue : Qfalse;
+  return args.result != 0 ? Qtrue : Qfalse;
 }
+
+// -- other --
 
 VALUE zstds_ext_compressor_read_result(VALUE self)
 {
@@ -190,6 +257,8 @@ VALUE zstds_ext_compressor_read_result(VALUE self)
 
   return result_value;
 }
+
+// -- cleanup --
 
 VALUE zstds_ext_compressor_close(VALUE self)
 {
@@ -215,6 +284,8 @@ VALUE zstds_ext_compressor_close(VALUE self)
 
   return Qnil;
 }
+
+// -- exports --
 
 void zstds_ext_compressor_exports(VALUE root_module)
 {

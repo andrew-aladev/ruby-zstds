@@ -107,6 +107,7 @@ end
 |---------------------------------|----------------|------------|-------------|
 | `source_buffer_length`          | 0 - inf        | 0 (auto)   | internal buffer length for source data |
 | `destination_buffer_length`     | 0 - inf        | 0 (auto)   | internal buffer length for description data |
+| `gvl`                           | true/false     | false      | enables global VM lock where possible |
 | `compression_level`             | -131072 - 22   | 0 (auto)   | compression level |
 | `window_log`                    | 10 - 31        | 0 (auto)   | maximum back-reference distance (power of 2) |
 | `hash_log`                      | 6 - 30         | 0 (auto)   | size of the initial probe table (power of 2) |
@@ -133,6 +134,10 @@ end
 There are internal buffers for compressed and decompressed data.
 For example you want to use 1 KB as `source_buffer_length` for compressor - please use 256 B as `destination_buffer_length`.
 You want to use 256 B as `source_buffer_length` for decompressor - please use 1 KB as `destination_buffer_length`.
+
+`gvl` is disabled by default, this mode allows running multiple compressors/decompressors in different threads simultaneously.
+Please consider enabling `gvl` if you don't want to launch processors in separate threads.
+If `gvl` is enabled ruby won't waste time on acquiring/releasing VM lock.
 
 `String` and `File` will set `:pledged_size` automaticaly.
 
@@ -161,6 +166,7 @@ Possible compressor options:
 ```
 :source_buffer_length
 :destination_buffer_length
+:gvl
 :compression_level
 :window_log
 :hash_log
@@ -188,6 +194,7 @@ Possible decompressor options:
 ```
 :source_buffer_length
 :destination_buffer_length
+:gvl
 :window_log_max
 :dictionary
 ```

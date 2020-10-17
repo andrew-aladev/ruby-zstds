@@ -4,6 +4,7 @@
 #if !defined(ZSTDS_EXT_STREAM_COMPRESSOR_H)
 #define ZSTDS_EXT_STREAM_COMPRESSOR_H
 
+#include <stdbool.h>
 #include <zstd.h>
 
 #include "ruby.h"
@@ -16,6 +17,7 @@ typedef struct
   size_t            destination_buffer_length;
   zstds_ext_byte_t* remaining_destination_buffer;
   size_t            remaining_destination_buffer_length;
+  bool              gvl;
 } zstds_ext_compressor_t;
 
 VALUE zstds_ext_allocate_compressor(VALUE klass);

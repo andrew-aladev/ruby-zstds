@@ -8,8 +8,8 @@
 
 #include "ruby/thread.h"
 
-#define ZSTDS_EXT_GVL_WRAP(with_gvl, function, data)                       \
-  if (with_gvl) {                                                          \
+#define ZSTDS_EXT_GVL_WRAP(gvl, function, data)                            \
+  if (gvl) {                                                               \
     function((void*) data);                                                \
   } else {                                                                 \
     rb_thread_call_without_gvl(function, (void*) data, RUBY_UBF_IO, NULL); \
@@ -17,7 +17,7 @@
 
 #else
 
-#define ZSTDS_EXT_GVL_WRAP(_with_gvl, function, data) function((void*) data);
+#define ZSTDS_EXT_GVL_WRAP(_gvl, function, data) function((void*) data);
 
 #endif
 
