@@ -55,20 +55,15 @@ static inline zstds_ext_result_t compress(
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
-
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = source;
-  in_buffer.size = source_length;
-  in_buffer.pos  = 0;
-
-  ZSTD_outBuffer out_buffer;
-  size_t         destination_length                  = 0;
-  size_t         remaining_destination_buffer_length = destination_buffer_length;
+  size_t             destination_length                  = 0;
+  size_t             remaining_destination_buffer_length = destination_buffer_length;
+  ZSTD_inBuffer      in_buffer                           = {.src = source, .size = source_length, .pos = 0};
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length;
-    out_buffer.size = remaining_destination_buffer_length;
-    out_buffer.pos  = 0;
+    ZSTD_outBuffer out_buffer = {
+      .dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length,
+      .size = remaining_destination_buffer_length,
+      .pos  = 0};
 
     result = ZSTD_compressStream2(ctx, &out_buffer, &in_buffer, ZSTD_e_end);
     if (ZSTD_isError(result)) {
@@ -154,20 +149,15 @@ static inline zstds_ext_result_t decompress(
 {
   zstds_result_t     result;
   zstds_ext_result_t ext_result;
-
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = source;
-  in_buffer.size = source_length;
-  in_buffer.pos  = 0;
-
-  ZSTD_outBuffer out_buffer;
-  size_t         destination_length                  = 0;
-  size_t         remaining_destination_buffer_length = destination_buffer_length;
+  size_t             destination_length                  = 0;
+  size_t             remaining_destination_buffer_length = destination_buffer_length;
+  ZSTD_inBuffer      in_buffer                           = {.src = source, .size = source_length, .pos = 0};
 
   while (true) {
-    out_buffer.dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length;
-    out_buffer.size = remaining_destination_buffer_length;
-    out_buffer.pos  = 0;
+    ZSTD_outBuffer out_buffer = {
+      .dst  = (zstds_ext_byte_t*) RSTRING_PTR(destination_value) + destination_length,
+      .size = remaining_destination_buffer_length,
+      .pos  = 0};
 
     result = ZSTD_decompressStream(ctx, &out_buffer, &in_buffer);
     if (ZSTD_isError(result)) {

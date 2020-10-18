@@ -117,16 +117,11 @@ VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
   const char* source        = RSTRING_PTR(source_value);
   size_t      source_length = RSTRING_LEN(source_value);
 
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = source;
-  in_buffer.size = source_length;
-  in_buffer.pos  = 0;
-
-  ZSTD_outBuffer out_buffer;
-  out_buffer.dst  = decompressor_ptr->remaining_destination_buffer;
-  out_buffer.size = decompressor_ptr->remaining_destination_buffer_length;
-  out_buffer.pos  = 0;
-
+  ZSTD_inBuffer  in_buffer  = {.src = source, .size = source_length, .pos = 0};
+  ZSTD_outBuffer out_buffer = {
+    .dst  = decompressor_ptr->remaining_destination_buffer,
+    .size = decompressor_ptr->remaining_destination_buffer_length,
+    .pos  = 0};
   decompress_args_t args = {
     .decompressor_ptr = decompressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
 

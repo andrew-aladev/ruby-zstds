@@ -119,16 +119,11 @@ VALUE zstds_ext_compress(VALUE self, VALUE source_value)
   const char* source        = RSTRING_PTR(source_value);
   size_t      source_length = RSTRING_LEN(source_value);
 
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = source;
-  in_buffer.size = source_length;
-  in_buffer.pos  = 0;
-
-  ZSTD_outBuffer out_buffer;
-  out_buffer.dst  = compressor_ptr->remaining_destination_buffer;
-  out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
-  out_buffer.pos  = 0;
-
+  ZSTD_inBuffer  in_buffer  = {.src = source, .size = source_length, .pos = 0};
+  ZSTD_outBuffer out_buffer = {
+    .dst  = compressor_ptr->remaining_destination_buffer,
+    .size = compressor_ptr->remaining_destination_buffer_length,
+    .pos  = 0};
   compress_args_t args = {.compressor_ptr = compressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_wrapper, &args);
@@ -156,12 +151,8 @@ typedef struct
 
 static inline void* compress_flush_wrapper(void* data)
 {
-  compress_flush_args_t* args = data;
-
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = NULL;
-  in_buffer.size = 0;
-  in_buffer.pos  = 0;
+  compress_flush_args_t* args      = data;
+  ZSTD_inBuffer          in_buffer = {.src = NULL, .size = 0, .pos = 0};
 
   args->result = ZSTD_compressStream2(args->compressor_ptr->ctx, args->out_buffer_ptr, &in_buffer, ZSTD_e_flush);
 
@@ -173,11 +164,10 @@ VALUE zstds_ext_flush_compressor(VALUE self)
   GET_COMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
 
-  ZSTD_outBuffer out_buffer;
-  out_buffer.dst  = compressor_ptr->remaining_destination_buffer;
-  out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
-  out_buffer.pos  = 0;
-
+  ZSTD_outBuffer out_buffer = {
+    .dst  = compressor_ptr->remaining_destination_buffer,
+    .size = compressor_ptr->remaining_destination_buffer_length,
+    .pos  = 0};
   compress_flush_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_flush_wrapper, &args);
@@ -202,12 +192,8 @@ typedef struct
 
 static inline void* compress_finish_wrapper(void* data)
 {
-  compress_finish_args_t* args = data;
-
-  ZSTD_inBuffer in_buffer;
-  in_buffer.src  = NULL;
-  in_buffer.size = 0;
-  in_buffer.pos  = 0;
+  compress_finish_args_t* args      = data;
+  ZSTD_inBuffer           in_buffer = {.src = NULL, .size = 0, .pos = 0};
 
   args->result = ZSTD_compressStream2(args->compressor_ptr->ctx, args->out_buffer_ptr, &in_buffer, ZSTD_e_end);
 
@@ -219,11 +205,10 @@ VALUE zstds_ext_finish_compressor(VALUE self)
   GET_COMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(compressor_ptr);
 
-  ZSTD_outBuffer out_buffer;
-  out_buffer.dst  = compressor_ptr->remaining_destination_buffer;
-  out_buffer.size = compressor_ptr->remaining_destination_buffer_length;
-  out_buffer.pos  = 0;
-
+  ZSTD_outBuffer out_buffer = {
+    .dst  = compressor_ptr->remaining_destination_buffer,
+    .size = compressor_ptr->remaining_destination_buffer_length,
+    .pos  = 0};
   compress_finish_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_finish_wrapper, &args);
