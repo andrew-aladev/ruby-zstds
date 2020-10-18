@@ -9,6 +9,7 @@ require_relative "validation"
 module ZSTDS
   class Dictionary
     TRAIN_DEFAULTS = {
+      :gvl      => false,
       :capacity => 0
     }
     .freeze
@@ -38,6 +39,7 @@ module ZSTDS
 
       options = TRAIN_DEFAULTS.merge options
 
+      Validation.validate_bool                 options[:gvl]
       Validation.validate_not_negative_integer options[:capacity]
 
       buffer = train_buffer samples, options

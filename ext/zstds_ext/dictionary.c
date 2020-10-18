@@ -9,17 +9,30 @@
 #include "ruby.h"
 #include "zstds_ext/buffer.h"
 #include "zstds_ext/error.h"
+#include "zstds_ext/gvl.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
-VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
-{
-  unsigned int id = ZDICT_getDictID(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
-  if (id == 0) {
-    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
-  }
+// -- initialization --
 
-  return UINT2NUM(id);
+typedef struct
+{
+  void*             buffer;
+  size_t            capacity;
+  zstds_ext_byte_t* samples_buffer;
+  size_t*           samples_sizes;
+  unsigned int      samples_length;
+  zstds_result_t    result;
+} train_args_t;
+
+static inline void* train_wrapper(void* data)
+{
+  train_args_t* args = data;
+
+  args->result = ZDICT_trainFromBuffer(
+    args->buffer, args->capacity, args->samples_buffer, args->samples_sizes, args->samples_length);
+
+  return NULL;
 }
 
 VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samples, VALUE options)
@@ -38,6 +51,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
   }
 
   Check_Type(options, T_HASH);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
   ZSTDS_EXT_GET_SIZE_OPTION(options, capacity);
 
   if (capacity == 0) {
@@ -75,23 +89,43 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
     samples_sizes[sample_index] = sample_size;
   }
 
-  zstds_result_t result =
-    ZDICT_trainFromBuffer(RSTRING_PTR(buffer), capacity, samples_buffer, samples_sizes, samples_length);
+  train_args_t args = {
+    .buffer         = RSTRING_PTR(buffer),
+    .capacity       = capacity,
+    .samples_buffer = samples_buffer,
+    .samples_sizes  = samples_sizes,
+    .samples_length = samples_length};
+
+  ZSTDS_EXT_GVL_WRAP(gvl, train_wrapper, &args);
 
   free(samples_buffer);
   free(samples_sizes);
 
-  if (ZSTD_isError(result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  if (ZSTD_isError(args.result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
   }
 
-  ZSTDS_EXT_RESIZE_STRING_BUFFER(buffer, result, exception);
+  ZSTDS_EXT_RESIZE_STRING_BUFFER(buffer, args.result, exception);
   if (exception != 0) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
   return buffer;
 }
+
+// -- other --
+
+VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
+{
+  unsigned int id = ZDICT_getDictID(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
+  if (id == 0) {
+    zstds_ext_raise_error(ZSTDS_EXT_ERROR_VALIDATE_FAILED);
+  }
+
+  return UINT2NUM(id);
+}
+
+// -- exports --
 
 void zstds_ext_dictionary_exports(VALUE root_module)
 {

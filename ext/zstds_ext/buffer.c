@@ -12,10 +12,10 @@ VALUE zstds_ext_create_string_buffer(VALUE length)
   return rb_str_new(NULL, NUM2SIZET(length));
 }
 
-VALUE zstds_ext_resize_string_buffer(VALUE args)
+VALUE zstds_ext_resize_string_buffer(VALUE buffer_args)
 {
-  VALUE buffer = rb_ary_entry(args, 0);
-  VALUE length = rb_ary_entry(args, 1);
+  VALUE buffer = rb_ary_entry(buffer_args, 0);
+  VALUE length = rb_ary_entry(buffer_args, 1);
 
   return rb_str_resize(buffer, NUM2SIZET(length));
 }

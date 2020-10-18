@@ -44,6 +44,12 @@ module ZSTDS
           end
         end
 
+        Validation::INVALID_BOOLS.each do |invalid_bool|
+          assert_raises ValidateError do
+            Target.train ["123"], :gvl => invalid_bool
+          end
+        end
+
         Validation::INVALID_NOT_NEGATIVE_INTEGERS.each do |invalid_capacity|
           assert_raises ValidateError do
             Target.train ["123"], :capacity => invalid_capacity

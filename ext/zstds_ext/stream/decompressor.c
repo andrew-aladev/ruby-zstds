@@ -7,7 +7,10 @@
 
 #include "ruby.h"
 #include "zstds_ext/error.h"
+#include "zstds_ext/gvl.h"
 #include "zstds_ext/option.h"
+
+// -- initialization --
 
 static void free_decompressor(zstds_ext_decompressor_t* decompressor_ptr)
 {
@@ -48,6 +51,7 @@ VALUE zstds_ext_initialize_decompressor(VALUE self, VALUE options)
   Check_Type(options, T_HASH);
   ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
 
   ZSTD_DCtx* ctx = ZSTD_createDCtx();
   if (ctx == NULL) {
@@ -75,26 +79,43 @@ VALUE zstds_ext_initialize_decompressor(VALUE self, VALUE options)
   decompressor_ptr->destination_buffer_length           = destination_buffer_length;
   decompressor_ptr->remaining_destination_buffer        = destination_buffer;
   decompressor_ptr->remaining_destination_buffer_length = destination_buffer_length;
+  decompressor_ptr->gvl                                 = gvl;
 
   return Qnil;
 }
+
+// -- decompress --
 
 #define DO_NOT_USE_AFTER_CLOSE(decompressor_ptr)                                       \
   if (decompressor_ptr->ctx == NULL || decompressor_ptr->destination_buffer == NULL) { \
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_USED_AFTER_CLOSE);                           \
   }
 
-#define GET_SOURCE_DATA(source_value)                    \
-  Check_Type(source_value, T_STRING);                    \
-                                                         \
-  const char* source        = RSTRING_PTR(source_value); \
-  size_t      source_length = RSTRING_LEN(source_value);
+typedef struct
+{
+  zstds_ext_decompressor_t* decompressor_ptr;
+  ZSTD_inBuffer*            in_buffer_ptr;
+  ZSTD_outBuffer*           out_buffer_ptr;
+  zstds_result_t            result;
+} decompress_args_t;
+
+static inline void* decompress_wrapper(void* data)
+{
+  decompress_args_t* args = data;
+
+  args->result = ZSTD_decompressStream(args->decompressor_ptr->ctx, args->out_buffer_ptr, args->in_buffer_ptr);
+
+  return NULL;
+}
 
 VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
 {
   GET_DECOMPRESSOR(self);
   DO_NOT_USE_AFTER_CLOSE(decompressor_ptr);
-  GET_SOURCE_DATA(source_value);
+  Check_Type(source_value, T_STRING);
+
+  const char* source        = RSTRING_PTR(source_value);
+  size_t      source_length = RSTRING_LEN(source_value);
 
   ZSTD_inBuffer in_buffer;
   in_buffer.src  = source;
@@ -106,9 +127,12 @@ VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
   out_buffer.size = decompressor_ptr->remaining_destination_buffer_length;
   out_buffer.pos  = 0;
 
-  zstds_result_t result = ZSTD_decompressStream(decompressor_ptr->ctx, &out_buffer, &in_buffer);
-  if (ZSTD_isError(result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  decompress_args_t args = {
+    .decompressor_ptr = decompressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
+
+  ZSTDS_EXT_GVL_WRAP(decompressor_ptr->gvl, decompress_wrapper, &args);
+  if (ZSTD_isError(args.result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
   }
 
   decompressor_ptr->remaining_destination_buffer += out_buffer.pos;
@@ -119,6 +143,8 @@ VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
 
   return rb_ary_new_from_args(2, bytes_read, needs_more_destination);
 }
+
+// -- other --
 
 VALUE zstds_ext_decompressor_read_result(VALUE self)
 {
@@ -138,6 +164,8 @@ VALUE zstds_ext_decompressor_read_result(VALUE self)
 
   return result_value;
 }
+
+// -- cleanup --
 
 VALUE zstds_ext_decompressor_close(VALUE self)
 {
@@ -163,6 +191,8 @@ VALUE zstds_ext_decompressor_close(VALUE self)
 
   return Qnil;
 }
+
+// -- exports --
 
 void zstds_ext_decompressor_exports(VALUE root_module)
 {
