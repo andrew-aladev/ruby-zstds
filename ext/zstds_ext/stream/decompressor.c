@@ -49,9 +49,9 @@ VALUE zstds_ext_initialize_decompressor(VALUE self, VALUE options)
 {
   GET_DECOMPRESSOR(self);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
   ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
+  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
 
   ZSTD_DCtx* ctx = ZSTD_createDCtx();
   if (ctx == NULL) {

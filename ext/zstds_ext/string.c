@@ -36,14 +36,6 @@ static inline zstds_ext_result_t increase_destination_buffer(
   return 0;
 }
 
-// -- utils --
-
-#define GET_SOURCE_DATA(source_value)                    \
-  Check_Type(source_value, T_STRING);                    \
-                                                         \
-  const char* source        = RSTRING_PTR(source_value); \
-  size_t      source_length = RSTRING_LEN(source_value);
-
 // -- compress --
 
 static inline zstds_ext_result_t compress(
@@ -99,10 +91,10 @@ static inline zstds_ext_result_t compress(
 
 VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value, VALUE options)
 {
-  GET_SOURCE_DATA(source_value);
+  Check_Type(source_value, T_STRING);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
 
   ZSTD_CCtx* ctx = ZSTD_createCCtx();
   if (ctx == NULL) {
@@ -126,6 +118,9 @@ VALUE zstds_ext_compress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value
     ZSTD_freeCCtx(ctx);
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
+
+  const char* source        = RSTRING_PTR(source_value);
+  size_t      source_length = RSTRING_LEN(source_value);
 
   ext_result = compress(ctx, source, source_length, destination_value, destination_buffer_length);
 
@@ -193,10 +188,10 @@ static inline zstds_ext_result_t decompress(
 
 VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_value, VALUE options)
 {
-  GET_SOURCE_DATA(source_value);
+  Check_Type(source_value, T_STRING);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
 
   ZSTD_DCtx* ctx = ZSTD_createDCtx();
   if (ctx == NULL) {
@@ -221,6 +216,9 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
+  const char* source        = RSTRING_PTR(source_value);
+  size_t      source_length = RSTRING_LEN(source_value);
+
   ext_result = decompress(ctx, source, source_length, destination_value, destination_buffer_length);
 
   ZSTD_freeDCtx(ctx);
@@ -231,6 +229,8 @@ VALUE zstds_ext_decompress_string(VALUE ZSTDS_EXT_UNUSED(self), VALUE source_val
 
   return destination_value;
 }
+
+// -- exports --
 
 void zstds_ext_string_exports(VALUE root_module)
 {

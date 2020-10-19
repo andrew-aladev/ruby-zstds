@@ -329,9 +329,9 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
   GET_FILE(source);
   GET_FILE(destination);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, source_buffer_length);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
 
   ZSTD_CCtx* ctx = ZSTD_createCCtx();
   if (ctx == NULL) {
@@ -464,9 +464,9 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
   GET_FILE(source);
   GET_FILE(destination);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
   ZSTDS_EXT_GET_SIZE_OPTION(options, source_buffer_length);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
 
   ZSTD_DCtx* ctx = ZSTD_createDCtx();
   if (ctx == NULL) {
@@ -517,6 +517,8 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
 
   return Qnil;
 }
+
+// -- exports --
 
 void zstds_ext_io_exports(VALUE root_module)
 {
