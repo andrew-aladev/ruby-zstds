@@ -10,6 +10,7 @@
 #include "ruby.h"
 #include "ruby/io.h"
 #include "zstds_ext/error.h"
+#include "zstds_ext/gvl.h"
 #include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
