@@ -202,7 +202,24 @@ static inline zstds_ext_result_t
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ACCESS_IO);  \
   }
 
-// -- compress --
+// -- buffered compress --
+
+typedef struct
+{
+  ZSTD_CCtx*      ctx;
+  ZSTD_inBuffer*  in_buffer_ptr;
+  ZSTD_outBuffer* out_buffer_ptr;
+  zstds_result_t  result;
+} compress_args_t;
+
+static inline void* compress_wrapper(void* data)
+{
+  compress_args_t* args = data;
+
+  args->result = ZSTD_compressStream2(args->ctx, args->out_buffer_ptr, args->in_buffer_ptr, ZSTD_e_continue);
+
+  return NULL;
+}
 
 static inline zstds_ext_result_t buffered_compress(
   ZSTD_CCtx*               ctx,
@@ -211,11 +228,12 @@ static inline zstds_ext_result_t buffered_compress(
   FILE*                    destination_file,
   zstds_ext_byte_t*        destination_buffer,
   size_t*                  destination_length_ptr,
-  size_t                   destination_buffer_length)
+  size_t                   destination_buffer_length,
+  bool                     gvl)
 {
-  zstds_result_t     result;
   zstds_ext_result_t ext_result;
   ZSTD_inBuffer      in_buffer = {.src = *source_ptr, .size = *source_length_ptr, .pos = 0};
+  compress_args_t    args      = {.ctx = ctx, .in_buffer_ptr = &in_buffer};
 
   while (true) {
     ZSTD_outBuffer out_buffer = {
@@ -223,9 +241,11 @@ static inline zstds_ext_result_t buffered_compress(
       .size = destination_buffer_length - *destination_length_ptr,
       .pos  = 0};
 
-    result = ZSTD_compressStream2(ctx, &out_buffer, &in_buffer, ZSTD_e_continue);
-    if (ZSTD_isError(result)) {
-      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    args.out_buffer_ptr = &out_buffer;
+
+    ZSTDS_EXT_GVL_WRAP(gvl, compress_wrapper, &args);
+    if (ZSTD_isError(args.result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(args.result));
     }
 
     *destination_length_ptr += out_buffer.pos;
@@ -250,16 +270,36 @@ static inline zstds_ext_result_t buffered_compress(
   return 0;
 }
 
+// -- buffered compressor finish --
+
+typedef struct
+{
+  ZSTD_CCtx*      ctx;
+  ZSTD_inBuffer*  in_buffer_ptr;
+  ZSTD_outBuffer* out_buffer_ptr;
+  zstds_result_t  result;
+} compressor_finish_args_t;
+
+static inline void* compressor_finish_wrapper(void* data)
+{
+  compressor_finish_args_t* args = data;
+
+  args->result = ZSTD_compressStream2(args->ctx, args->out_buffer_ptr, args->in_buffer_ptr, ZSTD_e_end);
+
+  return NULL;
+}
+
 static inline zstds_ext_result_t buffered_compressor_finish(
   ZSTD_CCtx*        ctx,
   FILE*             destination_file,
   zstds_ext_byte_t* destination_buffer,
   size_t*           destination_length_ptr,
-  size_t            destination_buffer_length)
+  size_t            destination_buffer_length,
+  bool              gvl)
 {
-  zstds_result_t     result;
-  zstds_ext_result_t ext_result;
-  ZSTD_inBuffer      in_buffer = {in_buffer.src = NULL, in_buffer.size = 0, in_buffer.pos = 0};
+  zstds_ext_result_t       ext_result;
+  ZSTD_inBuffer            in_buffer = {in_buffer.src = NULL, in_buffer.size = 0, in_buffer.pos = 0};
+  compressor_finish_args_t args      = {.ctx = ctx, .in_buffer_ptr = &in_buffer};
 
   while (true) {
     ZSTD_outBuffer out_buffer = {
@@ -267,14 +307,16 @@ static inline zstds_ext_result_t buffered_compressor_finish(
       out_buffer.size = destination_buffer_length - *destination_length_ptr,
       out_buffer.pos  = 0};
 
-    result = ZSTD_compressStream2(ctx, &out_buffer, &in_buffer, ZSTD_e_end);
-    if (ZSTD_isError(result)) {
-      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    args.out_buffer_ptr = &out_buffer;
+
+    ZSTDS_EXT_GVL_WRAP(gvl, compressor_finish_wrapper, &args);
+    if (ZSTD_isError(args.result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(args.result));
     }
 
     *destination_length_ptr += out_buffer.pos;
 
-    if (result != 0) {
+    if (args.result != 0) {
       ext_result = flush_destination_buffer(
         destination_file, destination_buffer, destination_length_ptr, destination_buffer_length);
 
@@ -291,6 +333,8 @@ static inline zstds_ext_result_t buffered_compressor_finish(
   return 0;
 }
 
+// -- compress --
+
 static inline zstds_ext_result_t compress(
   ZSTD_CCtx*        ctx,
   FILE*             source_file,
@@ -298,7 +342,8 @@ static inline zstds_ext_result_t compress(
   size_t            source_buffer_length,
   FILE*             destination_file,
   zstds_ext_byte_t* destination_buffer,
-  size_t            destination_buffer_length)
+  size_t            destination_buffer_length,
+  bool              gvl)
 {
   zstds_ext_result_t      ext_result;
   const zstds_ext_byte_t* source             = source_buffer;
@@ -313,10 +358,11 @@ static inline zstds_ext_result_t compress(
     destination_file,
     destination_buffer,
     &destination_length,
-    destination_buffer_length);
+    destination_buffer_length,
+    gvl);
 
   ext_result = buffered_compressor_finish(
-    ctx, destination_file, destination_buffer, &destination_length, destination_buffer_length);
+    ctx, destination_file, destination_buffer, &destination_length, destination_buffer_length, gvl);
 
   if (ext_result != 0) {
     return ext_result;
@@ -332,6 +378,7 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
   Check_Type(options, T_HASH);
   ZSTDS_EXT_GET_SIZE_OPTION(options, source_buffer_length);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
   ZSTDS_EXT_GET_COMPRESSOR_OPTIONS(options);
 
   ZSTD_CCtx* ctx = ZSTD_createCCtx();
@@ -368,7 +415,8 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
     source_buffer_length,
     destination_file,
     destination_buffer,
-    destination_buffer_length);
+    destination_buffer_length,
+    gvl);
 
   free(source_buffer);
   free(destination_buffer);
@@ -384,7 +432,24 @@ VALUE zstds_ext_compress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE de
   return Qnil;
 }
 
-// -- decompress --
+// -- buffered decompress --
+
+typedef struct
+{
+  ZSTD_DCtx*      ctx;
+  ZSTD_inBuffer*  in_buffer_ptr;
+  ZSTD_outBuffer* out_buffer_ptr;
+  zstds_result_t  result;
+} decompress_args_t;
+
+static inline void* decompress_wrapper(void* data)
+{
+  decompress_args_t* args = data;
+
+  args->result = ZSTD_decompressStream(args->ctx, args->out_buffer_ptr, args->in_buffer_ptr);
+
+  return NULL;
+}
 
 static inline zstds_ext_result_t buffered_decompress(
   ZSTD_DCtx*               ctx,
@@ -393,12 +458,12 @@ static inline zstds_ext_result_t buffered_decompress(
   FILE*                    destination_file,
   zstds_ext_byte_t*        destination_buffer,
   size_t*                  destination_length_ptr,
-  size_t                   destination_buffer_length)
+  size_t                   destination_buffer_length,
+  bool                     gvl)
 {
-  zstds_result_t     result;
   zstds_ext_result_t ext_result;
-
-  ZSTD_inBuffer in_buffer = {.src = *source_ptr, .size = *source_length_ptr, .pos = 0};
+  ZSTD_inBuffer      in_buffer = {.src = *source_ptr, .size = *source_length_ptr, .pos = 0};
+  decompress_args_t  args      = {.ctx = ctx, .in_buffer_ptr = &in_buffer};
 
   while (true) {
     ZSTD_outBuffer out_buffer = {
@@ -406,9 +471,11 @@ static inline zstds_ext_result_t buffered_decompress(
       .size = destination_buffer_length - *destination_length_ptr,
       .pos  = 0};
 
-    result = ZSTD_decompressStream(ctx, &out_buffer, &in_buffer);
-    if (ZSTD_isError(result)) {
-      return zstds_ext_get_error(ZSTD_getErrorCode(result));
+    args.out_buffer_ptr = &out_buffer;
+
+    ZSTDS_EXT_GVL_WRAP(gvl, decompress_wrapper, &args);
+    if (ZSTD_isError(args.result)) {
+      return zstds_ext_get_error(ZSTD_getErrorCode(args.result));
     }
 
     *destination_length_ptr += out_buffer.pos;
@@ -433,6 +500,8 @@ static inline zstds_ext_result_t buffered_decompress(
   return 0;
 }
 
+// -- decompress --
+
 static inline zstds_ext_result_t decompress(
   ZSTD_DCtx*        ctx,
   FILE*             source_file,
@@ -440,7 +509,8 @@ static inline zstds_ext_result_t decompress(
   size_t            source_buffer_length,
   FILE*             destination_file,
   zstds_ext_byte_t* destination_buffer,
-  size_t            destination_buffer_length)
+  size_t            destination_buffer_length,
+  bool              gvl)
 {
   zstds_ext_result_t      ext_result;
   const zstds_ext_byte_t* source             = source_buffer;
@@ -455,7 +525,8 @@ static inline zstds_ext_result_t decompress(
     destination_file,
     destination_buffer,
     &destination_length,
-    destination_buffer_length);
+    destination_buffer_length,
+    gvl);
 
   return write_remaining_destination(destination_file, destination_buffer, destination_length);
 }
@@ -467,6 +538,7 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
   Check_Type(options, T_HASH);
   ZSTDS_EXT_GET_SIZE_OPTION(options, source_buffer_length);
   ZSTDS_EXT_GET_SIZE_OPTION(options, destination_buffer_length);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
   ZSTDS_EXT_GET_DECOMPRESSOR_OPTIONS(options);
 
   ZSTD_DCtx* ctx = ZSTD_createDCtx();
@@ -503,7 +575,8 @@ VALUE zstds_ext_decompress_io(VALUE ZSTDS_EXT_UNUSED(self), VALUE source, VALUE 
     source_buffer_length,
     destination_file,
     destination_buffer,
-    destination_buffer_length);
+    destination_buffer_length,
+    gvl);
 
   free(source_buffer);
   free(destination_buffer);
