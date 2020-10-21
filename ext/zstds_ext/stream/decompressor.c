@@ -122,6 +122,7 @@ VALUE zstds_ext_decompress(VALUE self, VALUE source_value)
     .dst  = decompressor_ptr->remaining_destination_buffer,
     .size = decompressor_ptr->remaining_destination_buffer_length,
     .pos  = 0};
+
   decompress_args_t args = {
     .decompressor_ptr = decompressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
 

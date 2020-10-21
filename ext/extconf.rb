@@ -56,6 +56,7 @@ require_library(
     ZSTD_DStreamOutSize
     ZSTD_compressStream2
     ZSTD_decompressStream
+    ZDICT_isError
     ZDICT_getDictID
     ZDICT_trainFromBuffer
   ]

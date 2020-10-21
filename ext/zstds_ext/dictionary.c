@@ -17,37 +17,79 @@
 
 typedef struct
 {
-  void*             buffer;
-  size_t            capacity;
-  zstds_ext_byte_t* samples_buffer;
-  size_t*           samples_sizes;
-  unsigned int      samples_length;
-  zstds_result_t    result;
+  const char* data;
+  size_t      size;
+} sample_t;
+
+typedef struct
+{
+  const sample_t*    samples;
+  size_t             length;
+  char*              buffer;
+  size_t             capacity;
+  zstds_result_t     result;
+  zstds_ext_result_t ext_result;
 } train_args_t;
 
 static inline void* train_wrapper(void* data)
 {
-  train_args_t* args = data;
+  train_args_t*   args    = data;
+  const sample_t* samples = args->samples;
+  size_t          length  = args->length;
+  size_t          size    = 0;
 
-  args->result = ZDICT_trainFromBuffer(
-    args->buffer, args->capacity, args->samples_buffer, args->samples_sizes, args->samples_length);
+  for (size_t index = 0; index < length; index++) {
+    size += samples[index].size;
+  }
+
+  zstds_ext_byte_t* group = malloc(size);
+  if (group == NULL) {
+    args->ext_result = ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
+    return NULL;
+  }
+
+  size_t* sizes = malloc(length * sizeof(size_t));
+  if (sizes == NULL) {
+    free(group);
+    args->ext_result = ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
+    return NULL;
+  }
+
+  size_t offset = 0;
+
+  for (size_t index = 0; index < length; index++) {
+    const sample_t* sample_ptr  = &samples[index];
+    size_t          sample_size = sample_ptr->size;
+
+    memmove(group + offset, sample_ptr->data, sample_size);
+    offset += sample_size;
+
+    sizes[index] = sample_size;
+  }
+
+  args->result = ZDICT_trainFromBuffer((void*) args->buffer, args->capacity, group, sizes, (unsigned int) length);
+
+  free(group);
+  free(sizes);
+
+  if (ZDICT_isError(args->result)) {
+    args->ext_result = zstds_ext_get_error(ZSTD_getErrorCode(args->result));
+    return NULL;
+  }
+
+  args->ext_result = 0;
 
   return NULL;
 }
 
-VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samples, VALUE options)
+VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_samples, VALUE options)
 {
-  Check_Type(samples, T_ARRAY);
+  Check_Type(raw_samples, T_ARRAY);
 
-  size_t       sample_index;
-  unsigned int samples_length = (unsigned int) RARRAY_LEN(samples);
-  size_t       samples_size   = 0;
+  size_t length = RARRAY_LEN(raw_samples);
 
-  for (sample_index = 0; sample_index < samples_length; sample_index++) {
-    VALUE sample = rb_ary_entry(samples, sample_index);
-    Check_Type(sample, T_STRING);
-
-    samples_size += RSTRING_LEN(sample);
+  for (size_t index = 0; index < length; index++) {
+    Check_Type(rb_ary_entry(raw_samples, index), T_STRING);
   }
 
   Check_Type(options, T_HASH);
@@ -65,44 +107,31 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE samp
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  zstds_ext_byte_t* samples_buffer = malloc(samples_size);
-  if (samples_buffer == NULL) {
+  sample_t* samples = malloc(sizeof(sample_t) * length);
+  if (samples == NULL) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  size_t* samples_sizes = malloc(samples_length * sizeof(size_t));
-  if (samples_sizes == NULL) {
-    free(samples_buffer);
-    zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
-  }
+  for (size_t index = 0; index < length; index++) {
+    VALUE     raw_sample = rb_ary_entry(raw_samples, index);
+    sample_t* sample     = &samples[index];
 
-  size_t sample_offset = 0;
-
-  for (sample_index = 0; sample_index < samples_length; sample_index++) {
-    VALUE       sample      = rb_ary_entry(samples, sample_index);
-    const char* sample_data = RSTRING_PTR(sample);
-    size_t      sample_size = RSTRING_LEN(sample);
-
-    memmove(samples_buffer + sample_offset, sample_data, sample_size);
-    sample_offset += sample_size;
-
-    samples_sizes[sample_index] = sample_size;
+    sample->data = RSTRING_PTR(raw_sample);
+    sample->size = RSTRING_LEN(raw_sample);
   }
 
   train_args_t args = {
-    .buffer         = RSTRING_PTR(buffer),
-    .capacity       = capacity,
-    .samples_buffer = samples_buffer,
-    .samples_sizes  = samples_sizes,
-    .samples_length = samples_length};
+    .samples  = samples,
+    .length   = length,
+    .buffer   = RSTRING_PTR(buffer),
+    .capacity = capacity,
+  };
 
   ZSTDS_EXT_GVL_WRAP(gvl, train_wrapper, &args);
+  free(samples);
 
-  free(samples_buffer);
-  free(samples_sizes);
-
-  if (ZSTD_isError(args.result)) {
-    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(args.result)));
+  if (args.ext_result != 0) {
+    zstds_ext_raise_error(args.ext_result);
   }
 
   ZSTDS_EXT_RESIZE_STRING_BUFFER(buffer, args.result, exception);

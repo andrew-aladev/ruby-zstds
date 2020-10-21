@@ -124,6 +124,7 @@ VALUE zstds_ext_compress(VALUE self, VALUE source_value)
     .dst  = compressor_ptr->remaining_destination_buffer,
     .size = compressor_ptr->remaining_destination_buffer_length,
     .pos  = 0};
+
   compress_args_t args = {.compressor_ptr = compressor_ptr, .in_buffer_ptr = &in_buffer, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_wrapper, &args);
@@ -168,6 +169,7 @@ VALUE zstds_ext_flush_compressor(VALUE self)
     .dst  = compressor_ptr->remaining_destination_buffer,
     .size = compressor_ptr->remaining_destination_buffer_length,
     .pos  = 0};
+
   compress_flush_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_flush_wrapper, &args);
@@ -209,6 +211,7 @@ VALUE zstds_ext_finish_compressor(VALUE self)
     .dst  = compressor_ptr->remaining_destination_buffer,
     .size = compressor_ptr->remaining_destination_buffer_length,
     .pos  = 0};
+
   compress_finish_args_t args = {.compressor_ptr = compressor_ptr, .out_buffer_ptr = &out_buffer};
 
   ZSTDS_EXT_GVL_WRAP(compressor_ptr->gvl, compress_finish_wrapper, &args);
