@@ -425,6 +425,12 @@ Please use regular constructor to create dictionary from buffer.
 
 Read dictionary id from buffer.
 
+## Thread safety
+
+`:gvl` option is disabled by default, you can use bindings effectively in multiple threads.
+Please be careful: bindings are not thread safe.
+You should lock all shared data between threads.
+
 ## CI
 
 See universal test script [scripts/ci_test.sh](scripts/ci_test.sh) for CI.
