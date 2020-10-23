@@ -5,7 +5,7 @@ rvm:
   - 2.7
 
 dist: focal
-osx_image: xcode11.6
+osx_image: xcode12.2
 
 jobs:
   include:
