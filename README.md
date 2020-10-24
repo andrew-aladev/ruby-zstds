@@ -79,7 +79,7 @@ data = ZSTDS::String.compress "sample string", :dictionary => dictionary
 puts ZSTDS::String.decompress(data, :dictionary => dictionary)
 ```
 
-You can create and read `tar.zst` archives with `minitar` for example.
+You can create and read `tar.zst` archives with [minitar](https://github.com/halostatue/minitar) for example.
 
 ```ruby
 require "zstds"
@@ -98,6 +98,18 @@ ZSTDS::Stream::Reader.open "file.tar.zst" do |reader|
       puts entry.read
     end
   end
+end
+```
+
+You can also use `Content-Encoding: zstd` with [sinatra](http://sinatrarb.com):
+
+```ruby
+require "zstds"
+require "sinatra"
+
+get "/" do
+  headers["Content-Encoding"] = "zstd"
+  ZSTDS::String.compress "sample string"
 end
 ```
 
@@ -206,18 +218,6 @@ require "zstds"
 
 data = ZSTDS::String.compress "sample string", :compression_level => 5
 puts ZSTDS::String.decompress(data, :window_log_max => 11)
-```
-
-HTTP encoding (`Content-Encoding: zstd`) using default options:
-
-```ruby
-require "zstds"
-require "sinatra"
-
-get "/" do
-  headers["Content-Encoding"] = "zstd"
-  ZSTDS::String.compress "sample string"
-end
 ```
 
 ## String
@@ -433,10 +433,10 @@ You should lock all shared data between threads.
 
 ## CI
 
-See universal test script [scripts/ci_test.sh](scripts/ci_test.sh) for CI.
 Please visit [scripts/test-images](scripts/test-images).
-You can run this test script using many native and cross images.
+See universal test script [scripts/ci_test.sh](scripts/ci_test.sh) for CI.
+You can run this script using many native and cross images.
 
 ## License
 
-MIT license, see LICENSE and AUTHORS.
+MIT license, see [LICENSE](LICENSE) and [AUTHORS](AUTHORS).
