@@ -25,6 +25,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "rake-compiler"
   gem.add_development_dependency "rubocop", "~> 0.93"
   gem.add_development_dependency "rubocop-performance", "~> 1.8"
+  gem.add_development_dependency "parallel"
   gem.add_development_dependency "simplecov"
 
   gem.files =

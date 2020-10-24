@@ -58,7 +58,7 @@ module ZSTDS
       end
 
       def test_basic
-        CAPACITIES.each do |capacity|
+        Common.parallel_each CAPACITIES do |capacity|
           dictionary = Target.train SAMPLES, :capacity => capacity
 
           assert dictionary.id.positive?

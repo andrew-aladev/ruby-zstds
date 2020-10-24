@@ -52,7 +52,7 @@ module ZSTDS
       end
 
       def test_texts
-        TEXTS.each do |text|
+        Common.parallel_each TEXTS do |text|
           get_compressor_options do |compressor_options|
             compressed_text = Target.compress text, compressor_options
 
@@ -67,7 +67,7 @@ module ZSTDS
       end
 
       def test_large_texts
-        LARGE_TEXTS.each do |text|
+        Common.parallel_each LARGE_TEXTS do |text|
           compressed_text = Target.compress text
 
           decompressed_text = Target.decompress compressed_text

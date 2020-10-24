@@ -58,16 +58,19 @@ module ZSTDS
       end
 
       def test_texts
-        TEXTS.each do |text|
-          ::File.write SOURCE_PATH, text
+        Common.parallel_each TEXTS do |text, worker_index|
+          source_path  = "#{SOURCE_PATH}_#{worker_index}"
+          archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
+          ::File.write source_path, text
 
           get_compressor_options do |compressor_options|
-            Target.compress SOURCE_PATH, ARCHIVE_PATH, compressor_options
+            Target.compress source_path, archive_path, compressor_options
 
             get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-              Target.decompress ARCHIVE_PATH, SOURCE_PATH, decompressor_options
+              Target.decompress archive_path, source_path, decompressor_options
 
-              decompressed_text = ::File.read SOURCE_PATH
+              decompressed_text = ::File.read source_path
               decompressed_text.force_encoding text.encoding
 
               assert_equal text, decompressed_text
@@ -77,13 +80,16 @@ module ZSTDS
       end
 
       def test_large_texts
-        LARGE_TEXTS.each do |text|
-          ::File.write SOURCE_PATH, text
+        Common.parallel_each LARGE_TEXTS do |text, worker_index|
+          source_path  = "#{SOURCE_PATH}_#{worker_index}"
+          archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-          Target.compress SOURCE_PATH, ARCHIVE_PATH
-          Target.decompress ARCHIVE_PATH, SOURCE_PATH
+          ::File.write source_path, text
 
-          decompressed_text = ::File.read SOURCE_PATH
+          Target.compress source_path, archive_path
+          Target.decompress archive_path, source_path
+
+          decompressed_text = ::File.read source_path
           decompressed_text.force_encoding text.encoding
 
           assert_equal text, decompressed_text

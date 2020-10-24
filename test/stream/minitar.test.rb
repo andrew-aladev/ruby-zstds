@@ -19,14 +19,16 @@ module ZSTDS
         LARGE_TEXTS  = Common::LARGE_TEXTS
 
         def test_tar
-          LARGE_TEXTS.each do |text|
-            Writer.open ARCHIVE_PATH do |writer|
+          Common.parallel_each LARGE_TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
+            Writer.open archive_path do |writer|
               Minitar::Writer.open writer do |tar|
                 tar.add_file_simple "file", :data => text
               end
             end
 
-            Reader.open ARCHIVE_PATH do |reader|
+            Reader.open archive_path do |reader|
               Minitar::Reader.open reader do |tar|
                 tar.each_entry do |entry|
                   assert_equal entry.name, "file"
