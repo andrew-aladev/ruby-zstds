@@ -70,8 +70,7 @@ module ZSTDS
           assert_equal dictionary.id, dictionary_copy.id
           assert_equal dictionary.buffer, dictionary_copy.buffer
 
-          text = TEXTS.sample
-
+          text            = TEXTS.sample
           compressed_text = String.compress text, :dictionary => dictionary
 
           decompressed_text = String.decompress compressed_text, :dictionary => dictionary

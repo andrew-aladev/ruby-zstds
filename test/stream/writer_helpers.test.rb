@@ -50,8 +50,7 @@ module ZSTDS
         def test_print
           TEXTS.reject(&:empty?).each do |text|
             PORTION_LENGTHS.each do |portion_length|
-              sources = get_sources text, portion_length
-
+              sources          = get_sources text, portion_length
               field_separator  = " ".encode text.encoding
               record_separator = "\n".encode text.encoding
 

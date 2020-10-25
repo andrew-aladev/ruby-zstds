@@ -61,28 +61,65 @@ module ZSTDS
           end
 
           def test_texts
-            contexts = OCG.new(
-              :text           => TEXTS,
-              :portion_length => PORTION_LENGTHS
-            )
-            .to_a
+            Common.parallel_each TEXTS do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                get_compressor_options do |compressor_options|
+                  compressed_buffer = ::StringIO.new
+                  compressed_buffer.set_encoding ::Encoding::BINARY
 
-            Common.parallel_each contexts do |context|
-              text           = context[:text]
-              portion_length = context[:portion_length]
+                  writer     = proc { |portion| compressed_buffer << portion }
+                  compressor = Target.new compressor_options.merge(:pledged_size => text.bytesize)
 
-              get_compressor_options do |compressor_options|
+                  begin
+                    source      = "".b
+                    text_offset = 0
+                    index       = 0
+
+                    loop do
+                      portion = text.byteslice text_offset, portion_length
+                      break if portion.nil?
+
+                      text_offset += portion_length
+                      source << portion
+
+                      bytes_written = compressor.write source, &writer
+                      source        = source.byteslice bytes_written, source.bytesize - bytes_written
+
+                      compressor.flush(&writer) if index.even?
+                      index += 1
+                    end
+
+                  ensure
+                    refute compressor.closed?
+                    compressor.close(&writer)
+                    assert compressor.closed?
+                  end
+
+                  compressed_text = compressed_buffer.string
+
+                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                    decompressed_text = String.decompress compressed_text, decompressor_options
+                    decompressed_text.force_encoding text.encoding
+
+                    assert_equal text, decompressed_text
+                  end
+                end
+              end
+            end
+          end
+
+          def test_large_texts
+            Common.parallel_each LARGE_TEXTS do |text|
+              LARGE_PORTION_LENGTHS.each do |portion_length|
                 compressed_buffer = ::StringIO.new
                 compressed_buffer.set_encoding ::Encoding::BINARY
 
-                writer = proc { |portion| compressed_buffer << portion }
-
-                compressor = Target.new compressor_options.merge(:pledged_size => text.bytesize)
+                writer     = proc { |portion| compressed_buffer << portion }
+                compressor = Target.new
 
                 begin
                   source      = "".b
                   text_offset = 0
-                  index       = 0
 
                   loop do
                     portion = text.byteslice text_offset, portion_length
@@ -93,71 +130,18 @@ module ZSTDS
 
                     bytes_written = compressor.write source, &writer
                     source        = source.byteslice bytes_written, source.bytesize - bytes_written
-
-                    compressor.flush(&writer) if index.even?
-                    index += 1
                   end
-
                 ensure
-                  refute compressor.closed?
                   compressor.close(&writer)
-                  assert compressor.closed?
                 end
 
                 compressed_text = compressed_buffer.string
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                  decompressed_text = String.decompress compressed_text, decompressor_options
-                  decompressed_text.force_encoding text.encoding
+                decompressed_text = String.decompress compressed_text
+                decompressed_text.force_encoding text.encoding
 
-                  assert_equal text, decompressed_text
-                end
+                assert_equal text, decompressed_text
               end
-            end
-          end
-
-          def test_large_texts
-            contexts = OCG.new(
-              :text           => LARGE_TEXTS,
-              :portion_length => LARGE_PORTION_LENGTHS
-            )
-            .to_a
-
-            Common.parallel_each contexts do |context|
-              text           = context[:text]
-              portion_length = context[:portion_length]
-
-              compressed_buffer = ::StringIO.new
-              compressed_buffer.set_encoding ::Encoding::BINARY
-
-              writer = proc { |portion| compressed_buffer << portion }
-
-              compressor = Target.new
-
-              begin
-                source      = "".b
-                text_offset = 0
-
-                loop do
-                  portion = text.byteslice text_offset, portion_length
-                  break if portion.nil?
-
-                  text_offset += portion_length
-                  source << portion
-
-                  bytes_written = compressor.write source, &writer
-                  source        = source.byteslice bytes_written, source.bytesize - bytes_written
-                end
-              ensure
-                compressor.close(&writer)
-              end
-
-              compressed_text = compressed_buffer.string
-
-              decompressed_text = String.decompress compressed_text
-              decompressed_text.force_encoding text.encoding
-
-              assert_equal text, decompressed_text
             end
           end
 

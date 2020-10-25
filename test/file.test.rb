@@ -85,7 +85,6 @@ module ZSTDS
           archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
           ::File.write source_path, text
-
           Target.compress source_path, archive_path
           Target.decompress archive_path, source_path
 
