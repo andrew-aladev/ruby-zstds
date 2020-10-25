@@ -44,12 +44,14 @@ module ZSTDS
         end
 
         def test_byte
-          TEXTS.each do |text|
+          Common.parallel_each TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             get_compressor_options do |compressor_options|
-              write_archive text, compressor_options
+              write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                Target.open ARCHIVE_PATH, decompressor_options do |instance|
+                Target.open archive_path, decompressor_options do |instance|
                   # getbyte
 
                   byte = instance.getbyte
@@ -90,12 +92,14 @@ module ZSTDS
         end
 
         def test_char
-          TEXTS.each do |text|
+          Common.parallel_each TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             get_compressor_options do |compressor_options|
-              write_archive text, compressor_options
+              write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                Target.open ARCHIVE_PATH, decompressor_options do |instance|
+                Target.open archive_path, decompressor_options do |instance|
                   # getc
 
                   char = instance.getc
@@ -124,50 +128,59 @@ module ZSTDS
         end
 
         def test_char_encoding
-          TEXTS.each do |text|
+          contexts = OCG.new(
+            :text              => TEXTS,
+            :internal_encoding => ENCODINGS
+          )
+          .to_a
+
+          Common.parallel_each contexts do |context, worker_index|
+            text              = context[:text]
+            internal_encoding = context[:internal_encoding]
+            archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
+
             external_encoding = text.encoding
+            next if internal_encoding == external_encoding
 
-            (ENCODINGS - [external_encoding]).each do |internal_encoding|
-              target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
+            target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
-              get_compressor_options do |compressor_options|
-                write_archive text, compressor_options
+            get_compressor_options do |compressor_options|
+              write_archive archive_path, text, compressor_options
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                  Target.open ARCHIVE_PATH, decompressor_options do |instance|
-                    instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
+              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                Target.open archive_path, decompressor_options do |instance|
+                  instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
 
-                    # getc
+                  # getc
 
-                    char = instance.getc
+                  char = instance.getc
 
-                    unless char.nil?
-                      assert_equal char.encoding, internal_encoding
-                      instance.ungetc char
-                    end
-
-                    # readchar
-
-                    begin
-                      char = instance.readchar
-                      assert_equal char.encoding, internal_encoding
-
-                      instance.ungetc char
-                    rescue ::EOFError
-                      # ok
-                    end
-
-                    # each_char
-
-                    decompressed_text = ::String.new :encoding => internal_encoding
-
-                    instance.each_char do |current_char|
-                      assert_equal current_char.encoding, internal_encoding
-                      decompressed_text << current_char
-                    end
-
-                    assert_equal target_text, decompressed_text
+                  unless char.nil?
+                    assert_equal char.encoding, internal_encoding
+                    instance.ungetc char
                   end
+
+                  # readchar
+
+                  begin
+                    char = instance.readchar
+                    assert_equal char.encoding, internal_encoding
+
+                    instance.ungetc char
+                  rescue ::EOFError
+                    # ok
+                  end
+
+                  # each_char
+
+                  decompressed_text = ::String.new :encoding => internal_encoding
+
+                  instance.each_char do |current_char|
+                    assert_equal current_char.encoding, internal_encoding
+                    decompressed_text << current_char
+                  end
+
+                  assert_equal target_text, decompressed_text
                 end
               end
             end
@@ -203,7 +216,9 @@ module ZSTDS
         end
 
         def test_lines
-          TEXTS.each do |text|
+          Common.parallel_each TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             separator =
               if text.empty?
                 nil
@@ -212,10 +227,10 @@ module ZSTDS
               end
 
             get_compressor_options do |compressor_options|
-              write_archive text, compressor_options
+              write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                Target.open ARCHIVE_PATH, decompressor_options do |instance|
+                Target.open archive_path, decompressor_options do |instance|
                   # lineno
 
                   assert_equal instance.lineno, 0
@@ -284,8 +299,21 @@ module ZSTDS
         end
 
         def test_lines_encoding
-          TEXTS.each do |text|
+          contexts = OCG.new(
+            :text              => TEXTS,
+            :internal_encoding => ENCODINGS
+          )
+          .to_a
+
+          Common.parallel_each contexts do |context, worker_index|
+            text              = context[:text]
+            internal_encoding = context[:internal_encoding]
+            archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
+
             external_encoding = text.encoding
+            next if internal_encoding == external_encoding
+
+            target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
             separator =
               if text.empty?
@@ -294,47 +322,43 @@ module ZSTDS
                 text[0]
               end
 
-            (ENCODINGS - [external_encoding]).each do |internal_encoding|
-              target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
+            get_compressor_options do |compressor_options|
+              write_archive archive_path, text, compressor_options
 
-              get_compressor_options do |compressor_options|
-                write_archive text, compressor_options
+              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                Target.open archive_path, decompressor_options do |instance|
+                  instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                  Target.open ARCHIVE_PATH, decompressor_options do |instance|
-                    instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
+                  # gets
 
-                    # gets
+                  line = instance.gets separator
 
-                    line = instance.gets separator
-
-                    unless line.nil?
-                      assert_equal line.encoding, internal_encoding
-                      instance.ungetline line
-                    end
-
-                    # readline
-
-                    begin
-                      line = instance.readline
-                      assert_equal line.encoding, internal_encoding
-
-                      instance.ungetline line
-                    rescue ::EOFError
-                      # ok
-                    end
-
-                    # each_line
-
-                    decompressed_text = ::String.new :encoding => internal_encoding
-
-                    instance.each_line do |current_line|
-                      assert_equal current_line.encoding, internal_encoding
-                      decompressed_text << current_line
-                    end
-
-                    assert_equal target_text, decompressed_text
+                  unless line.nil?
+                    assert_equal line.encoding, internal_encoding
+                    instance.ungetline line
                   end
+
+                  # readline
+
+                  begin
+                    line = instance.readline
+                    assert_equal line.encoding, internal_encoding
+
+                    instance.ungetline line
+                  rescue ::EOFError
+                    # ok
+                  end
+
+                  # each_line
+
+                  decompressed_text = ::String.new :encoding => internal_encoding
+
+                  instance.each_line do |current_line|
+                    assert_equal current_line.encoding, internal_encoding
+                    decompressed_text << current_line
+                  end
+
+                  assert_equal target_text, decompressed_text
                 end
               end
             end
@@ -357,12 +381,14 @@ module ZSTDS
         end
 
         def test_open
-          TEXTS.each do |text|
+          Common.parallel_each TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             get_compressor_options do |compressor_options|
-              write_archive text, compressor_options
+              write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                decompressed_text = Target.open ARCHIVE_PATH, decompressor_options, &:read
+                decompressed_text = Target.open archive_path, decompressor_options, &:read
                 decompressed_text.force_encoding text.encoding
 
                 assert_equal text, decompressed_text
@@ -372,10 +398,11 @@ module ZSTDS
         end
 
         def test_open_with_large_texts
-          LARGE_TEXTS.each do |text|
-            write_archive text, {}
+          Common.parallel_each LARGE_TEXTS do |text, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+            write_archive archive_path, text
 
-            decompressed_text = Target.open ARCHIVE_PATH, &:read
+            decompressed_text = Target.open archive_path, &:read
             decompressed_text.force_encoding text.encoding
 
             assert_equal text, decompressed_text
@@ -384,9 +411,9 @@ module ZSTDS
 
         # -----
 
-        protected def write_archive(text, compressor_options)
+        protected def write_archive(archive_path, text, compressor_options = {})
           compressed_text = String.compress text, compressor_options
-          ::File.write ARCHIVE_PATH, compressed_text
+          ::File.write archive_path, compressed_text
         end
 
         def get_compressor_options(&block)

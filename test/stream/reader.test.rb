@@ -278,7 +278,7 @@ module ZSTDS
         def test_rewind
           TEXTS.each do |text|
             get_compressor_options do |compressor_options|
-              write_archive text, compressor_options
+              write_archive ARCHIVE_PATH, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                 decompressed_text = nil
@@ -547,9 +547,9 @@ module ZSTDS
           String.compress text, compressor_options
         end
 
-        protected def write_archive(text, compressor_options = {})
+        protected def write_archive(archive_path, text, compressor_options = {})
           compressed_text = String.compress text, compressor_options
-          ::File.write ARCHIVE_PATH, compressed_text
+          ::File.write archive_path, compressed_text
         end
 
         def get_invalid_decompressor_options(&block)

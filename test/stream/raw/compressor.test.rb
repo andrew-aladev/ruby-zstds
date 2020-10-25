@@ -61,15 +61,15 @@ module ZSTDS
           end
 
           def test_texts
-            options_groups = OCG.new(
+            contexts = OCG.new(
               :text           => TEXTS,
               :portion_length => PORTION_LENGTHS
             )
             .to_a
 
-            Common.parallel_each options_groups do |options|
-              text           = options[:text]
-              portion_length = options[:portion_length]
+            Common.parallel_each contexts do |context|
+              text           = context[:text]
+              portion_length = context[:portion_length]
 
               get_compressor_options do |compressor_options|
                 compressed_buffer = ::StringIO.new
@@ -117,15 +117,15 @@ module ZSTDS
           end
 
           def test_large_texts
-            options_groups = OCG.new(
+            contexts = OCG.new(
               :text           => LARGE_TEXTS,
               :portion_length => LARGE_PORTION_LENGTHS
             )
             .to_a
 
-            Common.parallel_each options_groups do |options|
-              text           = options[:text]
-              portion_length = options[:portion_length]
+            Common.parallel_each contexts do |context|
+              text           = context[:text]
+              portion_length = context[:portion_length]
 
               compressed_buffer = ::StringIO.new
               compressed_buffer.set_encoding ::Encoding::BINARY
