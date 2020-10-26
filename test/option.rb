@@ -277,7 +277,7 @@ module ZSTDS
         values.map { |value| [[value, min].max, max].min }
       end
 
-      # Absolute min values works too slow.
+      # Absolute min and max values works too slow.
       # Absolute max values are dangerous, it can provide out of memory exception.
       # We can use more reasonable min and max values defined in "zstd/lib/compress/zstd_compress.c".
 
