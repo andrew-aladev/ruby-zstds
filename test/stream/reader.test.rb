@@ -70,12 +70,12 @@ module ZSTDS
         end
 
         def test_read
-          Common.parallel TEXTS do |text|
-            Option::BOOLS.each do |with_buffer|
-              get_compressor_options do |compressor_options|
-                archive     = get_archive text, compressor_options
-                prev_result = "".b
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            TEXTS.each do |text|
+              archive     = get_archive text, compressor_options
+              prev_result = "".b
 
+              Option::BOOLS.each do |with_buffer|
                 PORTION_LENGTHS.each do |portion_length|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                     instance          = target.new ::StringIO.new(archive), decompressor_options
@@ -153,46 +153,35 @@ module ZSTDS
         end
 
         def test_read_with_large_texts
-          Common.parallel LARGE_TEXTS do |text|
-            Option::BOOLS.each do |with_buffer|
-              archive     = get_archive text
-              prev_result = "".b
+          options_generator = OCG.new(
+            :text        => LARGE_TEXTS,
+            :with_buffer => Option::BOOLS
+          )
 
-              LARGE_PORTION_LENGTHS.each do |portion_length|
-                instance          = target.new ::StringIO.new(archive)
-                decompressed_text = "".b
+          Common.parallel_options options_generator do |options|
+            text        = options[:text]
+            with_buffer = options[:with_buffer]
 
-                begin
-                  loop do
-                    result =
-                      if with_buffer
-                        instance.read portion_length, prev_result
-                      else
-                        instance.read portion_length
-                      end
+            archive     = get_archive text
+            prev_result = "".b
 
-                    break if result.nil?
-
-                    assert_equal result, prev_result if with_buffer
-                    decompressed_text << result
-                  end
-                ensure
-                  instance.close
-                end
-
-                decompressed_text.force_encoding text.encoding
-                assert_equal text, decompressed_text
-              end
-
+            LARGE_PORTION_LENGTHS.each do |portion_length|
               instance          = target.new ::StringIO.new(archive)
-              decompressed_text = nil
+              decompressed_text = "".b
 
               begin
-                if with_buffer
-                  decompressed_text = instance.read nil, prev_result
-                  assert_equal decompressed_text, prev_result
-                else
-                  decompressed_text = instance.read
+                loop do
+                  result =
+                    if with_buffer
+                      instance.read portion_length, prev_result
+                    else
+                      instance.read portion_length
+                    end
+
+                  break if result.nil?
+
+                  assert_equal result, prev_result if with_buffer
+                  decompressed_text << result
                 end
               ensure
                 instance.close
@@ -201,15 +190,31 @@ module ZSTDS
               decompressed_text.force_encoding text.encoding
               assert_equal text, decompressed_text
             end
+
+            instance          = target.new ::StringIO.new(archive)
+            decompressed_text = nil
+
+            begin
+              if with_buffer
+                decompressed_text = instance.read nil, prev_result
+                assert_equal decompressed_text, prev_result
+              else
+                decompressed_text = instance.read
+              end
+            ensure
+              instance.close
+            end
+
+            decompressed_text.force_encoding text.encoding
+            assert_equal text, decompressed_text
           end
         end
 
         def test_encoding
-          TEXTS.each do |text|
-            external_encoding = text.encoding
-
-            get_compressor_options do |compressor_options|
-              archive = get_archive text, compressor_options
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            TEXTS.each do |text|
+              external_encoding = text.encoding
+              archive           = get_archive text, compressor_options
 
               PORTION_LENGTHS.each do |portion_length|
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
@@ -276,14 +281,16 @@ module ZSTDS
         end
 
         def test_rewind
-          TEXTS.each do |text|
-            get_compressor_options do |compressor_options|
-              write_archive ARCHIVE_PATH, text, compressor_options
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
+            TEXTS.each do |text|
+              write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                 decompressed_text = nil
 
-                ::File.open ARCHIVE_PATH, "rb" do |file|
+                ::File.open archive_path, "rb" do |file|
                   instance = target.new file, decompressor_options
 
                   begin
@@ -372,11 +379,11 @@ module ZSTDS
             end
           end
 
-          start_server do |server|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                Option::BOOLS.each do |with_buffer|
-                  get_compressor_options do |compressor_options|
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            start_server do |server|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
+                  Option::BOOLS.each do |with_buffer|
                     get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                       server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
                         prev_result       = "".b
@@ -420,10 +427,10 @@ module ZSTDS
             end
           end
 
-          start_server do |server|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                get_compressor_options do |compressor_options|
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            start_server do |server|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                     server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance, socket|
                       decompressed_text = "".b
@@ -460,36 +467,42 @@ module ZSTDS
         end
 
         def test_read_nonblock_with_large_texts
-          start_server do |server|
-            LARGE_TEXTS.each do |text|
-              LARGE_PORTION_LENGTHS.each do |portion_length|
-                server_nonblock_test(server, text) do |instance, socket|
-                  decompressed_text = "".b
+          options_generator = OCG.new(
+            :text           => LARGE_TEXTS,
+            :portion_length => LARGE_PORTION_LENGTHS
+          )
 
-                  loop do
-                    begin
-                      decompressed_text << instance.read_nonblock(portion_length)
-                    rescue ::IO::WaitReadable
-                      ::IO.select [socket]
-                      retry
-                    rescue ::EOFError
-                      break
-                    end
+          Common.parallel_options options_generator do |options|
+            text           = options[:text]
+            portion_length = options[:portion_length]
 
-                    begin
-                      decompressed_text << instance.readpartial(portion_length)
-                    rescue ::EOFError
-                      break
-                    end
+            start_server do |server|
+              server_nonblock_test(server, text) do |instance, socket|
+                decompressed_text = "".b
 
-                    result = instance.read portion_length
-                    break if result.nil?
-
-                    decompressed_text << result
+                loop do
+                  begin
+                    decompressed_text << instance.read_nonblock(portion_length)
+                  rescue ::IO::WaitReadable
+                    ::IO.select [socket]
+                    retry
+                  rescue ::EOFError
+                    break
                   end
 
-                  decompressed_text
+                  begin
+                    decompressed_text << instance.readpartial(portion_length)
+                  rescue ::EOFError
+                    break
+                  end
+
+                  result = instance.read portion_length
+                  break if result.nil?
+
+                  decompressed_text << result
                 end
+
+                decompressed_text
               end
             end
           end
@@ -556,8 +569,8 @@ module ZSTDS
           Option.get_invalid_decompressor_options BUFFER_LENGTH_NAMES, &block
         end
 
-        def get_compressor_options(&block)
-          Option.get_compressor_options BUFFER_LENGTH_NAMES, &block
+        def get_compressor_options_generator
+          Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
         end
 
         def get_compatible_decompressor_options(compressor_options, &block)

@@ -44,10 +44,10 @@ module ZSTDS
         end
 
         def test_byte
-          Common.parallel TEXTS do |text, worker_index|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            get_compressor_options do |compressor_options|
+            TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
@@ -92,10 +92,10 @@ module ZSTDS
         end
 
         def test_char
-          Common.parallel TEXTS do |text, worker_index|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            get_compressor_options do |compressor_options|
+            TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
@@ -128,15 +128,16 @@ module ZSTDS
         end
 
         def test_char_encoding
-          Common.parallel TEXTS do |text, worker_index|
-            archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
-            external_encoding = text.encoding
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            (ENCODINGS - [external_encoding]).each do |internal_encoding|
-              target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
+            TEXTS.each do |text|
+              write_archive archive_path, text, compressor_options
 
-              get_compressor_options do |compressor_options|
-                write_archive archive_path, text, compressor_options
+              external_encoding = text.encoding
+
+              (ENCODINGS - [external_encoding]).each do |internal_encoding|
+                target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   Target.open archive_path, decompressor_options do |instance|
@@ -208,18 +209,18 @@ module ZSTDS
         end
 
         def test_lines
-          Common.parallel TEXTS do |text, worker_index|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            separator =
-              if text.empty?
-                nil
-              else
-                text[0]
-              end
-
-            get_compressor_options do |compressor_options|
+            TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
+
+              separator =
+                if text.empty?
+                  nil
+                else
+                  text[0]
+                end
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                 Target.open archive_path, decompressor_options do |instance|
@@ -291,22 +292,23 @@ module ZSTDS
         end
 
         def test_lines_encoding
-          Common.parallel TEXTS do |text, worker_index|
-            archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
-            external_encoding = text.encoding
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            (ENCODINGS - [external_encoding]).each do |internal_encoding|
-              target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
+            TEXTS.each do |text|
+              write_archive archive_path, text, compressor_options
 
-              separator =
-                if text.empty?
-                  nil
-                else
-                  text[0]
-                end
+              external_encoding = text.encoding
 
-              get_compressor_options do |compressor_options|
-                write_archive archive_path, text, compressor_options
+              (ENCODINGS - [external_encoding]).each do |internal_encoding|
+                target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
+
+                separator =
+                  if text.empty?
+                    nil
+                  else
+                    text[0]
+                  end
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   Target.open archive_path, decompressor_options do |instance|
@@ -365,10 +367,10 @@ module ZSTDS
         end
 
         def test_open
-          Common.parallel TEXTS do |text, worker_index|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
-            get_compressor_options do |compressor_options|
+            TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
@@ -400,8 +402,8 @@ module ZSTDS
           ::File.write archive_path, compressed_text
         end
 
-        def get_compressor_options(&block)
-          Option.get_compressor_options BUFFER_LENGTH_NAMES, &block
+        def get_compressor_options_generator
+          Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
         end
 
         def get_compatible_decompressor_options(compressor_options, &block)

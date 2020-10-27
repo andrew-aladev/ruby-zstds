@@ -61,67 +61,60 @@ module ZSTDS
           end
 
           def test_texts
-            compressor_generator = get_compressor_options_generator.and(
-              :text           => TEXTS,
-              :portion_length => PORTION_LENGTHS
-            )
+            Common.parallel_options get_compressor_options_generator do |compressor_options|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
+                  compressed_buffer = ::StringIO.new
+                  compressed_buffer.set_encoding ::Encoding::BINARY
 
-            Common.parallel_options compressor_generator do |compressor_options|
-              text = compressor_options[:text]
-              compressor_options.delete :text
+                  writer     = proc { |portion| compressed_buffer << portion }
+                  compressor = Target.new compressor_options.merge(:pledged_size => text.bytesize)
 
-              portion_length = compressor_options[:portion_length]
-              compressor_options.delete :portion_length
+                  begin
+                    source      = "".b
+                    text_offset = 0
+                    index       = 0
 
-              compressed_buffer = ::StringIO.new
-              compressed_buffer.set_encoding ::Encoding::BINARY
+                    loop do
+                      portion = text.byteslice text_offset, portion_length
+                      break if portion.nil?
 
-              writer     = proc { |portion| compressed_buffer << portion }
-              compressor = Target.new compressor_options.merge(:pledged_size => text.bytesize)
+                      text_offset += portion_length
+                      source << portion
 
-              begin
-                source      = "".b
-                text_offset = 0
-                index       = 0
+                      bytes_written = compressor.write source, &writer
+                      source        = source.byteslice bytes_written, source.bytesize - bytes_written
 
-                loop do
-                  portion = text.byteslice text_offset, portion_length
-                  break if portion.nil?
+                      compressor.flush(&writer) if index.even?
+                      index += 1
+                    end
 
-                  text_offset += portion_length
-                  source << portion
+                  ensure
+                    refute compressor.closed?
+                    compressor.close(&writer)
+                    assert compressor.closed?
+                  end
 
-                  bytes_written = compressor.write source, &writer
-                  source        = source.byteslice bytes_written, source.bytesize - bytes_written
+                  compressed_text = compressed_buffer.string
 
-                  compressor.flush(&writer) if index.even?
-                  index += 1
+                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                    decompressed_text = String.decompress compressed_text, decompressor_options
+                    decompressed_text.force_encoding text.encoding
+
+                    assert_equal text, decompressed_text
+                  end
                 end
-
-              ensure
-                refute compressor.closed?
-                compressor.close(&writer)
-                assert compressor.closed?
-              end
-
-              compressed_text = compressed_buffer.string
-
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                decompressed_text = String.decompress compressed_text, decompressor_options
-                decompressed_text.force_encoding text.encoding
-
-                assert_equal text, decompressed_text
               end
             end
           end
 
           def test_large_texts
-            generator = OCG.new(
+            options_generator = OCG.new(
               :text           => LARGE_TEXTS,
               :portion_length => LARGE_PORTION_LENGTHS
             )
 
-            Common.parallel_options generator do |options|
+            Common.parallel_options options_generator do |options|
               text           = options[:text]
               portion_length = options[:portion_length]
 

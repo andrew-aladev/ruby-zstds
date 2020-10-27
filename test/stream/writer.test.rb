@@ -48,11 +48,10 @@ module ZSTDS
         # -- synchronous --
 
         def test_write
-          TEXTS.each do |text|
-            PORTION_LENGTHS.each do |portion_length|
-              sources = get_sources text, portion_length
-
-              get_compressor_options do |compressor_options|
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            TEXTS.each do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                sources  = get_sources text, portion_length
                 io       = ::StringIO.new
                 instance = target.new io, compressor_options.merge(:pledged_size => text.bytesize)
 
@@ -81,35 +80,40 @@ module ZSTDS
         end
 
         def test_write_with_large_texts
-          LARGE_TEXTS.each do |text|
-            LARGE_PORTION_LENGTHS.each do |portion_length|
-              sources  = get_sources text, portion_length
-              io       = ::StringIO.new
-              instance = target.new io
+          options_generator = OCG.new(
+            :text           => LARGE_TEXTS,
+            :portion_length => LARGE_PORTION_LENGTHS
+          )
 
-              begin
-                sources.each_slice(2) do |current_sources|
-                  instance.write(*current_sources)
-                  instance.flush
-                end
-              ensure
-                instance.close
+          Common.parallel_options options_generator do |options|
+            text           = options[:text]
+            portion_length = options[:portion_length]
+
+            sources  = get_sources text, portion_length
+            io       = ::StringIO.new
+            instance = target.new io
+
+            begin
+              sources.each_slice(2) do |current_sources|
+                instance.write(*current_sources)
+                instance.flush
               end
-
-              compressed_text = io.string
-              check_text text, compressed_text
+            ensure
+              instance.close
             end
+
+            compressed_text = io.string
+            check_text text, compressed_text
           end
         end
 
         def test_encoding
-          TEXTS.each do |text|
-            # We don't need to transcode between same encodings.
-            (ENCODINGS - [text.encoding]).each do |external_encoding|
-              target_text = text.encode external_encoding, **TRANSCODE_OPTIONS
-
-              get_compressor_options do |compressor_options|
-                io = ::StringIO.new
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            TEXTS.each do |text|
+              # We don't need to transcode between same encodings.
+              (ENCODINGS - [text.encoding]).each do |external_encoding|
+                target_text = text.encode external_encoding, **TRANSCODE_OPTIONS
+                io          = ::StringIO.new
 
                 instance = target.new(
                   io,
@@ -143,10 +147,12 @@ module ZSTDS
         end
 
         def test_rewind
-          get_compressor_options do |compressor_options|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             compressed_texts = []
 
-            ::File.open ARCHIVE_PATH, "wb" do |file|
+            ::File.open archive_path, "wb" do |file|
               instance = target.new file, compressor_options
 
               begin
@@ -159,7 +165,7 @@ module ZSTDS
 
                   assert_equal instance.rewind, 0
 
-                  compressed_texts << ::File.read(ARCHIVE_PATH)
+                  compressed_texts << ::File.read(archive_path)
 
                   assert_equal instance.pos, 0
                   assert_equal instance.pos, instance.tell
@@ -190,12 +196,12 @@ module ZSTDS
           )
           .to_a
 
-          start_server do |server|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                sources = get_sources text, portion_length
+          Common.parallel_options get_compressor_options_generator do |compressor_options|
+            start_server do |server|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
+                  sources = get_sources text, portion_length
 
-                get_compressor_options do |compressor_options|
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                     modes.each do |mode|
                       server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance, socket|
@@ -276,67 +282,73 @@ module ZSTDS
           )
           .to_a
 
-          start_server do |server|
-            LARGE_TEXTS.each do |text|
-              LARGE_PORTION_LENGTHS.each do |portion_length|
-                sources = get_sources text, portion_length
+          options_generator = OCG.new(
+            :text           => LARGE_TEXTS,
+            :portion_length => LARGE_PORTION_LENGTHS
+          )
 
-                modes.each do |mode|
-                  server_nonblock_test(server, text, portion_length) do |instance, socket|
-                    # write
+          Common.parallel_options options_generator do |options|
+            text           = options[:text]
+            portion_length = options[:portion_length]
 
-                    sources.each.with_index do |source, index|
-                      if index.even?
-                        loop do
-                          begin
-                            bytes_written = instance.write_nonblock source
-                          rescue ::IO::WaitWritable
-                            ::IO.select nil, [socket]
-                            retry
-                          end
+            sources = get_sources text, portion_length
 
-                          source = source.byteslice bytes_written, source.bytesize - bytes_written
-                          break if source.bytesize.zero?
-                        end
-                      else
-                        instance.write source
-                      end
-                    end
+            start_server do |server|
+              modes.each do |mode|
+                server_nonblock_test(server, text, portion_length) do |instance, socket|
+                  # write
 
-                    # flush
-
-                    if mode[:flush_nonblock]
+                  sources.each.with_index do |source, index|
+                    if index.even?
                       loop do
                         begin
-                          is_flushed = instance.flush_nonblock
+                          bytes_written = instance.write_nonblock source
                         rescue ::IO::WaitWritable
                           ::IO.select nil, [socket]
                           retry
                         end
 
-                        break if is_flushed
+                        source = source.byteslice bytes_written, source.bytesize - bytes_written
+                        break if source.bytesize.zero?
                       end
                     else
-                      instance.flush
+                      instance.write source
                     end
+                  end
 
-                  ensure
-                    # close
+                  # flush
 
-                    if mode[:close_nonblock]
-                      loop do
-                        begin
-                          is_closed = instance.close_nonblock
-                        rescue ::IO::WaitWritable
-                          ::IO.select nil, [socket]
-                          retry
-                        end
-
-                        break if is_closed
+                  if mode[:flush_nonblock]
+                    loop do
+                      begin
+                        is_flushed = instance.flush_nonblock
+                      rescue ::IO::WaitWritable
+                        ::IO.select nil, [socket]
+                        retry
                       end
-                    else
-                      instance.close
+
+                      break if is_flushed
                     end
+                  else
+                    instance.flush
+                  end
+
+                ensure
+                  # close
+
+                  if mode[:close_nonblock]
+                    loop do
+                      begin
+                        is_closed = instance.close_nonblock
+                      rescue ::IO::WaitWritable
+                        ::IO.select nil, [socket]
+                        retry
+                      end
+
+                      break if is_closed
+                    end
+                  else
+                    instance.close
                   end
                 end
               end
@@ -345,10 +357,12 @@ module ZSTDS
         end
 
         def test_rewind_nonblock
-          get_compressor_options do |compressor_options|
+          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
+            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+
             compressed_texts = []
 
-            ::File.open ARCHIVE_PATH, "wb" do |file|
+            ::File.open archive_path, "wb" do |file|
               instance = target.new file, compressor_options
 
               begin
@@ -370,7 +384,7 @@ module ZSTDS
                     break if is_rewinded
                   end
 
-                  compressed_texts << ::File.read(ARCHIVE_PATH)
+                  compressed_texts << ::File.read(archive_path)
 
                   assert_equal instance.pos, 0
                   assert_equal instance.pos, instance.tell
@@ -456,8 +470,8 @@ module ZSTDS
           Option.get_invalid_compressor_options BUFFER_LENGTH_NAMES, &block
         end
 
-        def get_compressor_options(&block)
-          Option.get_compressor_options BUFFER_LENGTH_NAMES, &block
+        def get_compressor_options_generator
+          Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
         end
 
         def get_compatible_decompressor_options(compressor_options, &block)

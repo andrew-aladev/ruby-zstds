@@ -52,21 +52,16 @@ module ZSTDS
       end
 
       def test_texts
-        compressor_generator = get_compressor_options_generator.and(
-          :text => TEXTS
-        )
+        Common.parallel_options get_compressor_options_generator do |compressor_options|
+          TEXTS.each do |text|
+            compressed_text = Target.compress text, compressor_options
 
-        Common.parallel_options compressor_generator do |compressor_options|
-          text = compressor_options[:text]
-          compressor_options.delete :text
+            get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              decompressed_text = Target.decompress compressed_text, decompressor_options
+              decompressed_text.force_encoding text.encoding
 
-          compressed_text = Target.compress text, compressor_options
-
-          get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-            decompressed_text = Target.decompress compressed_text, decompressor_options
-            decompressed_text.force_encoding text.encoding
-
-            assert_equal text, decompressed_text
+              assert_equal text, decompressed_text
+            end
           end
         end
       end
