@@ -70,7 +70,7 @@ module ZSTDS
         end
 
         def test_read
-          Common.parallel_each TEXTS do |text|
+          Common.parallel TEXTS do |text|
             Option::BOOLS.each do |with_buffer|
               get_compressor_options do |compressor_options|
                 archive     = get_archive text, compressor_options
@@ -153,7 +153,7 @@ module ZSTDS
         end
 
         def test_read_with_large_texts
-          Common.parallel_each LARGE_TEXTS do |text|
+          Common.parallel LARGE_TEXTS do |text|
             Option::BOOLS.each do |with_buffer|
               archive     = get_archive text
               prev_result = "".b

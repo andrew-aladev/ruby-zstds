@@ -44,7 +44,7 @@ module ZSTDS
         end
 
         def test_byte
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
             get_compressor_options do |compressor_options|
@@ -92,7 +92,7 @@ module ZSTDS
         end
 
         def test_char
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
             get_compressor_options do |compressor_options|
@@ -128,7 +128,7 @@ module ZSTDS
         end
 
         def test_char_encoding
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
             external_encoding = text.encoding
 
@@ -208,7 +208,7 @@ module ZSTDS
         end
 
         def test_lines
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
             separator =
@@ -291,7 +291,7 @@ module ZSTDS
         end
 
         def test_lines_encoding
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path      = "#{ARCHIVE_PATH}_#{worker_index}"
             external_encoding = text.encoding
 
@@ -365,7 +365,7 @@ module ZSTDS
         end
 
         def test_open
-          Common.parallel_each TEXTS do |text, worker_index|
+          Common.parallel TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
             get_compressor_options do |compressor_options|
@@ -382,7 +382,7 @@ module ZSTDS
         end
 
         def test_open_with_large_texts
-          Common.parallel_each LARGE_TEXTS do |text, worker_index|
+          Common.parallel LARGE_TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
             write_archive archive_path, text
 

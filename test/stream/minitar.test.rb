@@ -19,7 +19,7 @@ module ZSTDS
         LARGE_TEXTS  = Common::LARGE_TEXTS
 
         def test_tar
-          Common.parallel_each LARGE_TEXTS do |text, worker_index|
+          Common.parallel LARGE_TEXTS do |text, worker_index|
             archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
             Writer.open archive_path do |writer|

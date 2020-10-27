@@ -52,22 +52,27 @@ module ZSTDS
       end
 
       def test_texts
-        Common.parallel_each TEXTS do |text|
-          get_compressor_options do |compressor_options|
-            compressed_text = Target.compress text, compressor_options
+        compressor_generator = get_compressor_options_generator.and(
+          :text => TEXTS
+        )
 
-            get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-              decompressed_text = Target.decompress compressed_text, decompressor_options
-              decompressed_text.force_encoding text.encoding
+        Common.parallel_options compressor_generator do |compressor_options|
+          text = compressor_options[:text]
+          compressor_options.delete :text
 
-              assert_equal text, decompressed_text
-            end
+          compressed_text = Target.compress text, compressor_options
+
+          get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+            decompressed_text = Target.decompress compressed_text, decompressor_options
+            decompressed_text.force_encoding text.encoding
+
+            assert_equal text, decompressed_text
           end
         end
       end
 
       def test_large_texts
-        Common.parallel_each LARGE_TEXTS do |text|
+        Common.parallel LARGE_TEXTS do |text|
           compressed_text = Target.compress text
 
           decompressed_text = Target.decompress compressed_text
@@ -87,8 +92,8 @@ module ZSTDS
         Option.get_invalid_decompressor_options BUFFER_LENGTH_NAMES, &block
       end
 
-      def get_compressor_options(&block)
-        Option.get_compressor_options BUFFER_LENGTH_NAMES, &block
+      def get_compressor_options_generator
+        Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
       end
 
       def get_compatible_decompressor_options(compressor_options, &block)

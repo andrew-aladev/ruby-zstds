@@ -58,29 +58,33 @@ module ZSTDS
       end
 
       def test_texts
-        Common.parallel_each TEXTS do |text, worker_index|
+        compressor_generator = get_compressor_options_generator.and(
+          :text => TEXTS
+        )
+
+        Common.parallel_options compressor_generator do |compressor_options, worker_index|
+          text = compressor_options[:text]
+          compressor_options.delete :text
+
           source_path  = "#{SOURCE_PATH}_#{worker_index}"
           archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
           ::File.write source_path, text
+          Target.compress source_path, archive_path, compressor_options
 
-          get_compressor_options do |compressor_options|
-            Target.compress source_path, archive_path, compressor_options
+          get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+            Target.decompress archive_path, source_path, decompressor_options
 
-            get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-              Target.decompress archive_path, source_path, decompressor_options
+            decompressed_text = ::File.read source_path
+            decompressed_text.force_encoding text.encoding
 
-              decompressed_text = ::File.read source_path
-              decompressed_text.force_encoding text.encoding
-
-              assert_equal text, decompressed_text
-            end
+            assert_equal text, decompressed_text
           end
         end
       end
 
       def test_large_texts
-        Common.parallel_each LARGE_TEXTS do |text, worker_index|
+        Common.parallel LARGE_TEXTS do |text, worker_index|
           source_path  = "#{SOURCE_PATH}_#{worker_index}"
           archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
 
@@ -105,8 +109,8 @@ module ZSTDS
         Option.get_invalid_decompressor_options BUFFER_LENGTH_NAMES, &block
       end
 
-      def get_compressor_options(&block)
-        Option.get_compressor_options BUFFER_LENGTH_NAMES, &block
+      def get_compressor_options_generator
+        Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
       end
 
       def get_compatible_decompressor_options(compressor_options, &block)

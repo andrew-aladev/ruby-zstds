@@ -80,10 +80,20 @@ module ZSTDS
       # We need at least 2 threads for testing multiple threads support.
       THREADS_COUNT = [Parallel.processor_count, 2].max.freeze
 
-      def self.parallel_each(producer, &_block)
+      def self.parallel(producer, &_block)
         Parallel.each producer, :in_threads => THREADS_COUNT do |item|
           yield item, Parallel.worker_number
         end
+      end
+
+      def self.parallel_options(generator, &block)
+        producer = proc do
+          next Parallel::Stop if generator.finished?
+
+          generator.next
+        end
+
+        parallel producer, &block
       end
     end
   end
