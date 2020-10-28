@@ -61,7 +61,7 @@ module ZSTDS
           end
 
           def test_texts
-            Common.parallel_options get_compressor_options_generator do |compressor_options|
+            parallel_compressor_options do |compressor_options|
               TEXTS.each do |text|
                 compressed_text = String.compress text, compressor_options
 
@@ -157,8 +157,8 @@ module ZSTDS
             Option.get_invalid_decompressor_options BUFFER_LENGTH_NAMES, &block
           end
 
-          def get_compressor_options_generator
-            Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
+          def parallel_compressor_options(&block)
+            Common.parallel_options Option.get_compressor_options_generator(BUFFER_LENGTH_NAMES), &block
           end
 
           def get_compatible_decompressor_options(compressor_options, &block)

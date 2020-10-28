@@ -19,6 +19,10 @@ module ZSTDS
       ]
       .each { |path| FileUtils.touch path }
 
+      def self.get_path(path, suffix)
+        "#{path}_#{suffix}"
+      end
+
       ENCODINGS = %w[
         binary
         UTF-8

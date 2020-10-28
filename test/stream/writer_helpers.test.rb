@@ -28,8 +28,8 @@ module ZSTDS
         BUFFER_LENGTH_MAPPING = { :destination_buffer_length => :destination_buffer_length }.freeze
 
         def test_write
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
@@ -50,8 +50,8 @@ module ZSTDS
         end
 
         def test_print
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.reject(&:empty?).each do |text|
               PORTION_LENGTHS.each do |portion_length|
@@ -79,8 +79,8 @@ module ZSTDS
         end
 
         def test_printf
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
@@ -111,8 +111,8 @@ module ZSTDS
         end
 
         def test_putc
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               Target.open archive_path, compressor_options do |instance|
@@ -136,8 +136,8 @@ module ZSTDS
         end
 
         def test_puts
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               PORTION_LENGTHS.each do |portion_length|
@@ -189,8 +189,8 @@ module ZSTDS
         end
 
         def test_open
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               Target.open(archive_path, compressor_options) { |instance| instance.write text }
@@ -214,7 +214,7 @@ module ZSTDS
             text           = options[:text]
             portion_length = options[:portion_length]
 
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             sources = get_sources text, portion_length
 
@@ -248,8 +248,8 @@ module ZSTDS
           assert_equal text, decompressed_text
         end
 
-        def get_compressor_options_generator
-          Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
+        def parallel_compressor_options(&block)
+          Common.parallel_options Option.get_compressor_options_generator(BUFFER_LENGTH_NAMES), &block
         end
 
         def get_compatible_decompressor_options(compressor_options, &block)

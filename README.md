@@ -101,7 +101,7 @@ ZSTDS::Stream::Reader.open "file.tar.zst" do |reader|
 end
 ```
 
-You can also use `Content-Encoding: zstd` with [sinatra](http://sinatrarb.com):
+You can also use `Content-Encoding: zstd` with [sinatra](http://sinatrarb.com) for example:
 
 ```ruby
 require "zstds"
@@ -110,6 +110,18 @@ require "sinatra"
 get "/" do
   headers["Content-Encoding"] = "zstd"
   ZSTDS::String.compress "sample string"
+end
+```
+
+All functionality (including streaming) can be used inside multiple threads with [parallel](https://github.com/grosser/parallel) for example.
+This code will provide heavy load for your CPU.
+
+```ruby
+require "zstds"
+require "parallel"
+
+Parallel.each(large_datas) do |large_data|
+  ZSTDS::String.compress large_data
 end
 ```
 

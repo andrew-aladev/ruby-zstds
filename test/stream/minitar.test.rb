@@ -20,7 +20,7 @@ module ZSTDS
 
         def test_tar
           Common.parallel LARGE_TEXTS do |text, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             Writer.open archive_path do |writer|
               Minitar::Writer.open writer do |tar|

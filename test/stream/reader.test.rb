@@ -70,7 +70,7 @@ module ZSTDS
         end
 
         def test_read
-          Common.parallel_options get_compressor_options_generator do |compressor_options|
+          parallel_compressor_options do |compressor_options|
             TEXTS.each do |text|
               archive     = get_archive text, compressor_options
               prev_result = "".b
@@ -211,7 +211,7 @@ module ZSTDS
         end
 
         def test_encoding
-          Common.parallel_options get_compressor_options_generator do |compressor_options|
+          parallel_compressor_options do |compressor_options|
             TEXTS.each do |text|
               external_encoding = text.encoding
               archive           = get_archive text, compressor_options
@@ -281,8 +281,8 @@ module ZSTDS
         end
 
         def test_rewind
-          Common.parallel_options get_compressor_options_generator do |compressor_options, worker_index|
-            archive_path = "#{ARCHIVE_PATH}_#{worker_index}"
+          parallel_compressor_options do |compressor_options, worker_index|
+            archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
             TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
@@ -379,7 +379,7 @@ module ZSTDS
             end
           end
 
-          Common.parallel_options get_compressor_options_generator do |compressor_options|
+          parallel_compressor_options do |compressor_options|
             start_server do |server|
               TEXTS.each do |text|
                 PORTION_LENGTHS.each do |portion_length|
@@ -427,7 +427,7 @@ module ZSTDS
             end
           end
 
-          Common.parallel_options get_compressor_options_generator do |compressor_options|
+          parallel_compressor_options do |compressor_options|
             start_server do |server|
               TEXTS.each do |text|
                 PORTION_LENGTHS.each do |portion_length|
@@ -569,8 +569,8 @@ module ZSTDS
           Option.get_invalid_decompressor_options BUFFER_LENGTH_NAMES, &block
         end
 
-        def get_compressor_options_generator
-          Option.get_compressor_options_generator BUFFER_LENGTH_NAMES
+        def parallel_compressor_options(&block)
+          Common.parallel_options Option.get_compressor_options_generator(BUFFER_LENGTH_NAMES), &block
         end
 
         def get_compatible_decompressor_options(compressor_options, &block)
