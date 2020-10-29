@@ -79,7 +79,7 @@ data = ZSTDS::String.compress "sample string", :dictionary => dictionary
 puts ZSTDS::String.decompress(data, :dictionary => dictionary)
 ```
 
-You can create and read `tar.zst` archives with [minitar](https://github.com/halostatue/minitar) for example.
+You can create and read `tar.zst` archives with [minitar](https://github.com/halostatue/minitar).
 
 ```ruby
 require "zstds"
@@ -101,7 +101,7 @@ ZSTDS::Stream::Reader.open "file.tar.zst" do |reader|
 end
 ```
 
-You can also use `Content-Encoding: zstd` with [sinatra](http://sinatrarb.com) for example:
+You can also use `Content-Encoding: zstd` with [sinatra](http://sinatrarb.com):
 
 ```ruby
 require "zstds"
@@ -113,7 +113,7 @@ get "/" do
 end
 ```
 
-All functionality (including streaming) can be used inside multiple threads with [parallel](https://github.com/grosser/parallel) for example.
+All functionality (including streaming) can be used inside multiple threads with [parallel](https://github.com/grosser/parallel).
 This code will provide heavy load for your CPU.
 
 ```ruby
