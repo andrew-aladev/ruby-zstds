@@ -470,10 +470,10 @@ module ZSTDS
         buffer_length_generator.mix(main_generator).mix(thread_generator).mix other_generator
       end
 
-      def self.get_compressor_options(buffer_length_names, &_block)
+      def self.get_compressor_options(buffer_length_names, &block)
         generator = get_compressor_options_generator buffer_length_names
 
-        yield generator.next until generator.finished?
+        generator.each(&block)
       end
 
       def self.get_compatible_decompressor_options(compressor_options, buffer_length_name_mapping, &_block)

@@ -143,7 +143,7 @@ module ZSTDS
       end
 
       protected def each_string(each_proc, &block)
-        return enum_for __method__ unless block.is_a? ::Proc
+        return enum_for __method__, each_proc unless block.is_a? ::Proc
 
         loop do
           string = each_proc.call

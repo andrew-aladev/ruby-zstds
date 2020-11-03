@@ -6,7 +6,7 @@ require "stringio"
 module ZSTDS
   module Test
     module Validation
-      NOOP_PROC = proc {}
+      NOOP_PROC = proc {} # no-op
 
       TYPES = [
         nil,

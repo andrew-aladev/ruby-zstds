@@ -87,7 +87,7 @@ module ZSTDS
                 sources = get_sources text, portion_length
 
                 Target.open archive_path, compressor_options do |instance|
-                  sources.each { |source| instance.printf "%s", source } # rubocop:disable Style/FormatStringToken
+                  sources.each { |source| instance.printf "%s", source }
                 end
 
                 compressed_text = ::File.read archive_path
@@ -178,7 +178,7 @@ module ZSTDS
         def test_invalid_open
           Validation::INVALID_STRINGS.each do |invalid_string|
             assert_raises ValidateError do
-              Target.open(invalid_string) {}
+              Target.open(invalid_string) {} # no-op
             end
           end
 
