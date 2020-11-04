@@ -33,7 +33,7 @@ jobs:
       arch: amd64
       language: bash
       before_install:
-        - choco install ruby zstandard
+        - choco upgrade ruby zstandard
         - ridk install
 
 addons:
