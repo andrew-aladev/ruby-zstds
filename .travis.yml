@@ -33,8 +33,8 @@ jobs:
       arch: amd64
       language: bash
       before_install:
-        - choco upgrade ruby zstandard
-        - ridk.cmd install
+        - choco uninstall mingw
+        - choco upgrade msys2 ruby zstandard
 
 addons:
   apt:
