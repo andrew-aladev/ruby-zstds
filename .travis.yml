@@ -34,7 +34,7 @@ jobs:
       language: bash
       before_install:
         - choco upgrade ruby zstandard
-        - ridk install
+        - ridk.cmd install
 
 addons:
   apt:
