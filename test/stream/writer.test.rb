@@ -191,17 +191,17 @@ module ZSTDS
 
         def test_write_nonblock
           parallel_compressor_options do |compressor_options|
-            modes = OCG.new(
-              :flush_nonblock => Option::BOOLS,
-              :close_nonblock => Option::BOOLS
-            )
-
             start_server do |server|
               TEXTS.each do |text|
                 PORTION_LENGTHS.each do |portion_length|
                   sources = get_sources text, portion_length
 
                   get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                    modes = OCG.new(
+                      :flush_nonblock => Option::BOOLS,
+                      :close_nonblock => Option::BOOLS
+                    )
+
                     modes.each do |mode|
                       server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance, socket|
                         # write
@@ -284,14 +284,14 @@ module ZSTDS
             text           = options[:text]
             portion_length = options[:portion_length]
 
-            modes = OCG.new(
-              :flush_nonblock => Option::BOOLS,
-              :close_nonblock => Option::BOOLS
-            )
-
             sources = get_sources text, portion_length
 
             start_server do |server|
+              modes = OCG.new(
+                :flush_nonblock => Option::BOOLS,
+                :close_nonblock => Option::BOOLS
+              )
+
               modes.each do |mode|
                 server_nonblock_test(server, text, portion_length) do |instance, socket|
                   # write
