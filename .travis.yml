@@ -35,7 +35,14 @@ jobs:
       before_install:
         - choco uninstall mingw
         - choco upgrade msys2 ruby zstandard
-        - ridk.cmd exec pacman --sync --noconfirm --needed base-devel mingw-w64-x86_64-toolchain
+        - ridk.cmd exec pacman --sync --noconfirm --needed make
+            mingw-w64-x86_64-binutils
+            mingw-w64-x86_64-crt-git
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-gcc-libs
+            mingw-w64-x86_64-headers-git
+            mingw-w64-x86_64-libwinpthread-git
+            mingw-w64-x86_64-winpthreads-git
 
 addons:
   apt:
