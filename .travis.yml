@@ -33,8 +33,9 @@ jobs:
       arch: amd64
       language: bash
       before_install:
-        - choco upgrade ruby zstandard
-        - ridk.cmd install 3
+        - choco uninstall mingw
+        - choco upgrade msys2 ruby zstandard
+        - ridk.cmd exec pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain
 
 addons:
   apt:
