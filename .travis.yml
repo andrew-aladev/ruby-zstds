@@ -2,38 +2,39 @@ language: ruby
 
 jobs:
   include:
-    - os: linux
-      arch: amd64
-      dist: focal
-      rvm: 2.5
-    - os: linux
-      arch: amd64
-      dist: focal
-      rvm: 2.6
-    - os: linux
-      arch: amd64
-      dist: focal
-      rvm: 2.7
-    - os: linux
-      arch: arm64
-      dist: focal
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.5
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.6
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.7
+    # - os: linux
+    #   arch: amd64
+    #   dist: focal
+    #   rvm: 2.5
+    # - os: linux
+    #   arch: amd64
+    #   dist: focal
+    #   rvm: 2.6
+    # - os: linux
+    #   arch: amd64
+    #   dist: focal
+    #   rvm: 2.7
+    # - os: linux
+    #   arch: arm64
+    #   dist: focal
+    # - os: osx
+    #   arch: amd64
+    #   osx_image: xcode12.2
+    #   rvm: 2.5
+    # - os: osx
+    #   arch: amd64
+    #   osx_image: xcode12.2
+    #   rvm: 2.6
+    # - os: osx
+    #   arch: amd64
+    #   osx_image: xcode12.2
+    #   rvm: 2.7
     - os: windows
       arch: amd64
       language: bash
       before_install:
-        - choco install zstandard
+        - choco install mingw msys2 zstandard
+        - ridk install
 
 addons:
   apt:
