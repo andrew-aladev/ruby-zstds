@@ -31,6 +31,7 @@ jobs:
       rvm: 2.7
     - os: windows
       arch: amd64
+      language: bash
       before_install:
         - choco install zstandard
 
