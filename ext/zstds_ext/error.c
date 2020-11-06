@@ -40,7 +40,7 @@ zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
   }
 }
 
-static inline NORETURN(void raise(const char* name, const char* description))
+static inline NORETURN(void raise_error(const char* name, const char* description))
 {
   VALUE module = rb_define_module(ZSTDS_EXT_MODULE_NAME);
   VALUE error  = rb_const_get(module, rb_intern(name));
@@ -51,30 +51,30 @@ void zstds_ext_raise_error(zstds_ext_result_t ext_result)
 {
   switch (ext_result) {
     case ZSTDS_EXT_ERROR_ALLOCATE_FAILED:
-      raise("AllocateError", "allocate error");
+      raise_error("AllocateError", "allocate error");
     case ZSTDS_EXT_ERROR_VALIDATE_FAILED:
-      raise("ValidateError", "validate error");
+      raise_error("ValidateError", "validate error");
 
     case ZSTDS_EXT_ERROR_USED_AFTER_CLOSE:
-      raise("UsedAfterCloseError", "used after closed");
+      raise_error("UsedAfterCloseError", "used after closed");
     case ZSTDS_EXT_ERROR_NOT_ENOUGH_SOURCE_BUFFER:
-      raise("NotEnoughSourceBufferError", "not enough source buffer");
+      raise_error("NotEnoughSourceBufferError", "not enough source buffer");
     case ZSTDS_EXT_ERROR_NOT_ENOUGH_DESTINATION_BUFFER:
-      raise("NotEnoughDestinationBufferError", "not enough destination buffer");
+      raise_error("NotEnoughDestinationBufferError", "not enough destination buffer");
     case ZSTDS_EXT_ERROR_DECOMPRESSOR_CORRUPTED_SOURCE:
-      raise("DecompressorCorruptedSourceError", "decompressor received corrupted source");
+      raise_error("DecompressorCorruptedSourceError", "decompressor received corrupted source");
     case ZSTDS_EXT_ERROR_CORRUPTED_DICTIONARY:
-      raise("CorruptedDictionaryError", "corrupted dictionary");
+      raise_error("CorruptedDictionaryError", "corrupted dictionary");
 
     case ZSTDS_EXT_ERROR_ACCESS_IO:
-      raise("AccessIOError", "failed to access IO");
+      raise_error("AccessIOError", "failed to access IO");
     case ZSTDS_EXT_ERROR_READ_IO:
-      raise("ReadIOError", "failed to read IO");
+      raise_error("ReadIOError", "failed to read IO");
     case ZSTDS_EXT_ERROR_WRITE_IO:
-      raise("WriteIOError", "failed to write IO");
+      raise_error("WriteIOError", "failed to write IO");
 
     default:
       // ZSTDS_EXT_ERROR_UNEXPECTED
-      raise("UnexpectedError", "unexpected error");
+      raise_error("UnexpectedError", "unexpected error");
   }
 }
