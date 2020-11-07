@@ -90,8 +90,11 @@ module ZSTDS
             instance.close_on_exec = true
             assert instance.close_on_exec?
 
-            stats = instance.fcntl Fcntl::F_GETFL, 0
-            refute stats.nil?
+            # Fcntl is not available on windows.
+            if Fcntl.const_defined? :F_GETFL
+              stats = instance.fcntl Fcntl::F_GETFL, 0
+              refute stats.nil?
+            end
 
             instance.fdatasync
 
