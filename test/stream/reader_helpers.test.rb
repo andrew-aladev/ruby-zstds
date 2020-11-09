@@ -399,7 +399,7 @@ module ZSTDS
 
         protected def write_archive(archive_path, text, compressor_options = {})
           compressed_text = String.compress text, compressor_options
-          ::File.write archive_path, compressed_text
+          ::File.write archive_path, compressed_text, :mode => "wb"
         end
 
         def parallel_compressor_options(&block)

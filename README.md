@@ -70,9 +70,9 @@ require "zstds"
 samples = (Array.new(8) { ::SecureRandom.random_bytes(1 << 8) } + ["sample string"]).shuffle
 
 dictionary = ZSTDS::Dictionary.train samples
-File.write "dictionary.bin", dictionary.buffer
+File.write "dictionary.bin", dictionary.buffer, :mode => "wb"
 
-dictionary_buffer = File.read "dictionary.bin"
+dictionary_buffer = File.read "dictionary.bin", :mode => "rb"
 dictionary        = ZSTDS::Dictionary.new dictionary_buffer
 
 data = ZSTDS::String.compress "sample string", :dictionary => dictionary

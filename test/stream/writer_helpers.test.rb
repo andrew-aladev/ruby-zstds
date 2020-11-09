@@ -39,7 +39,7 @@ module ZSTDS
                   sources.each { |current_source| instance << current_source }
                 end
 
-                compressed_text = ::File.read archive_path
+                compressed_text = ::File.read archive_path, :mode => "rb"
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text text, compressed_text, decompressor_options
@@ -68,7 +68,7 @@ module ZSTDS
                   instance.print(*sources, **keyword_args)
                 end
 
-                compressed_text = ::File.read archive_path
+                compressed_text = ::File.read archive_path, :mode => "rb"
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text target_text, compressed_text, decompressor_options
@@ -90,7 +90,7 @@ module ZSTDS
                   sources.each { |source| instance.printf "%s", source }
                 end
 
-                compressed_text = ::File.read archive_path
+                compressed_text = ::File.read archive_path, :mode => "rb"
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text text, compressed_text, decompressor_options
@@ -126,7 +126,7 @@ module ZSTDS
                 end
               end
 
-              compressed_text = ::File.read archive_path
+              compressed_text = ::File.read archive_path, :mode => "rb"
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                 check_text text, compressed_text, decompressor_options
@@ -165,7 +165,7 @@ module ZSTDS
                   instance.puts(*args)
                 end
 
-                compressed_text = ::File.read archive_path
+                compressed_text = ::File.read archive_path, :mode => "rb"
 
                 get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                   check_text target_text, compressed_text, decompressor_options
@@ -195,7 +195,7 @@ module ZSTDS
             TEXTS.each do |text|
               Target.open(archive_path, compressor_options) { |instance| instance.write text }
 
-              compressed_text = ::File.read archive_path
+              compressed_text = ::File.read archive_path, :mode => "rb"
 
               get_compatible_decompressor_options(compressor_options) do |decompressor_options|
                 check_text text, compressed_text, decompressor_options
@@ -222,7 +222,7 @@ module ZSTDS
               sources.each { |source| instance.write source }
             end
 
-            compressed_text = ::File.read archive_path
+            compressed_text = ::File.read archive_path, :mode => "rb"
 
             check_text text, compressed_text, {}
           end

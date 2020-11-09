@@ -78,7 +78,7 @@ module ZSTDS
         end
 
         def test_io_delegates
-          ::File.open SOURCE_PATH, "w+" do |file|
+          ::File.open SOURCE_PATH, "wb+" do |file|
             instance = target.new file
 
             instance.autoclose = true
