@@ -120,7 +120,7 @@ This code will provide heavy load for your CPU.
 require "zstds"
 require "parallel"
 
-Parallel.each(large_datas) do |large_data|
+Parallel.each large_datas do |large_data|
   ZSTDS::String.compress large_data
 end
 ```

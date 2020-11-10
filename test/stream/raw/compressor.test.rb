@@ -97,7 +97,7 @@ module ZSTDS
 
                   compressed_text = compressed_buffer.string
 
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  get_compatible_decompressor_options compressor_options do |decompressor_options|
                     decompressed_text = String.decompress compressed_text, decompressor_options
                     decompressed_text.force_encoding text.encoding
 

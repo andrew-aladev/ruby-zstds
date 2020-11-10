@@ -66,7 +66,7 @@ module ZSTDS
             ::File.write source_path, text, :mode => "wb"
             Target.compress source_path, archive_path, compressor_options
 
-            get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+            get_compatible_decompressor_options compressor_options do |decompressor_options|
               Target.decompress archive_path, source_path, decompressor_options
 
               decompressed_text = ::File.read source_path, :mode => "rb"

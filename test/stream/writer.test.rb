@@ -61,7 +61,7 @@ module ZSTDS
                 instance = target.new io, compressor_options.merge(:pledged_size => text.bytesize)
 
                 begin
-                  sources.each_slice(2) do |current_sources|
+                  sources.each_slice 2 do |current_sources|
                     instance.write(*current_sources)
                     instance.flush
                   end
@@ -76,7 +76,7 @@ module ZSTDS
 
                 compressed_text = io.string
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   check_text text, compressed_text, decompressor_options
                 end
               end
@@ -99,7 +99,7 @@ module ZSTDS
             instance = target.new io
 
             begin
-              sources.each_slice(2) do |current_sources|
+              sources.each_slice 2 do |current_sources|
                 instance.write(*current_sources)
                 instance.flush
               end
@@ -142,7 +142,7 @@ module ZSTDS
 
                 compressed_text = io.string
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   check_text target_text, compressed_text, decompressor_options
                   assert target_text.valid_encoding?
                 end
@@ -185,7 +185,7 @@ module ZSTDS
             TEXTS.each.with_index do |text, index|
               compressed_text = compressed_texts[index]
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 check_text text, compressed_text, decompressor_options
               end
             end
@@ -196,76 +196,74 @@ module ZSTDS
 
         def test_write_nonblock
           parallel_compressor_options do |compressor_options|
-            start_server do |server|
-              TEXTS.each do |text|
-                PORTION_LENGTHS.each do |portion_length|
-                  sources = get_sources text, portion_length
+            TEXTS.each do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                sources = get_sources text, portion_length
 
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                    FINISH_MODES.each do |finish_mode|
-                      server_nonblock_test(server, text, portion_length, compressor_options, decompressor_options) do |instance, socket|
-                        # write
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
+                  FINISH_MODES.each do |finish_mode|
+                    nonblock_test text, portion_length, compressor_options, decompressor_options do |instance, socket|
+                      # write
 
-                        sources.each.with_index do |source, index|
-                          if index.even?
-                            loop do
-                              begin
-                                bytes_written = instance.write_nonblock source
-                              rescue ::IO::WaitWritable
-                                ::IO.select nil, [socket]
-                                retry
-                              end
-
-                              source = source.byteslice bytes_written, source.bytesize - bytes_written
-                              break if source.bytesize.zero?
-                            end
-                          else
-                            instance.write source
-                          end
-                        end
-
-                        # flush
-
-                        if finish_mode[:flush_nonblock]
+                      sources.each.with_index do |source, index|
+                        if index.even?
                           loop do
                             begin
-                              is_flushed = instance.flush_nonblock
+                              bytes_written = instance.write_nonblock source
                             rescue ::IO::WaitWritable
                               ::IO.select nil, [socket]
                               retry
                             end
 
-                            break if is_flushed
+                            source = source.byteslice bytes_written, source.bytesize - bytes_written
+                            break if source.bytesize.zero?
                           end
                         else
-                          instance.flush
+                          instance.write source
                         end
-
-                        assert_equal instance.pos, text.bytesize
-                        assert_equal instance.pos, instance.tell
-
-                      ensure
-                        # close
-
-                        refute instance.closed?
-
-                        if finish_mode[:close_nonblock]
-                          loop do
-                            begin
-                              is_closed = instance.close_nonblock
-                            rescue ::IO::WaitWritable
-                              ::IO.select nil, [socket]
-                              retry
-                            end
-
-                            break if is_closed
-                          end
-                        else
-                          instance.close
-                        end
-
-                        assert instance.closed?
                       end
+
+                      # flush
+
+                      if finish_mode[:flush_nonblock]
+                        loop do
+                          begin
+                            is_flushed = instance.flush_nonblock
+                          rescue ::IO::WaitWritable
+                            ::IO.select nil, [socket]
+                            retry
+                          end
+
+                          break if is_flushed
+                        end
+                      else
+                        instance.flush
+                      end
+
+                      assert_equal instance.pos, text.bytesize
+                      assert_equal instance.pos, instance.tell
+
+                    ensure
+                      # close
+
+                      refute instance.closed?
+
+                      if finish_mode[:close_nonblock]
+                        loop do
+                          begin
+                            is_closed = instance.close_nonblock
+                          rescue ::IO::WaitWritable
+                            ::IO.select nil, [socket]
+                            retry
+                          end
+
+                          break if is_closed
+                        end
+                      else
+                        instance.close
+                      end
+
+                      assert instance.closed?
                     end
                   end
                 end
@@ -286,63 +284,61 @@ module ZSTDS
 
             sources = get_sources text, portion_length
 
-            start_server do |server|
-              FINISH_MODES.each do |finish_mode|
-                server_nonblock_test(server, text, portion_length) do |instance, socket|
-                  # write
+            FINISH_MODES.each do |finish_mode|
+              nonblock_test text, portion_length do |instance, socket|
+                # write
 
-                  sources.each.with_index do |source, index|
-                    if index.even?
-                      loop do
-                        begin
-                          bytes_written = instance.write_nonblock source
-                        rescue ::IO::WaitWritable
-                          ::IO.select nil, [socket]
-                          retry
-                        end
-
-                        source = source.byteslice bytes_written, source.bytesize - bytes_written
-                        break if source.bytesize.zero?
-                      end
-                    else
-                      instance.write source
-                    end
-                  end
-
-                  # flush
-
-                  if finish_mode[:flush_nonblock]
+                sources.each.with_index do |source, index|
+                  if index.even?
                     loop do
                       begin
-                        is_flushed = instance.flush_nonblock
+                        bytes_written = instance.write_nonblock source
                       rescue ::IO::WaitWritable
                         ::IO.select nil, [socket]
                         retry
                       end
 
-                      break if is_flushed
+                      source = source.byteslice bytes_written, source.bytesize - bytes_written
+                      break if source.bytesize.zero?
                     end
                   else
-                    instance.flush
+                    instance.write source
                   end
+                end
 
-                ensure
-                  # close
+                # flush
 
-                  if finish_mode[:close_nonblock]
-                    loop do
-                      begin
-                        is_closed = instance.close_nonblock
-                      rescue ::IO::WaitWritable
-                        ::IO.select nil, [socket]
-                        retry
-                      end
-
-                      break if is_closed
+                if finish_mode[:flush_nonblock]
+                  loop do
+                    begin
+                      is_flushed = instance.flush_nonblock
+                    rescue ::IO::WaitWritable
+                      ::IO.select nil, [socket]
+                      retry
                     end
-                  else
-                    instance.close
+
+                    break if is_flushed
                   end
+                else
+                  instance.flush
+                end
+
+              ensure
+                # close
+
+                if finish_mode[:close_nonblock]
+                  loop do
+                    begin
+                      is_closed = instance.close_nonblock
+                    rescue ::IO::WaitWritable
+                      ::IO.select nil, [socket]
+                      retry
+                    end
+
+                    break if is_closed
+                  end
+                else
+                  instance.close
                 end
               end
             end
@@ -392,51 +388,49 @@ module ZSTDS
             TEXTS.each.with_index do |text, index|
               compressed_text = compressed_texts[index]
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 check_text text, compressed_text, decompressor_options
               end
             end
           end
         end
 
-        # -- server --
+        # -- nonblock test --
 
-        protected def start_server(&block)
-          ::TCPServer.open 0, &block
-        end
-
-        protected def server_nonblock_test(server, text, portion_length, compressor_options = {}, decompressor_options = {}, &_block)
+        protected def nonblock_test(text, portion_length, compressor_options = {}, decompressor_options = {}, &_block)
           compressed_text = "".b
 
-          server_thread = ::Thread.new do
-            socket = server.accept
+          ::TCPServer.open 0 do |server|
+            server_thread = ::Thread.new do
+              socket = server.accept
 
-            begin
-              loop do
-                compressed_text << socket.read_nonblock(portion_length)
-              rescue ::IO::WaitReadable
-                ::IO.select [socket]
-              rescue ::EOFError
-                break
+              begin
+                loop do
+                  compressed_text << socket.read_nonblock(portion_length)
+                rescue ::IO::WaitReadable
+                  ::IO.select [socket]
+                rescue ::EOFError
+                  break
+                end
+              ensure
+                socket.close
               end
-            ensure
-              socket.close
             end
-          end
 
-          TCPSocket.open "localhost", server.addr[1] do |socket|
-            instance = target.new socket, compressor_options
+            ::TCPSocket.open "localhost", server.addr[1] do |socket|
+              instance = target.new socket, compressor_options
 
-            begin
-              yield instance, socket
-            ensure
-              instance.close
+              begin
+                yield instance, socket
+              ensure
+                instance.close
+              end
             end
+
+            server_thread.join
+
+            check_text text, compressed_text, decompressor_options
           end
-
-          server_thread.join
-
-          check_text text, compressed_text, decompressor_options
         end
 
         # -----

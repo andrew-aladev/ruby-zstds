@@ -77,7 +77,7 @@ module ZSTDS
 
               Option::BOOLS.each do |with_buffer|
                 PORTION_LENGTHS.each do |portion_length|
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  get_compatible_decompressor_options compressor_options do |decompressor_options|
                     instance          = target.new ::StringIO.new(archive), decompressor_options
                     decompressed_text = "".b
 
@@ -119,7 +119,7 @@ module ZSTDS
                   end
                 end
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   instance          = target.new ::StringIO.new(archive), decompressor_options
                   decompressed_text = nil
 
@@ -217,7 +217,7 @@ module ZSTDS
               archive           = get_archive text, compressor_options
 
               PORTION_LENGTHS.each do |portion_length|
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   instance          = target.new ::StringIO.new(archive), decompressor_options
                   decompressed_text = "".b
 
@@ -245,7 +245,7 @@ module ZSTDS
               (ENCODINGS - [external_encoding]).each do |internal_encoding|
                 target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   instance = target.new(
                     ::StringIO.new(archive),
                     decompressor_options,
@@ -287,7 +287,7 @@ module ZSTDS
             TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 decompressed_text = nil
 
                 ::File.open archive_path, "rb" do |file|
@@ -380,30 +380,28 @@ module ZSTDS
           end
 
           parallel_compressor_options do |compressor_options|
-            start_server do |server|
-              TEXTS.each do |text|
-                PORTION_LENGTHS.each do |portion_length|
-                  Option::BOOLS.each do |with_buffer|
-                    get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                      server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance|
-                        prev_result       = "".b
-                        decompressed_text = "".b
+            TEXTS.each do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                Option::BOOLS.each do |with_buffer|
+                  get_compatible_decompressor_options compressor_options do |decompressor_options|
+                    nonblock_test text, compressor_options, decompressor_options do |instance|
+                      prev_result       = "".b
+                      decompressed_text = "".b
 
-                        loop do
-                          if with_buffer
-                            result = instance.readpartial portion_length, prev_result
-                            assert_equal result, prev_result
-                          else
-                            result = instance.readpartial portion_length
-                          end
-
-                          decompressed_text << result
-                        rescue ::EOFError
-                          break
+                      loop do
+                        if with_buffer
+                          result = instance.readpartial portion_length, prev_result
+                          assert_equal result, prev_result
+                        else
+                          result = instance.readpartial portion_length
                         end
 
-                        decompressed_text
+                        decompressed_text << result
+                      rescue ::EOFError
+                        break
                       end
+
+                      decompressed_text
                     end
                   end
                 end
@@ -428,37 +426,35 @@ module ZSTDS
           end
 
           parallel_compressor_options do |compressor_options|
-            start_server do |server|
-              TEXTS.each do |text|
-                PORTION_LENGTHS.each do |portion_length|
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
-                    server_nonblock_test(server, text, compressor_options, decompressor_options) do |instance, socket|
-                      decompressed_text = "".b
+            TEXTS.each do |text|
+              PORTION_LENGTHS.each do |portion_length|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
+                  nonblock_test text, compressor_options, decompressor_options do |instance, socket|
+                    decompressed_text = "".b
 
-                      loop do
-                        begin
-                          decompressed_text << instance.read_nonblock(portion_length)
-                        rescue ::IO::WaitReadable
-                          ::IO.select [socket]
-                          retry
-                        rescue ::EOFError
-                          break
-                        end
-
-                        begin
-                          decompressed_text << instance.readpartial(portion_length)
-                        rescue ::EOFError
-                          break
-                        end
-
-                        result = instance.read portion_length
-                        break if result.nil?
-
-                        decompressed_text << result
+                    loop do
+                      begin
+                        decompressed_text << instance.read_nonblock(portion_length)
+                      rescue ::IO::WaitReadable
+                        ::IO.select [socket]
+                        retry
+                      rescue ::EOFError
+                        break
                       end
 
-                      decompressed_text
+                      begin
+                        decompressed_text << instance.readpartial(portion_length)
+                      rescue ::EOFError
+                        break
+                      end
+
+                      result = instance.read portion_length
+                      break if result.nil?
+
+                      decompressed_text << result
                     end
+
+                    decompressed_text
                   end
                 end
               end
@@ -476,82 +472,78 @@ module ZSTDS
             text           = options[:text]
             portion_length = options[:portion_length]
 
-            start_server do |server|
-              server_nonblock_test(server, text) do |instance, socket|
-                decompressed_text = "".b
+            nonblock_test text do |instance, socket|
+              decompressed_text = "".b
 
-                loop do
-                  begin
-                    decompressed_text << instance.read_nonblock(portion_length)
-                  rescue ::IO::WaitReadable
-                    ::IO.select [socket]
-                    retry
-                  rescue ::EOFError
-                    break
-                  end
-
-                  begin
-                    decompressed_text << instance.readpartial(portion_length)
-                  rescue ::EOFError
-                    break
-                  end
-
-                  result = instance.read portion_length
-                  break if result.nil?
-
-                  decompressed_text << result
-                end
-
-                decompressed_text
-              end
-            end
-          end
-        end
-
-        # -- server --
-
-        protected def start_server(&block)
-          ::TCPServer.open 0, &block
-        end
-
-        protected def server_nonblock_test(server, text, compressor_options = {}, decompressor_options = {}, &_block)
-          compressed_text = String.compress text, compressor_options
-
-          server_thread = ::Thread.new do
-            socket = server.accept
-
-            begin
               loop do
                 begin
-                  bytes_written = socket.write_nonblock compressed_text
-                rescue ::IO::WaitWritable
-                  ::IO.select nil, [socket]
+                  decompressed_text << instance.read_nonblock(portion_length)
+                rescue ::IO::WaitReadable
+                  ::IO.select [socket]
                   retry
+                rescue ::EOFError
+                  break
                 end
 
-                compressed_text = compressed_text.byteslice bytes_written, compressed_text.bytesize - bytes_written
-                break if compressed_text.bytesize.zero?
+                begin
+                  decompressed_text << instance.readpartial(portion_length)
+                rescue ::EOFError
+                  break
+                end
+
+                result = instance.read portion_length
+                break if result.nil?
+
+                decompressed_text << result
               end
-            ensure
-              socket.close
+
+              decompressed_text
             end
           end
+        end
 
-          decompressed_text =
-            ::TCPSocket.open "localhost", server.addr[1] do |socket|
-              instance = target.new socket, decompressor_options
+        # -- nonblock test --
+
+        protected def nonblock_test(text, compressor_options = {}, decompressor_options = {}, &_block)
+          compressed_text = String.compress text, compressor_options
+
+          ::TCPServer.open 0 do |server|
+            server_thread = ::Thread.new do
+              socket = server.accept
 
               begin
-                yield instance, socket
+                loop do
+                  begin
+                    bytes_written = socket.write_nonblock compressed_text
+                  rescue ::IO::WaitWritable
+                    ::IO.select nil, [socket]
+                    retry
+                  end
+
+                  compressed_text = compressed_text.byteslice bytes_written, compressed_text.bytesize - bytes_written
+                  break if compressed_text.bytesize.zero?
+                end
               ensure
-                instance.close
+                socket.close
               end
             end
 
-          server_thread.join
+            decompressed_text =
+              ::TCPSocket.open "localhost", server.addr[1] do |socket|
+                instance = target.new socket, decompressor_options
 
-          decompressed_text.force_encoding text.encoding
-          assert_equal text, decompressed_text
+                begin
+                  yield instance, socket
+                ensure
+                  instance.close
+                end
+              end
+
+            server_thread.join
+
+            decompressed_text.force_encoding text.encoding
+            assert_equal text, decompressed_text
+          end
         end
 
         # -----

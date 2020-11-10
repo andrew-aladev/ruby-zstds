@@ -66,7 +66,7 @@ module ZSTDS
                 compressed_text = String.compress text, compressor_options
 
                 PORTION_LENGTHS.each do |portion_length|
-                  get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                  get_compatible_decompressor_options compressor_options do |decompressor_options|
                     decompressed_buffer = ::StringIO.new
                     decompressed_buffer.set_encoding ::Encoding::BINARY
 

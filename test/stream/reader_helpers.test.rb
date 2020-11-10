@@ -50,7 +50,7 @@ module ZSTDS
             TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 Target.open archive_path, decompressor_options do |instance|
                   # getbyte
 
@@ -98,7 +98,7 @@ module ZSTDS
             TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 Target.open archive_path, decompressor_options do |instance|
                   # getc
 
@@ -139,7 +139,7 @@ module ZSTDS
               (ENCODINGS - [external_encoding]).each do |internal_encoding|
                 target_text = text.encode internal_encoding, **TRANSCODE_OPTIONS
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   Target.open archive_path, decompressor_options do |instance|
                     instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
 
@@ -222,7 +222,7 @@ module ZSTDS
                   text[0]
                 end
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 Target.open archive_path, decompressor_options do |instance|
                   # lineno
 
@@ -310,7 +310,7 @@ module ZSTDS
                     text[0]
                   end
 
-                get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   Target.open archive_path, decompressor_options do |instance|
                     instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
 
@@ -373,7 +373,7 @@ module ZSTDS
             TEXTS.each do |text|
               write_archive archive_path, text, compressor_options
 
-              get_compatible_decompressor_options(compressor_options) do |decompressor_options|
+              get_compatible_decompressor_options compressor_options do |decompressor_options|
                 decompressed_text = Target.open archive_path, decompressor_options, &:read
                 decompressed_text.force_encoding text.encoding
 
