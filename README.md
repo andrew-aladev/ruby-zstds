@@ -318,6 +318,9 @@ Special asynchronous methods missing in `Zlib::GzipWriter`.
 So it is possible to have asynchronous variants for these synchronous methods.
 Behaviour is the same as `IO#write_nonblock` method.
 
+All nonblock operations for file will raise `EBADF` error on Windows.
+Setting file into nonblocking mode is [not available on Windows](https://github.com/ruby/ruby/blob/master/win32/win32.c#L4388).
+
 ```
 #<<(object)
 #print(*objects)
