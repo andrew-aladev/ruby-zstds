@@ -346,6 +346,8 @@ module ZSTDS
         end
 
         def test_rewind_nonblock
+          return unless Common.file_can_be_used_nonblock?
+
           parallel_compressor_options do |compressor_options, worker_index|
             archive_path = Common.get_path ARCHIVE_PATH, worker_index
 
