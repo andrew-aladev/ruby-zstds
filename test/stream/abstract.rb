@@ -74,7 +74,7 @@ module ZSTDS
 
         def test_to_io
           instance = target.new ::StringIO.new
-          assert_equal instance.to_io, instance
+          assert_equal instance, instance.to_io
         end
 
         def test_io_delegates

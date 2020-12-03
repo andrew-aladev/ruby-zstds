@@ -83,7 +83,7 @@ module ZSTDS
 
                     begin
                       result = instance.read 0
-                      assert_equal result, ""
+                      assert_equal "", result
 
                       loop do
                         prev_eof = instance.eof?
@@ -102,7 +102,7 @@ module ZSTDS
 
                         refute prev_eof unless archive.bytesize.zero?
 
-                        assert_equal result, prev_result if with_buffer
+                        assert_equal prev_result, result if with_buffer
                         decompressed_text << result
                       end
 
@@ -128,7 +128,7 @@ module ZSTDS
 
                     if with_buffer
                       decompressed_text = instance.read nil, prev_result
-                      assert_equal decompressed_text, prev_result
+                      assert_equal prev_result, decompressed_text
                     else
                       decompressed_text = instance.read
                     end
@@ -180,7 +180,7 @@ module ZSTDS
 
                   break if result.nil?
 
-                  assert_equal result, prev_result if with_buffer
+                  assert_equal prev_result, result if with_buffer
                   decompressed_text << result
                 end
               ensure
@@ -197,7 +197,7 @@ module ZSTDS
             begin
               if with_buffer
                 decompressed_text = instance.read nil, prev_result
-                assert_equal decompressed_text, prev_result
+                assert_equal prev_result, decompressed_text
               else
                 decompressed_text = instance.read
               end
@@ -223,13 +223,13 @@ module ZSTDS
 
                   begin
                     result = instance.read 0
-                    assert_equal result.encoding, Encoding::BINARY
+                    assert_equal Encoding::BINARY, result.encoding
 
                     loop do
                       result = instance.read portion_length
                       break if result.nil?
 
-                      assert_equal result.encoding, Encoding::BINARY
+                      assert_equal Encoding::BINARY, result.encoding
                       decompressed_text << result
                     end
                   ensure
@@ -254,20 +254,20 @@ module ZSTDS
                     :transcode_options => TRANSCODE_OPTIONS
                   )
 
-                  assert_equal instance.external_encoding, external_encoding
-                  assert_equal instance.internal_encoding, internal_encoding
-                  assert_equal instance.transcode_options, TRANSCODE_OPTIONS
+                  assert_equal external_encoding, instance.external_encoding
+                  assert_equal internal_encoding, instance.internal_encoding
+                  assert_equal TRANSCODE_OPTIONS, instance.transcode_options
 
                   decompressed_text = nil
 
                   begin
                     instance.set_encoding external_encoding, internal_encoding, TRANSCODE_OPTIONS
-                    assert_equal instance.external_encoding, external_encoding
-                    assert_equal instance.internal_encoding, internal_encoding
-                    assert_equal instance.transcode_options, TRANSCODE_OPTIONS
+                    assert_equal external_encoding, instance.external_encoding
+                    assert_equal internal_encoding, instance.internal_encoding
+                    assert_equal TRANSCODE_OPTIONS, instance.transcode_options
 
                     decompressed_text = instance.read
-                    assert_equal decompressed_text.encoding, internal_encoding
+                    assert_equal internal_encoding, decompressed_text.encoding
                   ensure
                     instance.close
                   end
@@ -296,8 +296,8 @@ module ZSTDS
                   begin
                     result_1 = instance.read
 
-                    assert_equal instance.rewind, 0
-                    assert_equal instance.pos, 0
+                    assert_equal 0, instance.rewind
+                    assert_equal 0, instance.pos
                     assert_equal instance.pos, instance.tell
 
                     result_2 = instance.read
@@ -324,11 +324,11 @@ module ZSTDS
 
           byte = instance.read 1
           refute instance.eof?
-          assert_equal byte, "a"
+          assert_equal "a", byte
 
           byte = instance.read 1
           assert instance.eof?
-          assert_equal byte, "b"
+          assert_equal "b", byte
         end
 
         # -- asynchronous --
@@ -391,7 +391,7 @@ module ZSTDS
                       loop do
                         if with_buffer
                           result = instance.readpartial portion_length, prev_result
-                          assert_equal result, prev_result
+                          assert_equal prev_result, result
                         else
                           result = instance.readpartial portion_length
                         end

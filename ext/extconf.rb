@@ -87,7 +87,7 @@ $libs = $libs.split(%r{\s})
   .uniq
   .join " "
 
-if ENV["CI"] || ENV["COVERAGE"]
+if ENV["CI"]
   $CFLAGS << " --coverage"
   $LDFLAGS << " --coverage"
 end

@@ -63,7 +63,7 @@ module ZSTDS
 
           assert dictionary.id.positive?
           refute dictionary.buffer.nil?
-          refute dictionary.buffer.empty?
+          refute_empty dictionary.buffer
 
           dictionary_copy = Target.new dictionary.buffer
 

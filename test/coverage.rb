@@ -1,7 +1,7 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
-if ENV["CI"] || ENV["COVERAGE"]
+if ENV["CI"]
   require "codecov"
   require "simplecov"
 

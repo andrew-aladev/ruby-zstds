@@ -1,4 +1,7 @@
-require: rubocop-performance
+require:
+  - rubocop-minitest
+  - rubocop-performance
+  - rubocop-rake
 
 AllCops:
   NewCops: enable
@@ -6,6 +9,8 @@ AllCops:
 
 Layout/EmptyLinesAroundExceptionHandlingKeywords:
   Enabled: false
+Layout/EmptyLineBetweenDefs:
+  AllowAdjacentOneLineDefs: true
 Layout/HashAlignment:
   EnforcedHashRocketStyle: table
 Layout/LineLength:

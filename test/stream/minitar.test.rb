@@ -31,7 +31,7 @@ module ZSTDS
             Reader.open archive_path do |reader|
               Minitar::Reader.open reader do |tar|
                 tar.each_entry do |entry|
-                  assert_equal entry.name, "file"
+                  assert_equal "file", entry.name
 
                   decompressed_text = entry.read
                   decompressed_text.force_encoding text.encoding
