@@ -18,7 +18,7 @@ fi
 echo "need to mount tmp"
 
 # "sudo" may be required for ramfs.
-if command -v sudo > /dev/null 2>&1; then
+if command -v "sudo" > /dev/null 2>&1; then
   sudo ./ramfs.sh "$TMP_PATH" "$TMP_SIZE" || true
 else
   ./ramfs.sh "$TMP_PATH" "$TMP_SIZE" || true

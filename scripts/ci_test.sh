@@ -14,7 +14,7 @@ cd ".."
 ruby_version=$(< ".ruby-version")
 ruby_gemset=$(< ".ruby-gemset")
 
-if command -v rvm > /dev/null 2>&1; then
+if command -v "rvm" > /dev/null 2>&1; then
   # Using latest available ruby version (search is based on required major version).
   ruby_major_version=$(echo "${ruby_version%.*}" | sed "s/\./\\\./g") # escaping for regex
   ruby_version=$(rvm list | grep -o -e "${ruby_major_version}\.[0-9]\+" | sort | tail -n 1)
