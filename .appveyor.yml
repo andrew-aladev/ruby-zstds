@@ -25,6 +25,8 @@ for:
       - sh: sudo apt-get install -y libzstd-dev
     test_script:
       - sh: scripts/ci_test.sh
+    after_test:
+      - sh: bash <(curl -s "https://codecov.io/bash")
 
   -
     matrix:
@@ -34,6 +36,8 @@ for:
       - sh: brew install zstd
     test_script:
       - sh: sudo -E scripts/ci_test.sh
+    after_test:
+      - sh: bash <(curl -s "https://codecov.io/bash")
 
   # -
   #  matrix:
@@ -44,3 +48,5 @@ for:
   #    - cmd: C:\msys64\usr\bin\bash -cl "pacman --sync --noconfirm --needed libzstd-devel"
   #  test_script:
   #    - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
+  #  after_test:
+  #    - cmd: C:\msys64\usr\bin\bash -cl "bash <(curl -s 'https://codecov.io/bash')"
