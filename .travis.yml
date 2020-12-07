@@ -17,26 +17,11 @@ jobs:
     - os: linux
       arch: arm64
       dist: focal
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.5
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.6
-    - os: osx
-      arch: amd64
-      osx_image: xcode12.2
-      rvm: 2.7
 
 addons:
   apt:
     packages:
       - libzstd-dev
-  homebrew:
-    packages:
-      - zstd
 
 before_install:
   - gem install bundler
