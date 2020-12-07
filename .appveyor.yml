@@ -43,4 +43,4 @@ for:
      - cmd: set PATH=C:\Ruby%RUBY_VERSION%\bin;%PATH%
      - cmd: C:\msys64\usr\bin\bash -cl "pacman --sync --noconfirm --needed libzstd-devel"
    test_script:
-     - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
+     - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh; cat ./tmp/*/zstds_ext/2.7.2/mkmf.log"
