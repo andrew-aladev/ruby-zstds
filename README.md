@@ -1,8 +1,8 @@
 # Ruby bindings for zstd library
 
-| AppVeyor | Circle | Travis | Codecov | Gem   |
-| :---:  | :---:    | :---:  | :---:   | :---: |
-| [![AppVeyor test status](https://ci.appveyor.com/api/projects/status/github/andrew-aladev/ruby-zstds?branch=master&svg=true)](https://ci.appveyor.com/project/andrew-aladev/ruby-zstds/branch/master) | [![Circle test status](https://circleci.com/gh/andrew-aladev/ruby-zstds/tree/master.svg?style=shield)](https://circleci.com/gh/andrew-aladev/ruby-zstds/tree/master) | [![Travis test status](https://travis-ci.com/andrew-aladev/ruby-zstds.svg?branch=master)](https://travis-ci.com/andrew-aladev/ruby-zstds) | [![Codecov](https://codecov.io/gh/andrew-aladev/ruby-zstds/branch/master/graph/badge.svg)](https://codecov.io/gh/andrew-aladev/ruby-zstds) | [![Gem](https://img.shields.io/gem/v/ruby-zstds.svg)](https://rubygems.org/gems/ruby-zstds) |
+| AppVeyor | Circle | Codecov | Gem   |
+| :---:  | :---:    | :---:   | :---: |
+| [![AppVeyor test status](https://ci.appveyor.com/api/projects/status/github/andrew-aladev/ruby-zstds?branch=master&svg=true)](https://ci.appveyor.com/project/andrew-aladev/ruby-zstds/branch/master) | [![Circle test status](https://circleci.com/gh/andrew-aladev/ruby-zstds/tree/master.svg?style=shield)](https://circleci.com/gh/andrew-aladev/ruby-zstds/tree/master) | [![Codecov](https://codecov.io/gh/andrew-aladev/ruby-zstds/branch/master/graph/badge.svg)](https://codecov.io/gh/andrew-aladev/ruby-zstds) | [![Gem](https://img.shields.io/gem/v/ruby-zstds.svg)](https://rubygems.org/gems/ruby-zstds) |
 
 See [zstd library](https://github.com/facebook/zstd).
 
