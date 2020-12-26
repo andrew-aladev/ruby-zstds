@@ -4,30 +4,18 @@ on:
   - push
 
 jobs:
-  # ubuntu:
-  #   runs-on: ubuntu-latest
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #
-  #     - name: Setup dependencies
-  #       run: |
-  #         sudo apt-get install -y gcc-9 llvm-10 clang-10
-  #         sudo update-alternatives \
-  #           --install /usr/bin/gcc gcc /usr/bin/gcc-9 100 \
-  #           --slave /usr/bin/gcc-ar gcc-ar /usr/bin/gcc-ar-9 \
-  #           --slave /usr/bin/gcc-ranlib gcc-ranlib /usr/bin/gcc-ranlib-9 \
-  #           --slave /usr/bin/gcov gcov /usr/bin/gcov-9
-  #         sudo update-alternatives \
-  #           --install /usr/bin/llvm-ar llvm-ar /usr/bin/llvm-ar-10 100 \
-  #           --slave /usr/bin/llvm-ranlib llvm-ranlib /usr/bin/llvm-ranlib-10 \
-  #           --slave /usr/bin/llvm-cov llvm-cov /usr/bin/llvm-cov-10
-  #         sudo update-alternatives \
-  #           --install /usr/bin/clang clang /usr/bin/clang-10 100
-  #
-  #     - name: CI test
-  #       run: scripts/ci_test.sh
+  ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup dependencies
+        run: sudo apt-get install -y libzstd-dev
+
+      - name: CI test
+        run: scripts/ci_test.sh
 
   macos:
     runs-on: macos-latest
