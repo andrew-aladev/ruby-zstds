@@ -45,7 +45,6 @@ for:
   #      - job_name: Windows
   #  init:
   #    - cmd: set PATH=C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%
-  #    - cmd: C:\msys64\usr\bin\bash -cl "pacman --sync --noconfirm --needed libzstd-devel"
   #  test_script:
   #    - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
   #  after_test:
