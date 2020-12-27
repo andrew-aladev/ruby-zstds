@@ -83,3 +83,4 @@ jobs:
 
       - name: CI test
         run: scripts/ci_test.sh
+        shell: bash
