@@ -9,6 +9,7 @@ RUBY_VERSIONS=(
   "ruby25"
   "ruby26"
   "ruby27"
+  "ruby30"
 )
 
 if [ ! -d "$DIR" ]; then
