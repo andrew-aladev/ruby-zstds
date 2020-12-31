@@ -8,7 +8,7 @@ See [zstd library](https://github.com/facebook/zstd).
 
 ## Installation
 
-Please install zstd library first, use latest 1.4.3+ version.
+Please install zstd library first, use latest 1.4.0+ version.
 
 ```sh
 gem install ruby-zstds
