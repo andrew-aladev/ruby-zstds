@@ -10,11 +10,11 @@ environment:
       appveyor_build_worker_image: macos
       APPVEYOR: True
       CI: True
-    # - job_name: Windows
-    #   appveyor_build_worker_image: Visual Studio 2019
-    #   CHERE_INVOKING: 1
-    #   MSYSTEM: MINGW64
-    #   RUBY_VERSION: 27
+    - job_name: Windows
+      appveyor_build_worker_image: Visual Studio 2019
+      CHERE_INVOKING: 1
+      MSYSTEM: MINGW64
+      RUBY_VERSION: 27
 
 for:
   -
@@ -39,13 +39,13 @@ for:
     after_test:
       - sh: bash <(curl -s "https://codecov.io/bash")
 
-  # -
-  #  matrix:
-  #    only:
-  #      - job_name: Windows
-  #  init:
-  #    - cmd: set PATH=C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%
-  #  test_script:
-  #    - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
-  #  after_test:
-  #    - cmd: C:\msys64\usr\bin\bash -cl "bash <(curl -s 'https://codecov.io/bash')"
+  -
+    matrix:
+      only:
+        - job_name: Windows
+    init:
+      - cmd: set PATH=C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%
+    test_script:
+      - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
+    after_test:
+      - cmd: C:\msys64\usr\bin\bash -cl "bash <(curl -s 'https://codecov.io/bash')"

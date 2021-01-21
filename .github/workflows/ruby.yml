@@ -51,25 +51,25 @@ jobs:
       - name: CI test
         run: sudo scripts/ci_test.sh
 
-  # windows:
-  #   strategy:
-  #     matrix:
-  #       ruby:
-  #         - 2.5
-  #         - 2.6
-  #         - 2.7
-  #
-  #   runs-on: windows-2019
-  #
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v2
-  #
-  #     - name: Ruby setup
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: ${{ matrix.ruby }}
-  #
-  #     - name: CI test
-  #       run: scripts/ci_test.sh
-  #       shell: bash
+  windows:
+    strategy:
+      matrix:
+        ruby:
+          - 2.5
+          - 2.6
+          - 2.7
+
+    runs-on: windows-2019
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Ruby setup
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: CI test
+        run: scripts/ci_test.sh
+        shell: bash
