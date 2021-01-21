@@ -379,12 +379,12 @@ module ZSTDS
             end
           end
 
-          parallel_compressor_options do |compressor_options|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                Option::BOOLS.each do |with_buffer|
-                  get_compatible_decompressor_options compressor_options do |decompressor_options|
-                    nonblock_test text, compressor_options, decompressor_options do |instance|
+          PORTION_LENGTHS.each do |portion_length|
+            nonblock_server(portion_length) do |server|
+              parallel_compressor_options do |compressor_options|
+                TEXTS.each do |text|
+                  Option::BOOLS.each do |with_buffer|
+                    nonblock_test server, text, compressor_options do |instance|
                       prev_result       = "".b
                       decompressed_text = "".b
 
@@ -425,11 +425,11 @@ module ZSTDS
             end
           end
 
-          parallel_compressor_options do |compressor_options|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                get_compatible_decompressor_options compressor_options do |decompressor_options|
-                  nonblock_test text, compressor_options, decompressor_options do |instance, socket|
+          PORTION_LENGTHS.each do |portion_length|
+            nonblock_server(portion_length) do |server|
+              parallel_compressor_options do |compressor_options|
+                TEXTS.each do |text|
+                  nonblock_test server, text, compressor_options do |instance, socket|
                     decompressed_text = "".b
 
                     loop do
@@ -463,86 +463,146 @@ module ZSTDS
         end
 
         def test_read_nonblock_with_large_texts
-          options_generator = OCG.new(
-            :text           => LARGE_TEXTS,
-            :portion_length => LARGE_PORTION_LENGTHS
-          )
+          LARGE_PORTION_LENGTHS.each do |portion_length|
+            nonblock_server(portion_length) do |server|
+              Common.parallel LARGE_TEXTS do |text|
+                nonblock_test server, text do |instance, socket|
+                  decompressed_text = "".b
 
-          Common.parallel_options options_generator do |options|
-            text           = options[:text]
-            portion_length = options[:portion_length]
+                  loop do
+                    begin
+                      decompressed_text << instance.read_nonblock(portion_length)
+                    rescue ::IO::WaitReadable
+                      ::IO.select [socket]
+                      retry
+                    rescue ::EOFError
+                      break
+                    end
 
-            nonblock_test text do |instance, socket|
-              decompressed_text = "".b
+                    begin
+                      decompressed_text << instance.readpartial(portion_length)
+                    rescue ::EOFError
+                      break
+                    end
 
-              loop do
-                begin
-                  decompressed_text << instance.read_nonblock(portion_length)
-                rescue ::IO::WaitReadable
-                  ::IO.select [socket]
-                  retry
-                rescue ::EOFError
-                  break
+                    result = instance.read portion_length
+                    break if result.nil?
+
+                    decompressed_text << result
+                  end
+
+                  decompressed_text
                 end
-
-                begin
-                  decompressed_text << instance.readpartial(portion_length)
-                rescue ::EOFError
-                  break
-                end
-
-                result = instance.read portion_length
-                break if result.nil?
-
-                decompressed_text << result
               end
-
-              decompressed_text
             end
           end
         end
 
         # -- nonblock test --
 
-        protected def nonblock_test(text, compressor_options = {}, decompressor_options = {}, &_block)
-          compressed_text = String.compress text, compressor_options
+        protected def nonblock_server(portion_length)
+          # Server need just to redirect content for client.
 
           ::TCPServer.open 0 do |server|
-            server_thread = ::Thread.new do
-              socket = server.accept
+            # Server loop will be processed in separate (parent) thread.
+            # Child threads will be collected for later usage.
+            child_lock    = ::Mutex.new
+            child_threads = ::Set.new
 
-              begin
-                loop do
-                  begin
-                    bytes_written = socket.write_nonblock compressed_text
-                  rescue ::IO::WaitWritable
-                    ::IO.select nil, [socket]
-                    retry
+            parent_thread = ::Thread.new do
+              loop do
+                child_thread = ::Thread.start server.accept do |socket|
+                  result = "".b
+
+                  # Reading head.
+                  result_size = socket.read(8).unpack1 "Q"
+                  next if result_size.zero?
+
+                  # Reading result.
+                  loop do
+                    begin
+                      result << socket.read_nonblock(portion_length)
+                    rescue ::IO::WaitReadable
+                      ::IO.select [socket]
+                      retry
+                    end
+
+                    break if result.bytesize == result_size
                   end
 
-                  compressed_text = compressed_text.byteslice bytes_written, compressed_text.bytesize - bytes_written
-                  break if compressed_text.bytesize.zero?
+                  # Writing result.
+                  loop do
+                    begin
+                      bytes_written = socket.write_nonblock result
+                    rescue ::IO::WaitWritable
+                      ::IO.select nil, [socket]
+                      retry
+                    end
+
+                    result       = result.byteslice bytes_written, result.bytesize - bytes_written
+                    result_size -= bytes_written
+
+                    break if result_size.zero?
+                  end
+
+                ensure
+                  socket.close
+
+                  # Removing current child thread.
+                  child_lock.synchronize { child_threads.delete ::Thread.current }
                 end
-              ensure
-                socket.close
+
+                # Adding new child thread.
+                child_lock.synchronize { child_threads.add child_thread }
               end
             end
 
-            decompressed_text =
-              ::TCPSocket.open "localhost", server.addr[1] do |socket|
-                instance = target.new socket, decompressor_options
+            # Processing client.
+            begin
+              yield server
+            ensure
+              # We need to kill parent thread when client has finished.
+              # So server won't be able to create new child threads.
+              # Than we can join all remaining child threads.
+              parent_thread.kill.join
+              child_threads.each(&:join)
+            end
+          end
+        end
 
-                begin
-                  yield instance, socket
-                ensure
-                  instance.close
-                end
+        protected def nonblock_test(server, text, compressor_options = {}, &_block)
+          port            = server.addr[1]
+          compressed_text = String.compress text, compressor_options
+
+          processor = proc do |decompressor_options|
+            decompressed_text = ::TCPSocket.open "localhost", port do |socket|
+              # Writing head.
+              head = [compressed_text.bytesize].pack "Q"
+              socket.write head
+
+              # Writing compressed text.
+              socket.write compressed_text
+
+              instance = target.new socket, decompressor_options
+
+              begin
+                yield instance, socket
+              ensure
+                instance.close
               end
+            end
 
-            server_thread.join
-
+            # Testing decompressed text.
             decompressed_text.force_encoding text.encoding
             assert_equal text, decompressed_text
+          end
+
+          if compressor_options.empty?
+            processor.call({})
+          else
+            get_compatible_decompressor_options compressor_options do |decompressor_options|
+              processor.call decompressor_options
+            end
           end
         end
 

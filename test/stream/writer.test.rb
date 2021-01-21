@@ -34,6 +34,21 @@ module ZSTDS
         )
         .freeze
 
+        NONBLOCK_SERVER_MODES = {
+          :request  => 0,
+          :response => 1
+        }
+        .freeze
+
+        NONBLOCK_SERVER_TIMEOUT = 0.1
+
+        def initialize(*args)
+          super(*args)
+
+          @nonblock_client_lock = ::Mutex.new
+          @nonblock_client_id   = 0
+        end
+
         def test_invalid_initialize
           get_invalid_compressor_options do |invalid_options|
             assert_raises ValidateError do
@@ -195,14 +210,14 @@ module ZSTDS
         # -- asynchronous --
 
         def test_write_nonblock
-          parallel_compressor_options do |compressor_options|
-            TEXTS.each do |text|
-              PORTION_LENGTHS.each do |portion_length|
-                sources = get_sources text, portion_length
+          PORTION_LENGTHS.each do |portion_length|
+            nonblock_server(portion_length) do |server|
+              parallel_compressor_options do |compressor_options|
+                TEXTS.each do |text|
+                  sources = get_sources text, portion_length
 
-                get_compatible_decompressor_options compressor_options do |decompressor_options|
                   FINISH_MODES.each do |finish_mode|
-                    nonblock_test text, portion_length, compressor_options, decompressor_options do |instance, socket|
+                    nonblock_test server, text, compressor_options do |instance, socket|
                       # write
 
                       sources.each.with_index do |source, index|
@@ -273,72 +288,68 @@ module ZSTDS
         end
 
         def test_write_nonblock_with_large_texts
-          options_generator = OCG.new(
-            :text           => LARGE_TEXTS,
-            :portion_length => LARGE_PORTION_LENGTHS
-          )
+          LARGE_PORTION_LENGTHS.each do |portion_length|
+            nonblock_server(portion_length) do |server|
+              Common.parallel LARGE_TEXTS do |text|
+                sources = get_sources text, portion_length
 
-          Common.parallel_options options_generator do |options|
-            text           = options[:text]
-            portion_length = options[:portion_length]
+                FINISH_MODES.each do |finish_mode|
+                  nonblock_test server, text do |instance, socket|
+                    # write
 
-            sources = get_sources text, portion_length
+                    sources.each.with_index do |source, index|
+                      if index.even?
+                        loop do
+                          begin
+                            bytes_written = instance.write_nonblock source
+                          rescue ::IO::WaitWritable
+                            ::IO.select nil, [socket]
+                            retry
+                          end
 
-            FINISH_MODES.each do |finish_mode|
-              nonblock_test text, portion_length do |instance, socket|
-                # write
-
-                sources.each.with_index do |source, index|
-                  if index.even?
-                    loop do
-                      begin
-                        bytes_written = instance.write_nonblock source
-                      rescue ::IO::WaitWritable
-                        ::IO.select nil, [socket]
-                        retry
+                          source = source.byteslice bytes_written, source.bytesize - bytes_written
+                          break if source.bytesize.zero?
+                        end
+                      else
+                        instance.write source
                       end
-
-                      source = source.byteslice bytes_written, source.bytesize - bytes_written
-                      break if source.bytesize.zero?
-                    end
-                  else
-                    instance.write source
-                  end
-                end
-
-                # flush
-
-                if finish_mode[:flush_nonblock]
-                  loop do
-                    begin
-                      is_flushed = instance.flush_nonblock
-                    rescue ::IO::WaitWritable
-                      ::IO.select nil, [socket]
-                      retry
                     end
 
-                    break if is_flushed
-                  end
-                else
-                  instance.flush
-                end
+                    # flush
 
-              ensure
-                # close
+                    if finish_mode[:flush_nonblock]
+                      loop do
+                        begin
+                          is_flushed = instance.flush_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
 
-                if finish_mode[:close_nonblock]
-                  loop do
-                    begin
-                      is_closed = instance.close_nonblock
-                    rescue ::IO::WaitWritable
-                      ::IO.select nil, [socket]
-                      retry
+                        break if is_flushed
+                      end
+                    else
+                      instance.flush
                     end
 
-                    break if is_closed
+                  ensure
+                    # close
+
+                    if finish_mode[:close_nonblock]
+                      loop do
+                        begin
+                          is_closed = instance.close_nonblock
+                        rescue ::IO::WaitWritable
+                          ::IO.select nil, [socket]
+                          retry
+                        end
+
+                        break if is_closed
+                      end
+                    else
+                      instance.close
+                    end
                   end
-                else
-                  instance.close
                 end
               end
             end
@@ -399,39 +410,125 @@ module ZSTDS
 
         # -- nonblock test --
 
-        protected def nonblock_test(text, portion_length, compressor_options = {}, decompressor_options = {}, &_block)
-          compressed_text = "".b
+        protected def nonblock_server(portion_length)
+          # We need to test close nonblock.
+          # This method writes remaining data and closes socket.
+          # Server is not able to send response immediately.
+          # Client has to reconnect to server once again.
 
           ::TCPServer.open 0 do |server|
-            server_thread = ::Thread.new do
-              socket = server.accept
+            # Server loop will be processed in separate (parent) thread.
+            # Child threads will be collected for later usage.
+            child_lock    = ::Mutex.new
+            child_threads = ::Set.new
 
-              begin
-                loop do
-                  compressed_text << socket.read_nonblock(portion_length)
-                rescue ::IO::WaitReadable
-                  ::IO.select [socket]
-                rescue ::EOFError
-                  break
+            # Server need to maintain mapping between client id and result.
+            results_lock = ::Mutex.new
+            results      = {}
+
+            parent_thread = ::Thread.new do
+              loop do
+                child_thread = ::Thread.start server.accept do |socket|
+                  # Reading head.
+                  client_id, mode = socket.read(5).unpack "NC"
+
+                  if mode == NONBLOCK_SERVER_MODES[:request]
+                    # Reading result from client.
+                    result = "".b
+
+                    loop do
+                      result << socket.read_nonblock(portion_length)
+                    rescue ::IO::WaitReadable
+                      ::IO.select [socket]
+                    rescue ::EOFError
+                      break
+                    end
+
+                    # Saving result for client.
+                    results_lock.synchronize { results[client_id] = result }
+
+                    next
+                  end
+
+                  loop do
+                    # Waiting when result will be ready.
+                    result = results_lock.synchronize { results[client_id] }
+
+                    unless result.nil?
+                      # Sending result to client.
+                      socket.write result
+
+                      break
+                    end
+
+                    sleep NONBLOCK_SERVER_TIMEOUT
+                  end
+
+                  # Removing result for client.
+                  results_lock.synchronize { results.delete client_id }
+
+                ensure
+                  socket.close
+
+                  # Removing current child thread.
+                  child_lock.synchronize { child_threads.delete ::Thread.current }
                 end
-              ensure
-                socket.close
+
+                # Adding new child thread.
+                child_lock.synchronize { child_threads.add child_thread }
               end
             end
 
-            ::TCPSocket.open "localhost", server.addr[1] do |socket|
-              instance = target.new socket, compressor_options
-
-              begin
-                yield instance, socket
-              ensure
-                instance.close
-              end
+            # Processing client.
+            begin
+              yield server
+            ensure
+              # We need to kill parent thread when client has finished.
+              # So server won't be able to create new child threads.
+              # Than we can join all remaining child threads.
+              parent_thread.kill.join
+              child_threads.each(&:join)
             end
+          end
+        end
 
-            server_thread.join
+        protected def nonblock_test(server, text, compressor_options = {}, &_block)
+          port      = server.addr[1]
+          client_id = @nonblock_client_lock.synchronize { @nonblock_client_id += 1 }
 
-            check_text text, compressed_text, decompressor_options
+          # Writing request.
+          ::TCPSocket.open "localhost", port do |socket|
+            # Writing head.
+            head = [client_id, NONBLOCK_SERVER_MODES[:request]].pack "NC"
+            socket.write head
+
+            # Instance is going to write compressed text.
+            instance = target.new socket, compressor_options
+
+            begin
+              yield instance, socket
+            ensure
+              instance.close
+            end
+          end
+
+          # Reading response.
+          compressed_text = ::TCPSocket.open "localhost", port do |socket|
+            # Writing head.
+            head = [client_id, NONBLOCK_SERVER_MODES[:response]].pack "NC"
+            socket.write head
+
+            # Reading compressed text.
+            socket.read
+          end
+
+          # Testing compressed text.
+          if compressor_options.empty?
+            check_text text, compressed_text
+          else
+            get_compatible_decompressor_options compressor_options do |decompressor_options|
+              check_text text, compressed_text, decompressor_options
+            end
           end
         end
 
