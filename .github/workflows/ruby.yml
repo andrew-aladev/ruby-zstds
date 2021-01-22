@@ -18,13 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Setup dependencies
-        run: sudo apt-get install -y libzstd-dev
-
       - name: Ruby setup
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+
+      - name: Setup dependencies
+        run: sudo apt-get install -y libzstd-dev
 
       - name: CI test
         run: sudo scripts/ci_test.sh
