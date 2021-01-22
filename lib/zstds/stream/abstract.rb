@@ -12,7 +12,8 @@ module ZSTDS
       # Native stream is not seekable by design.
       # Related methods like "seek" and "pos=" can't be implemented.
 
-      # It is not possible to maintain correspondance between bytes consumed from source and bytes written to destination by design.
+      # It is not possible to maintain correspondance between bytes
+      # consumed from source and bytes written to destination by design.
       # We will consume all source bytes and maintain buffer with remaining destination data.
 
       include Delegates
@@ -89,8 +90,9 @@ module ZSTDS
         end
 
         internal_encoding = args[1]
-        Validation.validate_string internal_encoding \
-          unless internal_encoding.nil? || internal_encoding.is_a?(::Encoding)
+        unless internal_encoding.nil? || internal_encoding.is_a?(::Encoding)
+          Validation.validate_string internal_encoding
+        end
 
         transcode_options = args[2]
         Validation.validate_hash transcode_options unless transcode_options.nil?
