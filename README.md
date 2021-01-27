@@ -446,6 +446,10 @@ Read dictionary id from buffer.
 Please be careful: bindings are not thread safe.
 You should lock all shared data between threads.
 
+## Operating systems
+
+GNU/Linux, FreeBSD, OSX, Windows (MinGW).
+
 ## CI
 
 Please visit [scripts/test-images](scripts/test-images).
