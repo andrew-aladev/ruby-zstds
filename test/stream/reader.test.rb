@@ -34,8 +34,6 @@ module ZSTDS
         }
         .freeze
 
-        NONBLOCK_CLIENT_TIMEOUT = 0.1
-
         def test_invalid_initialize
           get_invalid_decompressor_options do |invalid_options|
             assert_raises ValidateError do
@@ -591,10 +589,6 @@ module ZSTDS
                 yield instance, socket
               ensure
                 instance.close
-
-                # Dirty workaround for windows, it allows to skip thread concurency.
-                # https://bugs.ruby-lang.org/issues/17394
-                sleep NONBLOCK_CLIENT_TIMEOUT
               end
             end
 
