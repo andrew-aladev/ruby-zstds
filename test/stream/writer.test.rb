@@ -210,14 +210,14 @@ module ZSTDS
         # -- asynchronous --
 
         def test_write_nonblock
-          PORTION_LENGTHS.each do |portion_length|
-            nonblock_server(portion_length) do |server|
-              parallel_compressor_options do |compressor_options|
-                TEXTS.each do |text|
+          nonblock_server do |server|
+            parallel_compressor_options do |compressor_options|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
                   sources = get_sources text, portion_length
 
                   FINISH_MODES.each do |finish_mode|
-                    nonblock_test server, text, compressor_options do |instance, socket|
+                    nonblock_test server, text, portion_length, compressor_options do |instance, socket|
                       # write
 
                       sources.each.with_index do |source, index|
@@ -288,13 +288,13 @@ module ZSTDS
         end
 
         def test_write_nonblock_with_large_texts
-          LARGE_PORTION_LENGTHS.each do |portion_length|
-            nonblock_server(portion_length) do |server|
-              Common.parallel LARGE_TEXTS do |text|
+          nonblock_server do |server|
+            Common.parallel LARGE_TEXTS do |text|
+              LARGE_PORTION_LENGTHS.each do |portion_length|
                 sources = get_sources text, portion_length
 
                 FINISH_MODES.each do |finish_mode|
-                  nonblock_test server, text do |instance, socket|
+                  nonblock_test server, text, portion_length do |instance, socket|
                     # write
 
                     sources.each.with_index do |source, index|
@@ -410,7 +410,7 @@ module ZSTDS
 
         # -- nonblock test --
 
-        protected def nonblock_server(portion_length)
+        protected def nonblock_server
           # We need to test close nonblock.
           # This method writes remaining data and closes socket.
           # Server is not able to send response immediately.
@@ -430,7 +430,7 @@ module ZSTDS
               loop do
                 child_thread = ::Thread.start server.accept do |socket|
                   # Reading head.
-                  client_id, mode = socket.read(5).unpack "NC"
+                  client_id, portion_length, mode = socket.read(13).unpack "NQC"
 
                   if mode == NONBLOCK_SERVER_MODES[:request]
                     # Reading result from client.
@@ -492,14 +492,14 @@ module ZSTDS
           end
         end
 
-        protected def nonblock_test(server, text, compressor_options = {}, &_block)
+        protected def nonblock_test(server, text, portion_length, compressor_options = {}, &_block)
           port      = server.addr[1]
           client_id = @nonblock_client_lock.synchronize { @nonblock_client_id += 1 }
 
           # Writing request.
           ::TCPSocket.open "localhost", port do |socket|
             # Writing head.
-            head = [client_id, NONBLOCK_SERVER_MODES[:request]].pack "NC"
+            head = [client_id, portion_length, NONBLOCK_SERVER_MODES[:request]].pack "NQC"
             socket.write head
 
             # Instance is going to write compressed text.
@@ -515,7 +515,7 @@ module ZSTDS
           # Reading response.
           compressed_text = ::TCPSocket.open "localhost", port do |socket|
             # Writing head.
-            head = [client_id, NONBLOCK_SERVER_MODES[:response]].pack "NC"
+            head = [client_id, portion_length, NONBLOCK_SERVER_MODES[:response]].pack "NQC"
             socket.write head
 
             # Reading compressed text.

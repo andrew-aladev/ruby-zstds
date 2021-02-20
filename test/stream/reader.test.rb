@@ -379,12 +379,12 @@ module ZSTDS
             end
           end
 
-          PORTION_LENGTHS.each do |portion_length|
-            nonblock_server(portion_length) do |server|
-              parallel_compressor_options do |compressor_options|
-                TEXTS.each do |text|
+          nonblock_server do |server|
+            parallel_compressor_options do |compressor_options|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
                   Option::BOOLS.each do |with_buffer|
-                    nonblock_test server, text, compressor_options do |instance|
+                    nonblock_test server, text, portion_length, compressor_options do |instance|
                       prev_result       = "".b
                       decompressed_text = "".b
 
@@ -425,11 +425,11 @@ module ZSTDS
             end
           end
 
-          PORTION_LENGTHS.each do |portion_length|
-            nonblock_server(portion_length) do |server|
-              parallel_compressor_options do |compressor_options|
-                TEXTS.each do |text|
-                  nonblock_test server, text, compressor_options do |instance, socket|
+          nonblock_server do |server|
+            parallel_compressor_options do |compressor_options|
+              TEXTS.each do |text|
+                PORTION_LENGTHS.each do |portion_length|
+                  nonblock_test server, text, portion_length, compressor_options do |instance, socket|
                     decompressed_text = "".b
 
                     loop do
@@ -463,10 +463,10 @@ module ZSTDS
         end
 
         def test_read_nonblock_with_large_texts
-          LARGE_PORTION_LENGTHS.each do |portion_length|
-            nonblock_server(portion_length) do |server|
-              Common.parallel LARGE_TEXTS do |text|
-                nonblock_test server, text do |instance, socket|
+          nonblock_server do |server|
+            Common.parallel LARGE_TEXTS do |text|
+              LARGE_PORTION_LENGTHS.each do |portion_length|
+                nonblock_test server, text, portion_length do |instance, socket|
                   decompressed_text = "".b
 
                   loop do
@@ -500,7 +500,7 @@ module ZSTDS
 
         # -- nonblock test --
 
-        protected def nonblock_server(portion_length)
+        protected def nonblock_server
           # Server need just to redirect content for client.
 
           ::TCPServer.open 0 do |server|
@@ -515,7 +515,7 @@ module ZSTDS
                   result = "".b
 
                   # Reading head.
-                  result_size = socket.read(8).unpack1 "Q"
+                  result_size, portion_length = socket.read(16).unpack "QQ"
                   next if result_size.zero?
 
                   # Reading result.
@@ -570,14 +570,14 @@ module ZSTDS
           end
         end
 
-        protected def nonblock_test(server, text, compressor_options = {}, &_block)
+        protected def nonblock_test(server, text, portion_length, compressor_options = {}, &_block)
           port            = server.addr[1]
           compressed_text = String.compress text, compressor_options
 
           processor = proc do |decompressor_options|
             decompressed_text = ::TCPSocket.open "localhost", port do |socket|
               # Writing head.
-              head = [compressed_text.bytesize].pack "Q"
+              head = [compressed_text.bytesize, portion_length].pack "QQ"
               socket.write head
 
               # Writing compressed text.
