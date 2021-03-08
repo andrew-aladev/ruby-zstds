@@ -4,7 +4,6 @@
 lib_path = File.expand_path "lib", __dir__
 $LOAD_PATH.unshift lib_path unless $LOAD_PATH.include? lib_path
 
-require "date"
 require "zstds/version"
 
 GEMSPEC = Gem::Specification.new do |gem|
@@ -15,7 +14,6 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.authors  = File.read("AUTHORS").split("\n").reject(&:empty?)
   gem.email    = "aladjev.andrew@gmail.com"
   gem.version  = ZSTDS::VERSION
-  gem.date     = Date.today.to_s
 
   gem.add_development_dependency "codecov"
   gem.add_development_dependency "minitar", "~> 0.9"
@@ -24,9 +22,9 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "parallel"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
-  gem.add_development_dependency "rubocop", "~> 1.8"
+  gem.add_development_dependency "rubocop", "~> 1.11"
   gem.add_development_dependency "rubocop-minitest", "~> 0.10"
-  gem.add_development_dependency "rubocop-performance", "~> 1.9"
+  gem.add_development_dependency "rubocop-performance", "~> 1.10"
   gem.add_development_dependency "rubocop-rake", "~> 0.5"
   gem.add_development_dependency "simplecov"
 
