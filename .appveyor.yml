@@ -2,15 +2,15 @@ build: off
 
 environment:
   matrix:
-    - job_name: Ubuntu
+    - job_name: ubuntu
       appveyor_build_worker_image: Ubuntu2004
       APPVEYOR: True
       CI: True
-    - job_name: MacOS
+    - job_name: macos
       appveyor_build_worker_image: macos
       APPVEYOR: True
       CI: True
-    - job_name: Windows
+    - job_name: windows
       appveyor_build_worker_image: Visual Studio 2019
       CHERE_INVOKING: 1
       MSYSTEM: MINGW64
@@ -20,7 +20,7 @@ for:
   -
     matrix:
       only:
-        - job_name: Ubuntu
+        - job_name: ubuntu
     init:
       - sh: sudo apt-get install -y libzstd-dev
     test_script:
@@ -31,7 +31,7 @@ for:
   -
     matrix:
       only:
-        - job_name: MacOS
+        - job_name: macos
     init:
       - sh: brew install zstd
     test_script:
@@ -42,7 +42,7 @@ for:
   -
     matrix:
       only:
-        - job_name: Windows
+        - job_name: windows
     init:
       - cmd: set PATH=C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%
     test_script:
