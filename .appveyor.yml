@@ -2,25 +2,25 @@ build: off
 
 environment:
   matrix:
-    - job_name: ubuntu
+    - job_name: Ubuntu
       appveyor_build_worker_image: Ubuntu2004
       APPVEYOR: True
       CI: True
-    - job_name: macos
+    - job_name: MacOS
       appveyor_build_worker_image: macos
       APPVEYOR: True
       CI: True
-    - job_name: windows
+    - job_name: Windows
       appveyor_build_worker_image: Visual Studio 2019
       CHERE_INVOKING: 1
       MSYSTEM: MINGW64
-      RUBY_VERSION: 27
+      RUBY_VERSION: 30
 
 for:
   -
     matrix:
       only:
-        - job_name: ubuntu
+        - job_name: Ubuntu
     init:
       - sh: sudo apt-get install -y libzstd-dev
     test_script:
@@ -31,7 +31,7 @@ for:
   -
     matrix:
       only:
-        - job_name: macos
+        - job_name: MacOS
     init:
       - sh: brew install zstd
     test_script:
@@ -42,9 +42,9 @@ for:
   -
     matrix:
       only:
-        - job_name: windows
+        - job_name: Windows
     init:
-      - cmd: set PATH=C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%
+      - cmd: set PATH="C:\Ruby%RUBY_VERSION%-x64\bin;%PATH%"
     test_script:
       - cmd: C:\msys64\usr\bin\bash -cl "./scripts/ci_test.sh"
     after_test:
