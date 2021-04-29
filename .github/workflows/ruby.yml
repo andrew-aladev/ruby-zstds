@@ -14,19 +14,15 @@ jobs:
           - 3.0
 
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Ruby setup
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-
       - name: Setup dependencies
         run: sudo apt-get install -y libzstd-dev
-
       - name: CI test
         run: sudo scripts/ci_test.sh
 
@@ -40,16 +36,13 @@ jobs:
           - 3.0
 
     runs-on: macos-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Ruby setup
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-
       - name: CI test
         run: sudo scripts/ci_test.sh
 
@@ -63,16 +56,13 @@ jobs:
           - 3.0
 
     runs-on: windows-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Ruby setup
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-
       - name: CI test
         run: scripts/ci_test.sh
         shell: bash
