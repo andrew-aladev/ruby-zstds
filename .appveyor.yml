@@ -22,6 +22,7 @@ for:
       only:
         - job_name: Ubuntu
     init:
+      - sh: sudo apt-get update
       - sh: sudo apt-get install -y libzstd-dev
     test_script:
       - sh: scripts/ci_test.sh
@@ -33,6 +34,7 @@ for:
       only:
         - job_name: MacOS
     init:
+      - sh: brew update
       - sh: brew install zstd
     test_script:
       - sh: sudo -E scripts/ci_test.sh

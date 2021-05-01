@@ -22,7 +22,9 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: Setup dependencies
-        run: sudo apt-get install -y libzstd-dev
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libzstd-dev
       - name: CI test
         run: sudo scripts/ci_test.sh
 
