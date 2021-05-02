@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/usr/bin/env bash
 set -e
 
 DIR=$(dirname "${BASH_SOURCE[0]}")
@@ -10,6 +10,8 @@ git remote | xargs -n1 -I {} git rebase "{}/$(git branch --show-current)" || tru
 
 cd ".."
 rm -f "Gemfile.lock"
-rvm use "."
-gem install bundler
-bundle update
+
+bash -cl "\
+  gem install bundler && \
+  bundle update \
+"

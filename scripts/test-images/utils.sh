@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
 XDG_RUNTIME_DIR="/tmp/buildah-runtime"
