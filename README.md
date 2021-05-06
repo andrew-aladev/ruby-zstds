@@ -25,6 +25,21 @@ gem install pkg/ruby-zstds-*.gem
 
 You can also use [overlay](https://github.com/andrew-aladev/overlay) for gentoo.
 
+### Installing in macOS on Apple Silicon
+On M1 Macs, Homebrew installs to /opt/homebrew, so you'll need to specify its
+include and lib paths when building the native extension for zstd.
+
+```sh
+brew install zstd
+gem install ruby-zstds -- --with-opt-include=/opt/homebrew/include --with-opt-lib=/opt/homebrew/lib
+```
+
+You can also configure Bundler to use those options when installing:
+
+```sh
+bundle config set build.ruby-zstds "--with-opt-include=/opt/homebrew/include --with-opt-lib=/opt/homebrew/lib"
+```
+
 ## Usage
 
 There are simple APIs: `String` and `File`. Also you can use generic streaming API: `Stream::Writer` and `Stream::Reader`.
