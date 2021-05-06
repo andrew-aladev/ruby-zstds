@@ -13,7 +13,7 @@ module ZSTDS
       def initialize(destination_io, options = {}, *args)
         @options = options
 
-        super destination_io, *args
+        super destination_io, options, *args
       end
 
       protected def create_raw_stream

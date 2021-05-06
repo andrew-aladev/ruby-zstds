@@ -16,7 +16,7 @@ module ZSTDS
       def initialize(source_io, options = {}, *args)
         @options = options
 
-        super source_io, *args
+        super source_io, options, *args
 
         initialize_source_buffer_length
         reset_io_remainder

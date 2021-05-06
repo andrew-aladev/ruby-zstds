@@ -25,7 +25,10 @@ module ZSTDS
       def initialize(io, options = {})
         @raw_stream = create_raw_stream
 
-        Validation.validate_io io
+        if options.fetch(:validate, true)
+          Validation.validate_io io
+        end
+
         @io = io
 
         @stat = Stat.new @io.stat if @io.respond_to? :stat
