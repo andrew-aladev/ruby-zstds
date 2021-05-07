@@ -17,15 +17,11 @@ NAME="ruby-zstds-${VERSION}"
 
 COMPRESSION_LEVEL="-9"
 TAR_COMMANDS=(
-  "bzip2 $COMPRESSION_LEVEL"
   "gzip $COMPRESSION_LEVEL"
-  "xz $COMPRESSION_LEVEL"
   "zip $COMPRESSION_LEVEL"
 )
 TAR_EXTENSIONS=(
-  "tar.bz2"
   "tar.gz"
-  "tar.xz"
   "zip"
 )
 CURRENT_BRANCH="$(git branch --show-current)"
