@@ -14,7 +14,7 @@ ROOT_DIR=$(pwd)
 
 /usr/bin/env bash -cl "\
   cd \"$ROOT_DIR\" && \
-  gem install bundler && \
+  gem install bundler --force && \
   bundle install && \
   bundle exec rake clean && \
   bundle exec rake \
