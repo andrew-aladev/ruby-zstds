@@ -10,8 +10,10 @@ TMP_SIZE="16"
 ./temp/mount.sh "$TMP_PATH" "$TMP_SIZE"
 
 cd ".."
+ROOT_DIR=$(pwd)
 
-bash -cl "\
+/usr/bin/env bash -cl "\
+  cd \"$ROOT_DIR\" && \
   gem install bundler && \
   bundle install && \
   bundle exec rake clean && \
