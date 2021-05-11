@@ -12,21 +12,20 @@ jobs:
           - 2.6
           - 2.7
           - 3.0
-
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Ruby setup
+      - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
       - name: Setup dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libzstd-dev
+        run: sudo apt-get install -y libzstd-dev
       - name: CI test
-        run: sudo scripts/ci_test.sh
+        run: scripts/ci_test.sh
+        env:
+          CI: True
 
   macos:
     strategy:
@@ -36,35 +35,62 @@ jobs:
           - 2.6
           - 2.7
           - 3.0
-
     runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Ruby setup
+      - name: Setup ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+      - name: Setup dependencies
+        run: brew install zstd
       - name: CI test
-        run: sudo scripts/ci_test.sh
+        run: scripts/ci_test.sh
+        env:
+          CI: True
 
-  windows:
-    strategy:
-      matrix:
-        ruby:
-          - 2.5
-          - 2.6
-          - 2.7
-          - 3.0
-
+  windows-mingw:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 "{0}"
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Ruby setup
-        uses: ruby/setup-ruby@v1
+      - name: Setup msys2
+        uses: msys2/setup-msys2@v2
         with:
-          ruby-version: ${{ matrix.ruby }}
+          install: >-
+            git
+            make
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-curl
+            mingw-w64-x86_64-ruby
+            mingw-w64-x86_64-zstd
       - name: CI test
         run: scripts/ci_test.sh
-        shell: bash
+        env:
+          CI: True
+          MSYSTEM: MINGW64
+
+  windows-cygwin:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: cmd
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup cygwin
+        uses: egor-tensin/setup-cygwin@v3
+        with:
+          platform: x64
+          install-dir: C:\cygwin64
+          packages: curl gcc-g++ git libzstd-devel make ruby-devel
+      - name: CI test
+        run: C:\cygwin64\bin\bash.exe -l "%cd%\scripts\ci_test.sh"
+        env:
+          CI: True
+          CYGWIN_NOWINPATH: True
+          SHELLOPTS: igncr
