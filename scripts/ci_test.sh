@@ -12,6 +12,9 @@ TMP_SIZE="16"
 cd ".."
 ROOT_DIR=$(pwd)
 
+curl -s "https://codecov.io/bash" > "codecov.sh"
+chmod +x "codecov.sh"
+
 /usr/bin/env bash -cl "\
   cd \"$ROOT_DIR\" && \
   gem install bundler --force && \
@@ -19,3 +22,6 @@ ROOT_DIR=$(pwd)
   bundle exec rake clean && \
   bundle exec rake \
 "
+
+# We need to send coverage for extension.
+./codecov.sh
