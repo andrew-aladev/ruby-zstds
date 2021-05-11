@@ -13,8 +13,8 @@ cd ".."
 ROOT_DIR=$(pwd)
 
 # We need to send coverage for extension.
-curl -s "https://codecov.io/bash" > "codecov.sh"
-chmod +x "codecov.sh"
+curl -s "https://codecov.io/bash" > "build/codecov.sh"
+chmod +x "build/codecov.sh"
 
 /usr/bin/env bash -cl "\
   cd \"$ROOT_DIR\" && \
@@ -22,5 +22,5 @@ chmod +x "codecov.sh"
   bundle install && \
   bundle exec rake clean && \
   bundle exec rake && \
-  ./codecov.sh \
+  ./build/codecov.sh \
 "
