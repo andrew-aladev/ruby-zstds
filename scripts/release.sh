@@ -12,7 +12,7 @@ rake gem
 
 # Packing source.
 
-VERSION=$(grep "VERSION" "lib/zstds/version.rb" | sed "s/.*VERSION\s*=\s*['\"]\([0-9.]*\).*/\1/g")
+VERSION=$(grep "VERSION" "lib/zstds/version.rb" | sed "s/.*VERSION[[:space:]]*=[[:space:]]*['\"]\([0-9.]*\).*/\1/g")
 NAME="ruby-zstds-${VERSION}"
 
 COMPRESSION_LEVEL="-9"
