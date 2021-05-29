@@ -9,6 +9,7 @@ git fetch --tags || true
 git remote | xargs -I {} git rebase "{}/$(git branch --show-current)" || true
 
 cd ".."
+
 ROOT_DIR=$(pwd)
 
 rm -f "Gemfile.lock"
