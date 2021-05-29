@@ -16,6 +16,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.version  = ZSTDS::VERSION
 
   gem.add_development_dependency "codecov"
+  gem.add_development_dependency "json"
   gem.add_development_dependency "minitar", "~> 0.9"
   gem.add_development_dependency "minitest", "~> 5.14"
   gem.add_development_dependency "ocg", "~> 1.3"

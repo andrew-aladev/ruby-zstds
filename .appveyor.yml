@@ -75,8 +75,8 @@ for:
           pacman --sync --noconfirm --needed
           git
           make
-          mingw-w64-x86_64-gcc
           mingw-w64-x86_64-curl
+          mingw-w64-x86_64-gcc
           mingw-w64-x86_64-ruby
           mingw-w64-x86_64-zstd
           "
@@ -93,6 +93,6 @@ for:
           --site "https://mirrors.kernel.org/sourceware/cygwin"
           --root "C:\cygwin64"
           --local-package-dir "C:\cygwin64\var\cache\setup"
-          --packages "curl,gcc-g++,git,libzstd-devel,make,ruby-devel"
+          --packages "gcc-g++,git,curl,libzstd-devel,make,ruby-devel"
     test_script:
       - cmd: C:\cygwin64\bin\bash -l "%cd%\scripts\ci_test.sh"

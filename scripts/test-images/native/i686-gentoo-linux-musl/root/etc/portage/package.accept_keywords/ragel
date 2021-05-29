@@ -1,3 +1,0 @@
-# We need at least ragel 7.0.0.12 and colm 0.13.0.7 for musl and x86.
-~dev-util/ragel-7.0.0.12 ~x86
-~dev-util/colm-0.13.0.7 ~x86

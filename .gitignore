@@ -1,4 +1,3 @@
-attached-common-root/*
 build/*
 coverage
 Gemfile.lock

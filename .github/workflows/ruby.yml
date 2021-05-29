@@ -64,8 +64,8 @@ jobs:
           install: >-
             git
             make
-            mingw-w64-x86_64-gcc
             mingw-w64-x86_64-curl
+            mingw-w64-x86_64-gcc
             mingw-w64-x86_64-ruby
             mingw-w64-x86_64-zstd
       - name: CI test
@@ -87,7 +87,7 @@ jobs:
         with:
           platform: x64
           install-dir: C:\cygwin64
-          packages: curl gcc-g++ git libzstd-devel make ruby-devel
+          packages: gcc-g++ git curl libzstd-devel make ruby-devel
       - name: CI test
         run: C:\cygwin64\bin\bash.exe -l "%cd%\scripts\ci_test.sh"
         env:
