@@ -74,21 +74,6 @@ build () {
     "."
 }
 
-build_with_portage () {
-  portage=$(from "${DOCKER_HOST}/${DOCKER_USERNAME}/test_portage")
-  portage_root=$(mount "$portage") || error=$?
-
-  build --volume "${portage_root}/var/db/repos/gentoo:/var/db/repos/gentoo" "$@" \
-    || error=$?
-
-  unmount "$portage" || :
-  remove "$portage" || :
-
-  if [ ! -z "$error" ]; then
-    exit "$error"
-  fi
-}
-
 push () {
   docker_image_name="docker://${DOCKER_HOST}/${DOCKER_USERNAME}/${IMAGE_NAME}"
 
@@ -113,6 +98,23 @@ run_image () {
   run $CONTAINER_OPTIONS "$container" "$@" || error=$?
 
   remove "$container" || :
+
+  if [ ! -z "$error" ]; then
+    exit "$error"
+  fi
+}
+
+# -- portage --
+
+build_with_portage () {
+  portage=$(from "${DOCKER_HOST}/${DOCKER_USERNAME}/test_portage")
+  portage_root=$(mount "$portage") || error=$?
+
+  build --volume "${portage_root}/var/db/repos/gentoo:/var/db/repos/gentoo" "$@" \
+    || error=$?
+
+  unmount "$portage" || :
+  remove "$portage" || :
 
   if [ ! -z "$error" ]; then
     exit "$error"
