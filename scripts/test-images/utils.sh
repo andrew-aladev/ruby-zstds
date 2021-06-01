@@ -99,8 +99,8 @@ run_image () {
 
   remove "$container" || :
 
-  if [ ! -z "$error" ]; then
-    exit "$error"
+  if [ ! -z $error ]; then
+    return $error
   fi
 }
 
@@ -116,7 +116,7 @@ build_with_portage () {
   unmount "$portage" || :
   remove "$portage" || :
 
-  if [ ! -z "$error" ]; then
-    exit "$error"
+  if [ ! -z $error ]; then
+    return $error
   fi
 }
