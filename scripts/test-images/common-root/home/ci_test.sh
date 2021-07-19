@@ -6,7 +6,6 @@ source "/etc/profile"
 
 DIR="/mnt/data"
 RUBY_VERSIONS=(
-  "ruby25"
   "ruby26"
   "ruby27"
   "ruby30"

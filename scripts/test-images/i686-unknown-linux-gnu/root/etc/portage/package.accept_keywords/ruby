@@ -1,5 +1,4 @@
 app-eselect/eselect-ruby ~x86
-dev-lang/ruby:2.5 ~x86
 dev-lang/ruby:2.6 ~x86
 dev-lang/ruby:2.7 ~x86
 dev-lang/ruby:3.0 ~x86
