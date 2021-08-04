@@ -29,4 +29,3 @@ Build is rootless, just use your regular `my_user`.
 
 - [virtual/ruby-ssl: unmask for ruby](https://bugs.gentoo.org/722566)
 - [sys-libs/musl: undefined reference to __stack_chk_fail_local (x86)](https://www.openwall.com/lists/musl/2018/09/11/2)
-- [app-emulation/buildah: Multi-platform images: copy from platform](https://github.com/containers/buildah/issues/3252)
