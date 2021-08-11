@@ -62,7 +62,7 @@ module ZSTDS
           dictionary = Target.train SAMPLES, :capacity => capacity
 
           assert dictionary.id.positive?
-          refute dictionary.buffer.nil?
+          refute_nil dictionary.buffer
           refute_empty dictionary.buffer
 
           dictionary_copy = Target.new dictionary.buffer

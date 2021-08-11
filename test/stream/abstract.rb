@@ -93,21 +93,21 @@ module ZSTDS
             # Fcntl is not available on windows.
             if Fcntl.const_defined? :F_GETFL
               stats = instance.fcntl Fcntl::F_GETFL, 0
-              refute stats.nil?
+              refute_nil stats
             end
 
             instance.fdatasync
 
             fd = instance.fileno
-            refute fd.nil?
+            refute_nil fd
 
             refute instance.isatty
-            assert instance.pid.nil?
+            assert_nil instance.pid
 
             instance.sync = true
             assert instance.sync
 
-            refute instance.to_i.nil?
+            refute_nil instance.to_i
             refute instance.tty?
           end
         end
