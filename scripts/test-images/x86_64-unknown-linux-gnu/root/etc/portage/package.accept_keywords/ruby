@@ -23,3 +23,4 @@ dev-ruby/rexml ~amd64
 dev-ruby/rss ~amd64
 dev-ruby/typeprof ~amd64
 dev-ruby/xmlrpc ~amd64
+dev-ruby/webrick ~amd64
