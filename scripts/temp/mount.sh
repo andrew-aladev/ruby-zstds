@@ -24,4 +24,4 @@ else
   sudo_prefix=""
 fi
 
-$sudo_prefix ./ramfs.sh "$TMP_PATH" "$TMP_SIZE" || true
+$sudo_prefix ./ramfs.sh "$TMP_PATH" "$TMP_SIZE" || :

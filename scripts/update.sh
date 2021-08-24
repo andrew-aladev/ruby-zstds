@@ -4,9 +4,12 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$DIR"
 
-git fetch --all || true
-git fetch --tags || true
-git remote | xargs -I {} git rebase "{}/$(git branch --show-current)" || true
+git fetch --all || :
+git fetch --tags || :
+git remote | xargs -I {} git rebase "{}/$(git branch --show-current)" || :
+
+./clang/complete.sh
+./clang/format.sh
 
 cd ".."
 
@@ -17,5 +20,6 @@ rm -f "Gemfile.lock"
 /usr/bin/env bash -cl "\
   cd \"$ROOT_DIR\" && \
   gem install bundler --force && \
-  bundle update \
+  bundle update && \
+  bundle exec rubocop \
 "

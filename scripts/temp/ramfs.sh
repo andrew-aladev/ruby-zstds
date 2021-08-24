@@ -7,12 +7,12 @@ cd "$DIR"
 TMP_PATH=$1
 TMP_SIZE=$2 # MB
 
-umount -f "$TMP_PATH" || true
+umount -f "$TMP_PATH" || :
 
 kernel_name=$(uname -s)
 
 if [ $kernel_name = "Darwin" ]; then
-  hdiutil detach "$TMP_PATH" || true
+  hdiutil detach "$TMP_PATH" || :
 
   sectors=$((2048 * $TMP_SIZE))
   disk_id=$(hdiutil attach -nomount "ram://${sectors}")
