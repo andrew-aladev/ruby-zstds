@@ -5,8 +5,6 @@
 
 #include <zstd.h>
 
-#include "ruby.h"
-
 VALUE zstds_ext_create_string_buffer(VALUE length)
 {
   return rb_str_new(NULL, NUM2SIZET(length));

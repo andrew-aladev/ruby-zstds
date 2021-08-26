@@ -5,7 +5,6 @@
 
 #include <zstd.h>
 
-#include "ruby.h"
 #include "zstds_ext/buffer.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/gvl.h"

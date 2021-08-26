@@ -7,7 +7,6 @@
 #include <string.h>
 #include <zstd.h>
 
-#include "ruby.h"
 #include "ruby/io.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/gvl.h"

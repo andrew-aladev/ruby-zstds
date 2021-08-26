@@ -1,7 +1,6 @@
 // Ruby bindings for zstd library.
 // Copyright (c) 2019 AUTHORS, MIT License.
 
-#include "ruby.h"
 #include "zstds_ext/buffer.h"
 #include "zstds_ext/dictionary.h"
 #include "zstds_ext/io.h"
@@ -21,4 +20,7 @@ void Init_zstds_ext()
   zstds_ext_compressor_exports(root_module);
   zstds_ext_decompressor_exports(root_module);
   zstds_ext_string_exports(root_module);
+
+  VALUE version = rb_str_new2(ZSTD_VERSION_STRING);
+  rb_define_const(root_module, "LIBRARY_VERSION", rb_obj_freeze(version));
 }

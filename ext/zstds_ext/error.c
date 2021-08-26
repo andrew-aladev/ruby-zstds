@@ -3,10 +3,6 @@
 
 #include "zstds_ext/error.h"
 
-#include <zstd_errors.h>
-
-#include "ruby.h"
-
 zstds_ext_result_t zstds_ext_get_error(ZSTD_ErrorCode error_code)
 {
   switch (error_code) {

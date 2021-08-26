@@ -3,9 +3,6 @@
 
 #include "zstds_ext/stream/compressor.h"
 
-#include <zstd.h>
-
-#include "ruby.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/gvl.h"
 #include "zstds_ext/option.h"

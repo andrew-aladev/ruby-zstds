@@ -9,25 +9,95 @@ have_func "rb_thread_call_without_gvl", "ruby/thread.h"
 # https://bugs.gentoo.org/713940
 $LDFLAGS << " -pthread" # rubocop:disable Style/GlobalVars
 
-def require_header(name, types = [])
+def require_header(name, constants: [], macroses: [], types: [])
   abort "Can't find #{name} header" unless find_header name
+
+  constants.each do |constant|
+    abort "Can't find #{constant} constant in #{name} header" unless have_const constant, name
+  end
+
+  macroses.each do |macro|
+    abort "Can't find #{macro} macro in #{name} header" unless have_macro macro, name
+  end
 
   types.each do |type|
     abort "Can't find #{type} type in #{name} header" unless find_type type, nil, name
   end
 end
 
-require_header "zstd_errors.h", %w[
-  ZSTD_ErrorCode
-]
-require_header "zstd.h", [
-  "ZSTD_CCtx *",
-  "ZSTD_DCtx *",
-  "ZSTD_strategy",
-  "ZSTD_bounds",
-  "ZSTD_inBuffer",
-  "ZSTD_outBuffer"
-]
+require_header(
+  "zstd_errors.h",
+  :constants => %w[
+    ZSTD_error_checksum_wrong
+    ZSTD_error_corruption_detected
+    ZSTD_error_dictionaryCreation_failed
+    ZSTD_error_dictionary_corrupted
+    ZSTD_error_dictionary_wrong
+    ZSTD_error_dstBuffer_null
+    ZSTD_error_dstSize_tooSmall
+    ZSTD_error_frameParameter_unsupported
+    ZSTD_error_frameParameter_windowTooLarge
+    ZSTD_error_init_missing
+    ZSTD_error_maxSymbolValue_tooLarge
+    ZSTD_error_maxSymbolValue_tooSmall
+    ZSTD_error_memory_allocation
+    ZSTD_error_parameter_outOfBound
+    ZSTD_error_parameter_unsupported
+    ZSTD_error_prefix_unknown
+    ZSTD_error_srcSize_wrong
+    ZSTD_error_stage_wrong
+    ZSTD_error_tableLog_tooLarge
+    ZSTD_error_version_unsupported
+    ZSTD_error_workSpace_tooSmall
+  ],
+  :types     => %w[ZSTD_ErrorCode]
+)
+require_header(
+  "zstd.h",
+  :constants => %w[
+    ZSTD_btlazy2
+    ZSTD_btopt
+    ZSTD_btultra
+    ZSTD_btultra2
+    ZSTD_c_chainLog
+    ZSTD_c_checksumFlag
+    ZSTD_c_compressionLevel
+    ZSTD_c_contentSizeFlag
+    ZSTD_c_dictIDFlag
+    ZSTD_c_enableLongDistanceMatching
+    ZSTD_c_jobSize
+    ZSTD_c_hashLog
+    ZSTD_c_ldmBucketSizeLog
+    ZSTD_c_ldmHashLog
+    ZSTD_c_ldmHashRateLog
+    ZSTD_c_ldmMinMatch
+    ZSTD_c_minMatch
+    ZSTD_c_nbWorkers
+    ZSTD_c_overlapLog
+    ZSTD_c_targetLength
+    ZSTD_c_searchLog
+    ZSTD_c_strategy
+    ZSTD_c_windowLog
+    ZSTD_dfast
+    ZSTD_d_windowLogMax
+    ZSTD_e_continue
+    ZSTD_e_end
+    ZSTD_e_flush
+    ZSTD_fast
+    ZSTD_greedy
+    ZSTD_lazy
+    ZSTD_lazy2
+  ],
+  :macroses  => %w[ZSTD_VERSION_STRING],
+  :types     => [
+    "ZSTD_CCtx *",
+    "ZSTD_bounds",
+    "ZSTD_DCtx *",
+    "ZSTD_inBuffer",
+    "ZSTD_outBuffer",
+    "ZSTD_strategy"
+  ]
+)
 require_header "zdict.h"
 
 def require_library(name, functions)
@@ -39,26 +109,26 @@ end
 require_library(
   "zstd",
   %w[
-    ZSTD_isError
-    ZSTD_getErrorCode
+    ZDICT_getDictID
+    ZDICT_isError
+    ZDICT_trainFromBuffer
+    ZSTD_CCtx_setParameter
+    ZSTD_CCtx_setPledgedSrcSize
+    ZSTD_compressStream2
+    ZSTD_cParam_getBounds
     ZSTD_createCCtx
     ZSTD_createDCtx
-    ZSTD_freeCCtx
-    ZSTD_freeDCtx
-    ZSTD_CCtx_setParameter
-    ZSTD_DCtx_setParameter
-    ZSTD_CCtx_setPledgedSrcSize
-    ZSTD_cParam_getBounds
-    ZSTD_dParam_getBounds
     ZSTD_CStreamInSize
     ZSTD_CStreamOutSize
+    ZSTD_DCtx_setParameter
+    ZSTD_decompressStream
+    ZSTD_dParam_getBounds
     ZSTD_DStreamInSize
     ZSTD_DStreamOutSize
-    ZSTD_compressStream2
-    ZSTD_decompressStream
-    ZDICT_isError
-    ZDICT_getDictID
-    ZDICT_trainFromBuffer
+    ZSTD_freeCCtx
+    ZSTD_freeDCtx
+    ZSTD_getErrorCode
+    ZSTD_isError
   ]
 )
 

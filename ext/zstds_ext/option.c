@@ -3,9 +3,6 @@
 
 #include "zstds_ext/option.h"
 
-#include <zstd.h>
-
-#include "ruby.h"
 #include "zstds_ext/dictionary.h"
 #include "zstds_ext/error.h"
 
