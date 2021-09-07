@@ -25,6 +25,53 @@ def require_header(name, constants: [], macroses: [], types: [])
   end
 end
 
+require_header "zdict.h"
+require_header(
+  "zstd.h",
+  :constants => %w[
+    ZSTD_btlazy2
+    ZSTD_btopt
+    ZSTD_btultra
+    ZSTD_btultra2
+    ZSTD_c_chainLog
+    ZSTD_c_checksumFlag
+    ZSTD_c_compressionLevel
+    ZSTD_c_contentSizeFlag
+    ZSTD_c_dictIDFlag
+    ZSTD_c_enableLongDistanceMatching
+    ZSTD_c_hashLog
+    ZSTD_c_jobSize
+    ZSTD_c_ldmBucketSizeLog
+    ZSTD_c_ldmHashLog
+    ZSTD_c_ldmHashRateLog
+    ZSTD_c_ldmMinMatch
+    ZSTD_c_minMatch
+    ZSTD_c_nbWorkers
+    ZSTD_c_overlapLog
+    ZSTD_c_searchLog
+    ZSTD_c_strategy
+    ZSTD_c_targetLength
+    ZSTD_c_windowLog
+    ZSTD_dfast
+    ZSTD_d_windowLogMax
+    ZSTD_e_continue
+    ZSTD_e_end
+    ZSTD_e_flush
+    ZSTD_fast
+    ZSTD_greedy
+    ZSTD_lazy
+    ZSTD_lazy2
+  ],
+  :macroses  => %w[ZSTD_VERSION_STRING],
+  :types     => [
+    "ZSTD_bounds",
+    "ZSTD_CCtx *",
+    "ZSTD_DCtx *",
+    "ZSTD_inBuffer",
+    "ZSTD_outBuffer",
+    "ZSTD_strategy"
+  ]
+)
 require_header(
   "zstd_errors.h",
   :constants => %w[
@@ -52,53 +99,6 @@ require_header(
   ],
   :types     => %w[ZSTD_ErrorCode]
 )
-require_header(
-  "zstd.h",
-  :constants => %w[
-    ZSTD_btlazy2
-    ZSTD_btopt
-    ZSTD_btultra
-    ZSTD_btultra2
-    ZSTD_c_chainLog
-    ZSTD_c_checksumFlag
-    ZSTD_c_compressionLevel
-    ZSTD_c_contentSizeFlag
-    ZSTD_c_dictIDFlag
-    ZSTD_c_enableLongDistanceMatching
-    ZSTD_c_jobSize
-    ZSTD_c_hashLog
-    ZSTD_c_ldmBucketSizeLog
-    ZSTD_c_ldmHashLog
-    ZSTD_c_ldmHashRateLog
-    ZSTD_c_ldmMinMatch
-    ZSTD_c_minMatch
-    ZSTD_c_nbWorkers
-    ZSTD_c_overlapLog
-    ZSTD_c_targetLength
-    ZSTD_c_searchLog
-    ZSTD_c_strategy
-    ZSTD_c_windowLog
-    ZSTD_dfast
-    ZSTD_d_windowLogMax
-    ZSTD_e_continue
-    ZSTD_e_end
-    ZSTD_e_flush
-    ZSTD_fast
-    ZSTD_greedy
-    ZSTD_lazy
-    ZSTD_lazy2
-  ],
-  :macroses  => %w[ZSTD_VERSION_STRING],
-  :types     => [
-    "ZSTD_CCtx *",
-    "ZSTD_bounds",
-    "ZSTD_DCtx *",
-    "ZSTD_inBuffer",
-    "ZSTD_outBuffer",
-    "ZSTD_strategy"
-  ]
-)
-require_header "zdict.h"
 
 def require_library(name, functions)
   functions.each do |function|
@@ -112,19 +112,21 @@ require_library(
     ZDICT_getDictID
     ZDICT_isError
     ZDICT_trainFromBuffer
+    ZSTD_CCtx_loadDictionary
     ZSTD_CCtx_setParameter
     ZSTD_CCtx_setPledgedSrcSize
+    ZSTD_CStreamInSize
+    ZSTD_CStreamOutSize
     ZSTD_compressStream2
     ZSTD_cParam_getBounds
     ZSTD_createCCtx
     ZSTD_createDCtx
-    ZSTD_CStreamInSize
-    ZSTD_CStreamOutSize
     ZSTD_DCtx_setParameter
-    ZSTD_decompressStream
-    ZSTD_dParam_getBounds
+    ZSTD_DCtx_loadDictionary
     ZSTD_DStreamInSize
     ZSTD_DStreamOutSize
+    ZSTD_decompressStream
+    ZSTD_dParam_getBounds
     ZSTD_freeCCtx
     ZSTD_freeDCtx
     ZSTD_getErrorCode
