@@ -1,4 +1,2 @@
-# virtual/ruby-ssl: unmask for ruby.
-# https://bugs.gentoo.org/722566
 virtual/ruby-ssl -ruby_targets_ruby26 -ruby_targets_ruby27 -ruby_targets_ruby30
 dev-ruby/webrick -ruby_targets_ruby26 -ruby_targets_ruby27 -ruby_targets_ruby30
