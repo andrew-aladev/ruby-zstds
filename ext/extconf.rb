@@ -110,6 +110,7 @@ require_library(
   "zstd",
   %w[
     ZDICT_getDictID
+    ZDICT_getDictHeaderSize
     ZDICT_isError
     ZDICT_trainFromBuffer
     ZSTD_CCtx_loadDictionary

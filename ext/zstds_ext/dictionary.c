@@ -153,6 +153,16 @@ VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buf
   return UINT2NUM(id);
 }
 
+VALUE zstds_ext_get_dictionary_header_size(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
+{
+  zstds_result_t result = ZDICT_getDictHeaderSize(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
+  if (ZDICT_isError(result)) {
+    zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
+  }
+
+  return SIZET2NUM(result);
+}
+
 // -- exports --
 
 void zstds_ext_dictionary_exports(VALUE root_module)
@@ -160,5 +170,6 @@ void zstds_ext_dictionary_exports(VALUE root_module)
   VALUE dictionary = rb_define_class_under(root_module, "Dictionary", rb_cObject);
 
   rb_define_singleton_method(dictionary, "get_buffer_id", zstds_ext_get_dictionary_buffer_id, 1);
+  rb_define_singleton_method(dictionary, "get_header_size", zstds_ext_get_dictionary_header_size, 1);
   rb_define_singleton_method(dictionary, "train_buffer", zstds_ext_train_dictionary_buffer, 2);
 }

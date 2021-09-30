@@ -62,12 +62,14 @@ module ZSTDS
           dictionary = Target.train SAMPLES, :capacity => capacity
 
           assert dictionary.id.positive?
+          assert dictionary.header_size.positive?
           refute_nil dictionary.buffer
           refute_empty dictionary.buffer
 
           dictionary_copy = Target.new dictionary.buffer
 
           assert_equal dictionary.id, dictionary_copy.id
+          assert_equal dictionary.header_size, dictionary_copy.header_size
           assert_equal dictionary.buffer, dictionary_copy.buffer
 
           text            = TEXTS.sample

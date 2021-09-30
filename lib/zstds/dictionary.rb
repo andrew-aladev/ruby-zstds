@@ -23,10 +23,6 @@ module ZSTDS
       @buffer = buffer
     end
 
-    def id
-      self.class.get_buffer_id @buffer
-    end
-
     def self.train(samples, options = {})
       Validation.validate_array samples
 
@@ -44,6 +40,14 @@ module ZSTDS
 
       buffer = train_buffer samples, options
       new buffer
+    end
+
+    def id
+      self.class.get_buffer_id @buffer
+    end
+
+    def header_size
+      self.class.get_header_size @buffer
     end
   end
 end
