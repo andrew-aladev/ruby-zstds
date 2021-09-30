@@ -19,7 +19,7 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "json"
   gem.add_development_dependency "minitar", "~> 0.9"
   gem.add_development_dependency "minitest", "~> 5.14"
-  gem.add_development_dependency "ocg", "~> 1.3"
+  gem.add_development_dependency "ocg", "~> 1.4"
   gem.add_development_dependency "parallel"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
