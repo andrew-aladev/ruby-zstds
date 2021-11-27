@@ -75,7 +75,7 @@ build () {
 }
 
 push () {
-  docker_image_name="docker://${DOCKER_HOST}/${DOCKER_USERNAME}/${IMAGE_NAME}"
+  docker_image_name="${DOCKER_HOST}/${DOCKER_USERNAME}/${IMAGE_NAME}"
 
   logged_docker_username=$(tool login --get-login "$DOCKER_HOST" || :)
   if [ "$logged_docker_username" != "$DOCKER_USERNAME" ]; then
@@ -86,7 +86,7 @@ push () {
 }
 
 pull () {
-  docker_image_name="docker://${DOCKER_HOST}/${DOCKER_USERNAME}/${IMAGE_NAME}"
+  docker_image_name="${DOCKER_HOST}/${DOCKER_USERNAME}/${IMAGE_NAME}"
 
   tool pull "$docker_image_name"
   tool tag "$docker_image_name" "$IMAGE_NAME"

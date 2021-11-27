@@ -14,6 +14,9 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.authors  = File.read("AUTHORS").split("\n").reject(&:empty?)
   gem.email    = "aladjev.andrew@gmail.com"
   gem.version  = ZSTDS::VERSION
+  gem.metadata = {
+    "rubygems_mfa_required" => "true"
+  }
 
   gem.add_development_dependency "codecov"
   gem.add_development_dependency "json"
@@ -23,8 +26,8 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "parallel"
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
-  gem.add_development_dependency "rubocop", "~> 1.22"
-  gem.add_development_dependency "rubocop-minitest", "~> 0.15"
+  gem.add_development_dependency "rubocop", "~> 1.23"
+  gem.add_development_dependency "rubocop-minitest", "~> 0.17"
   gem.add_development_dependency "rubocop-performance", "~> 1.12"
   gem.add_development_dependency "rubocop-rake", "~> 0.6"
   gem.add_development_dependency "simplecov"
