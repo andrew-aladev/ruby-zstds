@@ -27,17 +27,13 @@ environment:
     - job_name: macos (2.7)
       appveyor_build_worker_image: macos
       RUBY_VERSION: ruby-2.7
-    # TODO
+    # TODO ruby v3
     # - job_name: macos (3)
     #   appveyor_build_worker_image: macos
     #   RUBY_VERSION: ruby-3.0
     - job_name: windows-mingw
       appveyor_build_worker_image: Visual Studio 2019
       MSYSTEM: MINGW64
-    - job_name: windows-cygwin
-      appveyor_build_worker_image: Visual Studio 2019
-      CYGWIN_NOWINPATH: True
-      SHELLOPTS: igncr
 
 for:
   -
@@ -59,7 +55,7 @@ for:
         - job_name: macos (2.5)
         - job_name: macos (2.6)
         - job_name: macos (2.7)
-        # TODO
+        # TODO ruby v3
         # - job_name: macos (3)
     init:
       - sh: brew install zstd
@@ -84,17 +80,3 @@ for:
           "
     test_script:
       - cmd: C:\msys64\usr\bin\bash -l "%cd%\scripts\ci_test.sh"
-
-  -
-    matrix:
-      only:
-        - job_name: windows-cygwin
-    init:
-      - cmd: >-
-          C:\cygwin64\setup-x86_64.exe --quiet-mode --only-site
-          --site "https://mirrors.kernel.org/sourceware/cygwin"
-          --root "C:\cygwin64"
-          --local-package-dir "C:\cygwin64\var\cache\setup"
-          --packages "gcc-g++,git,curl,libzstd-devel,make,ruby-devel"
-    test_script:
-      - cmd: C:\cygwin64\bin\bash -l "%cd%\scripts\ci_test.sh"
