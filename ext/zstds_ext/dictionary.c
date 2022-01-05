@@ -9,7 +9,6 @@
 #include "zstds_ext/buffer.h"
 #include "zstds_ext/error.h"
 #include "zstds_ext/gvl.h"
-#include "zstds_ext/macro.h"
 #include "zstds_ext/option.h"
 
 // -- initialization --
@@ -153,22 +152,23 @@ VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buf
   return UINT2NUM(id);
 }
 
-VALUE zstds_ext_get_dictionary_header_size(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
-{
 #if defined(HAVE_ZDICT_HEADER_SIZE)
+VALUE zstds_ext_get_dictionary_header_size(VALUE self, VALUE buffer)
+{
   zstds_result_t result = ZDICT_getDictHeaderSize(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
   if (ZDICT_isError(result)) {
     zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));
   }
 
   return SIZET2NUM(result);
+}
 
 #else
+ZSTDS_EXT_NORETURN VALUE zstds_ext_get_dictionary_header_size(VALUE self, VALUE buffer)
+{
   zstds_ext_raise_error(ZSTDS_EXT_ERROR_NOT_IMPLEMENTED);
-
-  return SIZET2NUM(0);
+};
 #endif
-}
 
 // -- exports --
 
