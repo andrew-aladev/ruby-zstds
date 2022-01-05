@@ -69,6 +69,9 @@ void zstds_ext_raise_error(zstds_ext_result_t ext_result)
     case ZSTDS_EXT_ERROR_WRITE_IO:
       raise_error("WriteIOError", "failed to write IO");
 
+    case ZSTDS_EXT_ERROR_NOT_IMPLEMENTED:
+      raise_error("NotImplementedError", "not implemented error");
+
     default:
       // ZSTDS_EXT_ERROR_UNEXPECTED
       raise_error("UnexpectedError", "unexpected error");

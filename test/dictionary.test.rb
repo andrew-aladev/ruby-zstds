@@ -62,14 +62,26 @@ module ZSTDS
           dictionary = Target.train SAMPLES, :capacity => capacity
 
           assert dictionary.id.positive?
-          assert dictionary.header_size.positive?
+
+          begin
+            assert dictionary.header_size.positive?
+          rescue NotImplementedError
+            # Header size may not be implemented.
+          end
+
           refute_nil dictionary.buffer
           refute_empty dictionary.buffer
 
           dictionary_copy = Target.new dictionary.buffer
 
           assert_equal dictionary.id, dictionary_copy.id
-          assert_equal dictionary.header_size, dictionary_copy.header_size
+
+          begin
+            assert_equal dictionary.header_size, dictionary_copy.header_size
+          rescue NotImplementedError
+            # Header size may not be implemented.
+          end
+
           assert_equal dictionary.buffer, dictionary_copy.buffer
 
           text            = TEXTS.sample

@@ -155,6 +155,10 @@ VALUE zstds_ext_get_dictionary_buffer_id(VALUE ZSTDS_EXT_UNUSED(self), VALUE buf
 
 VALUE zstds_ext_get_dictionary_header_size(VALUE ZSTDS_EXT_UNUSED(self), VALUE buffer)
 {
+#if !defined(HAVE_ZDICT_HEADER_SIZE)
+  zstds_ext_raise_error(ZSTDS_EXT_ERROR_NOT_IMPLEMENTED);
+#endif
+
   zstds_result_t result = ZDICT_getDictHeaderSize(RSTRING_PTR(buffer), RSTRING_LEN(buffer));
   if (ZDICT_isError(result)) {
     zstds_ext_raise_error(zstds_ext_get_error(ZSTD_getErrorCode(result)));

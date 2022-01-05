@@ -18,5 +18,6 @@ module ZSTDS
   class ReadIOError   < BaseError; end
   class WriteIOError  < BaseError; end
 
-  class UnexpectedError < BaseError; end
+  class NotImplementedError < BaseError; end
+  class UnexpectedError     < BaseError; end
 end

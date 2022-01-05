@@ -4,7 +4,7 @@
 #if !defined(ZSTDS_EXT_GVL_H)
 #define ZSTDS_EXT_GVL_H
 
-#ifdef HAVE_RB_THREAD_CALL_WITHOUT_GVL
+#if defined(HAVE_RB_THREAD_CALL_WITHOUT_GVL)
 
 #include "ruby/thread.h"
 
