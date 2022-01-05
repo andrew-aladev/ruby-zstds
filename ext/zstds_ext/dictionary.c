@@ -165,6 +165,8 @@ VALUE zstds_ext_get_dictionary_header_size(VALUE ZSTDS_EXT_UNUSED(self), VALUE b
 
 #else
   zstds_ext_raise_error(ZSTDS_EXT_ERROR_NOT_IMPLEMENTED);
+
+  return SIZET2NUM(0);
 #endif
 }
 
