@@ -227,7 +227,7 @@ module ZSTDS
                             begin
                               bytes_written = instance.write_nonblock source
                             rescue ::IO::WaitWritable
-                              ::IO.select nil, [socket]
+                              socket.wait_writable
                               retry
                             end
 
@@ -246,7 +246,7 @@ module ZSTDS
                           begin
                             is_flushed = instance.flush_nonblock
                           rescue ::IO::WaitWritable
-                            ::IO.select nil, [socket]
+                            socket.wait_writable
                             retry
                           end
 
@@ -269,7 +269,7 @@ module ZSTDS
                           begin
                             is_closed = instance.close_nonblock
                           rescue ::IO::WaitWritable
-                            ::IO.select nil, [socket]
+                            socket.wait_writable
                             retry
                           end
 
@@ -304,7 +304,7 @@ module ZSTDS
                           begin
                             bytes_written = instance.write_nonblock source
                           rescue ::IO::WaitWritable
-                            ::IO.select nil, [socket]
+                            socket.wait_writable
                             retry
                           end
 
@@ -323,7 +323,7 @@ module ZSTDS
                         begin
                           is_flushed = instance.flush_nonblock
                         rescue ::IO::WaitWritable
-                          ::IO.select nil, [socket]
+                          socket.wait_writable
                           retry
                         end
 
@@ -341,7 +341,7 @@ module ZSTDS
                         begin
                           is_closed = instance.close_nonblock
                         rescue ::IO::WaitWritable
-                          ::IO.select nil, [socket]
+                          socket.wait_writable
                           retry
                         end
 
@@ -380,7 +380,7 @@ module ZSTDS
                     begin
                       is_rewinded = instance.rewind_nonblock
                     rescue ::IO::WaitWritable
-                      ::IO.select nil, [file]
+                      file.wait_writable
                       retry
                     end
 
@@ -440,7 +440,7 @@ module ZSTDS
                     loop do
                       result << socket.read_nonblock(portion_length)
                     rescue ::IO::WaitReadable
-                      ::IO.select [socket]
+                      socket.wait_readable
                     rescue ::EOFError
                       break
                     end

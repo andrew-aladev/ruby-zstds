@@ -437,7 +437,7 @@ module ZSTDS
                       begin
                         decompressed_text << instance.read_nonblock(portion_length)
                       rescue ::IO::WaitReadable
-                        ::IO.select [socket]
+                        socket.wait_readable
                         retry
                       rescue ::EOFError
                         break
@@ -474,7 +474,7 @@ module ZSTDS
                     begin
                       decompressed_text << instance.read_nonblock(portion_length)
                     rescue ::IO::WaitReadable
-                      ::IO.select [socket]
+                      socket.wait_readable
                       retry
                     rescue ::EOFError
                       break
@@ -524,7 +524,7 @@ module ZSTDS
                     begin
                       result << socket.read_nonblock(portion_length)
                     rescue ::IO::WaitReadable
-                      ::IO.select [socket]
+                      socket.wait_readable
                       retry
                     end
 
@@ -536,7 +536,7 @@ module ZSTDS
                     begin
                       bytes_written = socket.write_nonblock result
                     rescue ::IO::WaitWritable
-                      ::IO.select nil, [socket]
+                      socket.wait_writable
                       retry
                     end
 
