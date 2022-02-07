@@ -68,6 +68,13 @@ typedef struct
   VALUE              dictionary;
 } zstds_ext_decompressor_options_t;
 
+typedef struct
+{
+  zstds_ext_option_t compression_level;
+  zstds_ext_option_t notification_level;
+  zstds_ext_option_t dictionary_id;
+} zstds_ext_dictionary_options_t;
+
 void zstds_ext_resolve_option(
   VALUE                   options,
   zstds_ext_option_t*     option,
@@ -116,6 +123,13 @@ void zstds_ext_resolve_dictionary_option(VALUE options, VALUE* option, const cha
                                                                                                        \
   ZSTDS_EXT_RESOLVE_OPTION(options, decompressor_options, ZSTDS_EXT_OPTION_TYPE_UINT, window_log_max); \
   ZSTDS_EXT_RESOLVE_DICTIONARY_OPTION(options, decompressor_options, dictionary);
+
+#define ZSTDS_EXT_GET_DICTIONARY_OPTIONS(options)                                                        \
+  zstds_ext_dictionary_options_t dictionary_options;                                                     \
+                                                                                                         \
+  ZSTDS_EXT_RESOLVE_OPTION(options, dictionary_options, ZSTDS_EXT_OPTION_TYPE_INT, compression_level);   \
+  ZSTDS_EXT_RESOLVE_OPTION(options, dictionary_options, ZSTDS_EXT_OPTION_TYPE_UINT, notification_level); \
+  ZSTDS_EXT_RESOLVE_OPTION(options, dictionary_options, ZSTDS_EXT_OPTION_TYPE_UINT, dictionary_id);
 
 bool   zstds_ext_get_bool_option_value(VALUE options, const char* name);
 size_t zstds_ext_get_size_option_value(VALUE options, const char* name);
