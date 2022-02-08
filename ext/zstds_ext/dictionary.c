@@ -29,6 +29,17 @@ typedef struct
   zstds_ext_result_t ext_result;
 } train_args_t;
 
+static inline void check_raw_samples(VALUE raw_samples)
+{
+  Check_Type(raw_samples, T_ARRAY);
+
+  size_t length = RARRAY_LEN(raw_samples);
+
+  for (size_t index = 0; index < length; index++) {
+    Check_Type(rb_ary_entry(raw_samples, index), T_STRING);
+  }
+}
+
 static inline void* train_wrapper(void* data)
 {
   train_args_t*   args    = data;
@@ -82,17 +93,10 @@ static inline void* train_wrapper(void* data)
 
 VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_samples, VALUE options)
 {
-  Check_Type(raw_samples, T_ARRAY);
-
-  size_t length = RARRAY_LEN(raw_samples);
-
-  for (size_t index = 0; index < length; index++) {
-    Check_Type(rb_ary_entry(raw_samples, index), T_STRING);
-  }
-
+  check_raw_samples(raw_samples);
   Check_Type(options, T_HASH);
-  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
   ZSTDS_EXT_GET_SIZE_OPTION(options, capacity);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
 
   if (capacity == 0) {
     capacity = ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY;
@@ -105,12 +109,13 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  sample_t* samples = malloc(sizeof(sample_t) * length);
+  size_t    samples_length = RARRAY_LEN(raw_samples);
+  sample_t* samples        = malloc(sizeof(sample_t) * samples_length);
   if (samples == NULL) {
     zstds_ext_raise_error(ZSTDS_EXT_ERROR_ALLOCATE_FAILED);
   }
 
-  for (size_t index = 0; index < length; index++) {
+  for (size_t index = 0; index < samples_length; index++) {
     VALUE     raw_sample = rb_ary_entry(raw_samples, index);
     sample_t* sample     = &samples[index];
 
@@ -120,7 +125,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_
 
   train_args_t args = {
     .samples  = samples,
-    .length   = length,
+    .length   = samples_length,
     .buffer   = RSTRING_PTR(buffer),
     .capacity = capacity,
   };
@@ -138,6 +143,24 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_
   }
 
   return buffer;
+}
+
+VALUE zstds_ext_finalize_dictionary_buffer(
+  VALUE ZSTDS_EXT_UNUSED(self),
+  VALUE content,
+  VALUE raw_samples,
+  VALUE options)
+{
+  Check_Type(content, T_STRING);
+  check_raw_samples(raw_samples);
+  Check_Type(options, T_HASH);
+  ZSTDS_EXT_GET_SIZE_OPTION(options, max_size);
+  ZSTDS_EXT_GET_BOOL_OPTION(options, gvl);
+  ZSTDS_EXT_GET_DICTIONARY_OPTIONS(options);
+
+  if (max_size == 0) {
+    max_size = ZSTDS_EXT_DEFAULT_DICTIONARY_MAX_SIZE;
+  }
 }
 
 // -- other --

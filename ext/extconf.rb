@@ -25,7 +25,12 @@ def require_header(name, constants: [], macroses: [], types: [])
   end
 end
 
-require_header "zdict.h"
+require_header(
+  "zdict.h",
+  :types => %w[
+    ZDICT_params_t
+  ]
+)
 
 require_header(
   "zstd.h",
@@ -120,6 +125,7 @@ require_library(
     ZDICT_getDictID
     ZDICT_isError
     ZDICT_trainFromBuffer
+    ZDICT_finalizeDictionary
     ZSTD_CCtx_loadDictionary
     ZSTD_CCtx_setParameter
     ZSTD_CCtx_setPledgedSrcSize
