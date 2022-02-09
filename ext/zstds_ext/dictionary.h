@@ -12,8 +12,13 @@
 #define ZSTDS_EXT_DEFAULT_DICTIONARY_MAX_SIZE ZSTDS_EXT_DEFAULT_DICTIONARY_CAPACITY
 
 VALUE zstds_ext_train_dictionary_buffer(VALUE self, VALUE samples, VALUE options);
-VALUE zstds_ext_finalize_dictionary_buffer(VALUE self, VALUE content, VALUE samples, VALUE options);
 VALUE zstds_ext_get_dictionary_buffer_id(VALUE self, VALUE buffer);
+
+#if defined(HAVE_ZDICT_FINALIZE)
+VALUE zstds_ext_finalize_dictionary_buffer(VALUE self, VALUE content, VALUE samples, VALUE options);
+#else
+ZSTDS_EXT_NORETURN VALUE zstds_ext_finalize_dictionary_buffer(VALUE self, VALUE content, VALUE samples, VALUE options);
+#endif
 
 #if defined(HAVE_ZDICT_HEADER_SIZE)
 VALUE zstds_ext_get_dictionary_header_size(VALUE self, VALUE buffer);

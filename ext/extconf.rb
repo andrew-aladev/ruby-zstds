@@ -25,13 +25,7 @@ def require_header(name, constants: [], macroses: [], types: [])
   end
 end
 
-require_header(
-  "zdict.h",
-  :types => %w[
-    ZDICT_params_t
-  ]
-)
-
+require_header "zdict.h"
 require_header(
   "zstd.h",
   :constants => %w[
@@ -117,6 +111,13 @@ end
 if find_library "zstd", "ZDICT_getDictHeaderSize"
   $defs.push "-DHAVE_ZDICT_HEADER_SIZE"
 end
+
+zdict_has_params   = find_type "ZDICT_params_t", nil, "zdict.h"
+zdict_has_finalize = find_library "zstd", "ZDICT_finalizeDictionary"
+
+if zdict_has_params && zdict_has_finalize
+  $defs.push "-DHAVE_ZDICT_FINALIZE"
+end
 # rubocop:enable Style/GlobalVars
 
 require_library(
@@ -125,7 +126,6 @@ require_library(
     ZDICT_getDictID
     ZDICT_isError
     ZDICT_trainFromBuffer
-    ZDICT_finalizeDictionary
     ZSTD_CCtx_loadDictionary
     ZSTD_CCtx_setParameter
     ZSTD_CCtx_setPledgedSrcSize
