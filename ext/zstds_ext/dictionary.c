@@ -23,9 +23,9 @@ static inline void check_raw_samples(VALUE raw_samples)
 {
   Check_Type(raw_samples, T_ARRAY);
 
-  size_t length = RARRAY_LEN(raw_samples);
+  size_t samples_length = RARRAY_LEN(raw_samples);
 
-  for (size_t index = 0; index < length; index++) {
+  for (size_t index = 0; index < samples_length; index++) {
     Check_Type(rb_ary_entry(raw_samples, index), T_STRING);
   }
 }
@@ -56,7 +56,7 @@ static inline sample_t* prepare_samples(VALUE raw_samples, size_t* samples_lengt
 typedef struct
 {
   const sample_t*    samples;
-  size_t             length;
+  size_t             samples_length;
   char*              buffer;
   size_t             capacity;
   zstds_result_t     result;
@@ -65,12 +65,12 @@ typedef struct
 
 static inline void* train_wrapper(void* data)
 {
-  train_args_t*   args    = data;
-  const sample_t* samples = args->samples;
-  size_t          length  = args->length;
-  size_t          size    = 0;
+  train_args_t*   args           = data;
+  const sample_t* samples        = args->samples;
+  size_t          samples_length = args->samples_length;
+  size_t          size           = 0;
 
-  for (size_t index = 0; index < length; index++) {
+  for (size_t index = 0; index < samples_length; index++) {
     size += samples[index].size;
   }
 
@@ -80,7 +80,7 @@ static inline void* train_wrapper(void* data)
     return NULL;
   }
 
-  size_t* sizes = malloc(length * sizeof(size_t));
+  size_t* sizes = malloc(samples_length * sizeof(size_t));
   if (sizes == NULL) {
     free(group);
     args->ext_result = ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
@@ -89,7 +89,7 @@ static inline void* train_wrapper(void* data)
 
   size_t offset = 0;
 
-  for (size_t index = 0; index < length; index++) {
+  for (size_t index = 0; index < samples_length; index++) {
     const sample_t* sample_ptr  = &samples[index];
     size_t          sample_size = sample_ptr->size;
 
@@ -99,7 +99,8 @@ static inline void* train_wrapper(void* data)
     sizes[index] = sample_size;
   }
 
-  args->result = ZDICT_trainFromBuffer((void*) args->buffer, args->capacity, group, sizes, (unsigned int) length);
+  args->result =
+    ZDICT_trainFromBuffer((void*) args->buffer, args->capacity, group, sizes, (unsigned int) samples_length);
 
   free(group);
   free(sizes);
@@ -136,10 +137,10 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_
   }
 
   train_args_t args = {
-    .samples  = samples,
-    .length   = samples_length,
-    .buffer   = RSTRING_PTR(buffer),
-    .capacity = capacity,
+    .samples        = samples,
+    .samples_length = samples_length,
+    .buffer         = RSTRING_PTR(buffer),
+    .capacity       = capacity,
   };
 
   ZSTDS_EXT_GVL_WRAP(gvl, train_wrapper, &args);
@@ -163,7 +164,7 @@ VALUE zstds_ext_train_dictionary_buffer(VALUE ZSTDS_EXT_UNUSED(self), VALUE raw_
 typedef struct
 {
   const sample_t*                samples;
-  size_t                         length;
+  size_t                         samples_length;
   char*                          buffer;
   size_t                         max_size;
   char*                          content;
@@ -207,7 +208,7 @@ VALUE zstds_ext_finalize_dictionary_buffer(
 
   finalize_args_t args = {
     .samples            = samples,
-    .length             = samples_length,
+    .samples_length     = samples_length,
     .buffer             = RSTRING_PTR(buffer),
     .max_size           = max_size,
     .content            = RSTRING_PTR(content),
@@ -239,7 +240,7 @@ ZSTDS_EXT_NORETURN VALUE zstds_ext_finalize_dictionary_buffer(
 {
   zstds_ext_raise_error(ZSTDS_EXT_ERROR_NOT_IMPLEMENTED);
 }
-#endif
+#endif // HAVE_ZDICT_FINALIZE
 
 // -- other --
 
@@ -270,7 +271,7 @@ ZSTDS_EXT_NORETURN VALUE
 {
   zstds_ext_raise_error(ZSTDS_EXT_ERROR_NOT_IMPLEMENTED);
 };
-#endif
+#endif // HAVE_ZDICT_HEADER_SIZE
 
 // -- exports --
 

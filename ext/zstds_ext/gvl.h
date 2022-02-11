@@ -19,6 +19,6 @@
 
 #define ZSTDS_EXT_GVL_WRAP(_gvl, function, data) function((void*) data);
 
-#endif
+#endif // HAVE_RB_THREAD_CALL_WITHOUT_GVL
 
 #endif // ZSTDS_EXT_GVL_H

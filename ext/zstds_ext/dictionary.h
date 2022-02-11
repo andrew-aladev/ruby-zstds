@@ -18,13 +18,13 @@ VALUE zstds_ext_get_dictionary_buffer_id(VALUE self, VALUE buffer);
 VALUE zstds_ext_finalize_dictionary_buffer(VALUE self, VALUE content, VALUE samples, VALUE options);
 #else
 ZSTDS_EXT_NORETURN VALUE zstds_ext_finalize_dictionary_buffer(VALUE self, VALUE content, VALUE samples, VALUE options);
-#endif
+#endif // HAVE_ZDICT_FINALIZE
 
 #if defined(HAVE_ZDICT_HEADER_SIZE)
 VALUE zstds_ext_get_dictionary_header_size(VALUE self, VALUE buffer);
 #else
 ZSTDS_EXT_NORETURN VALUE zstds_ext_get_dictionary_header_size(VALUE self, VALUE buffer);
-#endif
+#endif // HAVE_ZDICT_HEADER_SIZE
 
 void zstds_ext_dictionary_exports(VALUE root_module);
 
