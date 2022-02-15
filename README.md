@@ -10,6 +10,8 @@ See [zstd library](https://github.com/facebook/zstd).
 
 Please install zstd library first, use latest 1.4.0+ version.
 
+Also some server installations (especially CentOS) might require [libzstd-devel](https://pkgs.org/download/libzstd-devel) package installation.
+
 ```sh
 gem install ruby-zstds
 ```
