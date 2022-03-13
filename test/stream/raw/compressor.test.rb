@@ -90,9 +90,9 @@ module ZSTDS
                     end
 
                   ensure
-                    refute compressor.closed?
+                    refute_predicate compressor, :closed?
                     compressor.close(&writer)
-                    assert compressor.closed?
+                    assert_predicate compressor, :closed?
                   end
 
                   compressed_text = compressed_buffer.string

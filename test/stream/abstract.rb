@@ -82,13 +82,13 @@ module ZSTDS
             instance = target.new file
 
             instance.autoclose = true
-            assert instance.autoclose?
+            assert_predicate instance, :autoclose?
 
             instance.binmode
-            assert instance.binmode
+            assert_predicate instance, :binmode
 
             instance.close_on_exec = true
-            assert instance.close_on_exec?
+            assert_predicate instance, :close_on_exec?
 
             # Fcntl is not available on windows.
             if Fcntl.const_defined? :F_GETFL
@@ -101,23 +101,23 @@ module ZSTDS
             fd = instance.fileno
             refute_nil fd
 
-            refute instance.isatty
+            refute_predicate instance, :isatty
             assert_nil instance.pid
 
             instance.sync = true
-            assert instance.sync
+            assert_predicate instance, :sync
 
             refute_nil instance.to_i
-            refute instance.tty?
+            refute_predicate instance, :tty?
           end
         end
 
         def test_stat
           instance = target.new $stdout
 
-          refute instance.stat.file?
-          refute instance.stat.pipe?
-          refute instance.stat.socket?
+          refute_predicate instance.stat, :file?
+          refute_predicate instance.stat, :pipe?
+          refute_predicate instance.stat, :socket?
         end
 
         # -----

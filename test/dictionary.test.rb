@@ -61,10 +61,10 @@ module ZSTDS
         Common.parallel CAPACITIES do |capacity|
           dictionary = Target.train SAMPLES, :capacity => capacity
 
-          assert dictionary.id.positive?
+          assert_predicate dictionary.id, :positive?
 
           begin
-            assert dictionary.header_size.positive?
+            assert_predicate dictionary.header_size, :positive?
           rescue NotImplementedError
             # Header size may not be implemented.
           end
