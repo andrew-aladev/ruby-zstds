@@ -51,24 +51,13 @@ static inline sample_t* prepare_samples(VALUE raw_samples, size_t* samples_lengt
   return samples;
 }
 
-// -- training --
-
-typedef struct
+static inline zstds_ext_result_t prepare_samples_group(
+  const sample_t*    samples,
+  size_t             samples_length,
+  zstds_ext_byte_t** group_ptr,
+  size_t**           sizes_ptr)
 {
-  const sample_t*    samples;
-  size_t             samples_length;
-  char*              buffer;
-  size_t             capacity;
-  zstds_result_t     result;
-  zstds_ext_result_t ext_result;
-} train_args_t;
-
-static inline void* train_wrapper(void* data)
-{
-  train_args_t*   args           = data;
-  const sample_t* samples        = args->samples;
-  size_t          samples_length = args->samples_length;
-  size_t          size           = 0;
+  size_t size = 0;
 
   for (size_t index = 0; index < samples_length; index++) {
     size += samples[index].size;
@@ -76,15 +65,13 @@ static inline void* train_wrapper(void* data)
 
   zstds_ext_byte_t* group = malloc(size);
   if (group == NULL) {
-    args->ext_result = ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
-    return NULL;
+    return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
   }
 
   size_t* sizes = malloc(samples_length * sizeof(size_t));
   if (sizes == NULL) {
     free(group);
-    args->ext_result = ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
-    return NULL;
+    return ZSTDS_EXT_ERROR_ALLOCATE_FAILED;
   }
 
   size_t offset = 0;
@@ -99,8 +86,38 @@ static inline void* train_wrapper(void* data)
     sizes[index] = sample_size;
   }
 
+  *group_ptr = group;
+  *sizes_ptr = sizes;
+
+  return 0;
+}
+
+// -- training --
+
+typedef struct
+{
+  const sample_t*    samples;
+  size_t             samples_length;
+  char*              buffer;
+  size_t             capacity;
+  zstds_result_t     result;
+  zstds_ext_result_t ext_result;
+} train_args_t;
+
+static inline void* train_wrapper(void* data)
+{
+  train_args_t* args = data;
+
+  zstds_ext_byte_t*  group;
+  size_t*            sizes;
+  zstds_ext_result_t result = prepare_samples_group(args->samples, args->samples_length, &group, &sizes);
+  if (result != 0) {
+    args->ext_result = result;
+    return NULL;
+  }
+
   args->result =
-    ZDICT_trainFromBuffer((void*) args->buffer, args->capacity, group, sizes, (unsigned int) samples_length);
+    ZDICT_trainFromBuffer((void*) args->buffer, args->capacity, group, sizes, (unsigned int) args->samples_length);
 
   free(group);
   free(sizes);
@@ -177,6 +194,60 @@ typedef struct
 static inline void* finalize_wrapper(void* data)
 {
   finalize_args_t* args = data;
+
+  zstds_ext_byte_t*  group;
+  size_t*            sizes;
+  zstds_ext_result_t result = prepare_samples_group(args->samples, args->samples_length, &group, &sizes);
+  if (result != 0) {
+    args->ext_result = result;
+    return NULL;
+  }
+
+  int                compressionLevel  = 0;
+  zstds_ext_option_t compression_level = args->dictionary_options.compression_level;
+  if (compression_level.has_value) {
+    compressionLevel = compression_level.value;
+  }
+
+  unsigned int       notificationLevel  = 0;
+  zstds_ext_option_t notification_level = args->dictionary_options.notification_level;
+  if (notification_level.has_value) {
+    notificationLevel = notification_level.value;
+  }
+
+  unsigned int       dictID        = 0;
+  zstds_ext_option_t dictionary_id = args->dictionary_options.dictionary_id;
+  if (dictionary_id.has_value) {
+    dictID = dictionary_id.value;
+  }
+
+  ZDICT_params_t dictionary_params = {
+    .compressionLevel  = compressionLevel,
+    .notificationLevel = notificationLevel,
+    .dictID            = dictID,
+  };
+
+  args->result = ZDICT_finalizeDictionary(
+    (void*) args->buffer,
+    args->max_size,
+    (void*) args->content,
+    args->content_length,
+    group,
+    sizes,
+    (unsigned int) args->samples_length,
+    dictionary_params);
+
+  free(group);
+  free(sizes);
+
+  if (ZDICT_isError(args->result)) {
+    args->ext_result = zstds_ext_get_error(ZSTD_getErrorCode(args->result));
+    return NULL;
+  }
+
+  args->ext_result = 0;
+
+  return NULL;
 }
 
 VALUE zstds_ext_finalize_dictionary_buffer(
@@ -279,8 +350,8 @@ void zstds_ext_dictionary_exports(VALUE root_module)
 {
   VALUE dictionary = rb_define_class_under(root_module, "Dictionary", rb_cObject);
 
+  rb_define_singleton_method(dictionary, "finalize_buffer", zstds_ext_finalize_dictionary_buffer, 3);
   rb_define_singleton_method(dictionary, "get_buffer_id", zstds_ext_get_dictionary_buffer_id, 1);
   rb_define_singleton_method(dictionary, "get_header_size", zstds_ext_get_dictionary_header_size, 1);
   rb_define_singleton_method(dictionary, "train_buffer", zstds_ext_train_dictionary_buffer, 2);
-  rb_define_singleton_method(dictionary, "finalize_buffer", zstds_ext_finalize_dictionary_buffer, 3);
 }
