@@ -203,22 +203,28 @@ static inline void* finalize_wrapper(void* data)
     return NULL;
   }
 
-  int                compressionLevel  = 0;
+  int                compressionLevel;
   zstds_ext_option_t compression_level = args->dictionary_options.compression_level;
   if (compression_level.has_value) {
     compressionLevel = compression_level.value;
+  } else {
+    compressionLevel = 0;
   }
 
-  unsigned int       notificationLevel  = 0;
+  unsigned int       notificationLevel;
   zstds_ext_option_t notification_level = args->dictionary_options.notification_level;
   if (notification_level.has_value) {
     notificationLevel = notification_level.value;
+  } else {
+    notificationLevel = 0;
   }
 
-  unsigned int       dictID        = 0;
+  unsigned int       dictID;
   zstds_ext_option_t dictionary_id = args->dictionary_options.dictionary_id;
   if (dictionary_id.has_value) {
     dictID = dictionary_id.value;
+  } else {
+    dictID = 0;
   }
 
   ZDICT_params_t dictionary_params = {
