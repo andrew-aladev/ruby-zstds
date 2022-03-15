@@ -33,7 +33,8 @@ gem install pkg/ruby-zstds-*.gem
 
 You can also use [overlay](https://github.com/andrew-aladev/overlay) for gentoo.
 
-### Installing in macOS on Apple Silicon
+### Installation in macOS on Apple Silicon
+
 On M1 Macs, Homebrew installs to /opt/homebrew, so you'll need to specify its
 include and lib paths when building the native extension for zstd.
 

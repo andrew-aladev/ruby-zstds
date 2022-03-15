@@ -11,7 +11,7 @@ Rake::ExtensionTask.new do |ext|
   ext.tmp_dir        = "tmp"
   ext.source_pattern = "*.{c,h}"
 
-  if File.directory?("/opt/homebrew")
+  if File.directory? "/opt/homebrew"
     ext.config_options << "--with-opt-include=/opt/homebrew/include"
     ext.config_options << "--with-opt-lib=/opt/homebrew/lib"
   end
