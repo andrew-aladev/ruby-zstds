@@ -389,7 +389,12 @@ module ZSTDS
       DICTIONARIES = [
         nil,
         Dictionary.train(DICTIONARY_SAMPLES),
-        Dictionary.finalize(DICTIONARY_CONTENTS.first, DICTIONARY_SAMPLES)
+        begin
+          Dictionary.finalize(DICTIONARY_CONTENTS.first, DICTIONARY_SAMPLES)
+        rescue NotImplementedError
+          # Finalize may not be implemented.
+          nil
+        end
       ]
       .freeze
 

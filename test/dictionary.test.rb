@@ -191,6 +191,9 @@ module ZSTDS
           )
           process_dictionary dictionary
         end
+
+      rescue NotImplementedError
+        # Finalize may not be implemented.
       end
     end
 
