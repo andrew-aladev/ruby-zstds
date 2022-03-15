@@ -13,9 +13,10 @@ module ZSTDS
     module Option
       Dictionary = ZSTDS::Dictionary
 
-      DICTIONARY_SAMPLES = Common::DICTIONARY_SAMPLES
+      DICTIONARY_CONTENTS = Common::DICTIONARY_CONTENTS
+      DICTIONARY_SAMPLES  = Common::DICTIONARY_SAMPLES
 
-      INVALID_COMPRESSOR_LEVELS = (
+      INVALID_COMPRESSION_LEVELS = (
         Validation::INVALID_INTEGERS - [nil] +
         [
           ZSTDS::Option::MIN_COMPRESSION_LEVEL - 1,
@@ -172,7 +173,7 @@ module ZSTDS
       def self.get_invalid_compressor_options(buffer_length_names, &block)
         get_common_invalid_options buffer_length_names, &block
 
-        INVALID_COMPRESSOR_LEVELS.each do |invalid_compression_level|
+        INVALID_COMPRESSION_LEVELS.each do |invalid_compression_level|
           yield({ :compression_level => invalid_compression_level })
         end
 
@@ -387,7 +388,8 @@ module ZSTDS
 
       DICTIONARIES = [
         nil,
-        Dictionary.train(DICTIONARY_SAMPLES)
+        Dictionary.train(DICTIONARY_SAMPLES),
+        Dictionary.finalize(DICTIONARY_CONTENTS.first, DICTIONARY_SAMPLES)
       ]
       .freeze
 

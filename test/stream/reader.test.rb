@@ -97,7 +97,7 @@ module ZSTDS
                           end
 
                         if result.nil?
-                          assert instance.eof?
+                          assert_predicate instance, :eof?
                           break
                         end
 
@@ -110,9 +110,9 @@ module ZSTDS
                       assert_equal instance.pos, decompressed_text.bytesize
                       assert_equal instance.pos, instance.tell
                     ensure
-                      refute instance.closed?
+                      refute_predicate instance, :closed?
                       instance.close
-                      assert instance.closed?
+                      assert_predicate instance, :closed?
                     end
 
                     decompressed_text.force_encoding text.encoding
@@ -134,15 +134,15 @@ module ZSTDS
                       decompressed_text = instance.read
                     end
 
-                    assert instance.eof?
+                    assert_predicate instance, :eof?
                     refute prev_eof unless archive.bytesize.zero?
 
                     assert_equal instance.pos, decompressed_text.bytesize
                     assert_equal instance.pos, instance.tell
                   ensure
-                    refute instance.closed?
+                    refute_predicate instance, :closed?
                     instance.close
-                    assert instance.closed?
+                    assert_predicate instance, :closed?
                   end
 
                   decompressed_text.force_encoding text.encoding
@@ -274,7 +274,7 @@ module ZSTDS
                   end
 
                   assert_equal target_text, decompressed_text
-                  assert target_text.valid_encoding?
+                  assert_predicate target_text, :valid_encoding?
                 end
               end
             end
@@ -321,14 +321,14 @@ module ZSTDS
           compressed_text = String.compress "ab"
           instance        = target.new ::StringIO.new(compressed_text)
 
-          refute instance.eof?
+          refute_predicate instance, :eof?
 
           byte = instance.read 1
-          refute instance.eof?
+          refute_predicate instance, :eof?
           assert_equal "a", byte
 
           byte = instance.read 1
-          assert instance.eof?
+          assert_predicate instance, :eof?
           assert_equal "b", byte
         end
 

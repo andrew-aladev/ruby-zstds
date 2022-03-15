@@ -8,7 +8,17 @@ See [zstd library](https://github.com/facebook/zstd).
 
 ## Installation
 
-Please install zstd library first, use latest 1.4.0+ version.
+Operating systems: GNU/Linux, FreeBSD, OSX, Windows (MinGW).
+
+Dependencies: [zstd](https://github.com/facebook/zstd) 1.4.0+ version.
+
+| Popular OS | Dependencies              |
+|------------|---------------------------|
+| Ubuntu     | `libzstd-dev`             |
+| CentOS     | `libzstd-devel`           |
+| ArchLinux  | `zstd`                    |
+| OSX        | `zstd`                    |
+| Windows    | `mingw-w64-x86_64-zstd`   |
 
 Also some server installations (especially CentOS) might require [libzstd-devel](https://pkgs.org/download/libzstd-devel) package installation.
 
@@ -450,10 +460,6 @@ You should lock all shared data between threads.
 
 For example: you should not use same compressor/decompressor inside multiple threads.
 Please verify that you are using each processor inside single thread at the same time.
-
-## Operating systems
-
-GNU/Linux, FreeBSD, OSX, Windows (MinGW).
 
 ## CI
 

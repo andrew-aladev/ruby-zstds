@@ -8,12 +8,12 @@
 #define ZSTDS_EXT_UNUSED(x) x __attribute__((__unused__))
 #else
 #define ZSTDS_EXT_UNUSED(x) x
-#endif
+#endif // __GNUC__
 
 #if defined(__GNUC__)
 #define ZSTDS_EXT_NORETURN __attribute__((__noreturn__))
 #else
 #define ZSTDS_EXT_NORETURN
-#endif
+#endif // __GNUC__
 
 #endif // ZSTDS_EXT_MACRO_H

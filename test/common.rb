@@ -72,6 +72,13 @@ module ZSTDS
       ]
       .freeze
 
+      DICTIONARY_CONTENTS = [
+        ::SecureRandom.random_bytes(1 << 10), # 1 KB
+        ::SecureRandom.random_bytes(1 << 12)  # 4 KB
+      ]
+      .shuffle
+      .freeze
+
       DICTIONARY_SAMPLES = (
         TEXTS.reject(&:empty?) +
         Common.generate_texts(
