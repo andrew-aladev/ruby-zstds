@@ -20,8 +20,6 @@ Dependencies: [zstd](https://github.com/facebook/zstd) 1.4.0+ version.
 | OSX        | `zstd`                    |
 | Windows    | `mingw-w64-x86_64-zstd`   |
 
-Also some server installations (especially CentOS) might require [libzstd-devel](https://pkgs.org/download/libzstd-devel) package installation.
-
 ```sh
 gem install ruby-zstds
 ```
