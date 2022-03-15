@@ -67,7 +67,11 @@ module ZSTDS
 
       dictionary_options = FINALIZE_DICTIONARY_DEFAULTS.merge options[:dictionary_options]
 
-      Validation.validate_not_negative_integer dictionary_options[:compression_level]
+      compression_level = dictionary_options[:compression_level]
+      Validation.validate_integer compression_level
+      raise ValidateError, "invalid compression level" if
+        compression_level < Option::MIN_COMPRESSION_LEVEL || compression_level > Option::MAX_COMPRESSION_LEVEL
+
       Validation.validate_not_negative_integer dictionary_options[:notification_level]
       Validation.validate_not_negative_integer dictionary_options[:dictionary_id]
 

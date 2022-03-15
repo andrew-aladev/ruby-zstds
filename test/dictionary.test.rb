@@ -15,6 +15,15 @@ module ZSTDS
       Target = ZSTDS::Dictionary
       String = ZSTDS::String
 
+      INVALID_COMPRESSION_LEVELS = (
+        Validation::INVALID_INTEGERS +
+        [
+          ZSTDS::Option::MIN_COMPRESSION_LEVEL - 1,
+          ZSTDS::Option::MAX_COMPRESSION_LEVEL + 1
+        ]
+      )
+      .freeze
+
       TEXTS    = Common::TEXTS
       CONTENTS = Common::DICTIONARY_CONTENTS
       SAMPLES  = Common::DICTIONARY_SAMPLES
@@ -82,26 +91,28 @@ module ZSTDS
           end
         end
 
-        Validation::INVALID_NOT_NEGATIVE_INTEGERS.each do |invalid_number|
+        Validation::INVALID_INTEGERS.each do |invalid_integer|
           assert_raises ValidateError do
-            Target.finalize "123", ["123"], :max_size => invalid_number
+            Target.finalize "123", ["123"], :max_size => invalid_integer
           end
 
           assert_raises ValidateError do
             Target.finalize "123", ["123"], :dictionary_options => {
-              :compression_level => invalid_number
+              :notification_level => invalid_integer
             }
           end
 
           assert_raises ValidateError do
             Target.finalize "123", ["123"], :dictionary_options => {
-              :notification_level => invalid_number
+              :dictionary_id => invalid_integer
             }
           end
+        end
 
+        INVALID_COMPRESSION_LEVELS.each do |invalid_compression_level|
           assert_raises ValidateError do
             Target.finalize "123", ["123"], :dictionary_options => {
-              :dictionary_id => invalid_number
+              :compression_level => invalid_compression_level
             }
           end
         end
@@ -173,7 +184,9 @@ module ZSTDS
             SAMPLES,
             :max_size           => max_size,
             :dictionary_options => {
-              :compression_level => ZSTDS::Option::MAX_COMPRESSION_LEVEL
+              :compression_level  => ZSTDS::Option::MAX_COMPRESSION_LEVEL,
+              :notification_level => 1,
+              :dictionary_id      => 2
             }
           )
           process_dictionary dictionary
