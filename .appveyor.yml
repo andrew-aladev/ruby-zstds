@@ -31,7 +31,7 @@ environment:
       appveyor_build_worker_image: macos
       RUBY_VERSION: ruby-3.0
     - job_name: windows-mingw
-      appveyor_build_worker_image: Visual Studio 2019
+      appveyor_build_worker_image: Visual Studio 2022
       MSYSTEM: MINGW64
 
 for:
