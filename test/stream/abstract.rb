@@ -15,12 +15,6 @@ module ZSTDS
         SOURCE_PATH = Common::SOURCE_PATH
 
         def test_invalid_initialize
-          Validation::INVALID_IOS.each do |invalid_io|
-            assert_raises ValidateError do
-              target.new invalid_io
-            end
-          end
-
           (Validation::INVALID_STRINGS - [nil] + Validation::INVALID_ENCODINGS).each do |invalid_encoding|
             assert_raises ValidateError do
               target.new ::StringIO.new, {}, :external_encoding => invalid_encoding

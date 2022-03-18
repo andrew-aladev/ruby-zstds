@@ -31,7 +31,6 @@ module ZSTDS
       INVALID_SYMBOLS  = (TYPES - %i[a]).freeze
       INVALID_ARRAYS   = (TYPES - [[]]).freeze
       INVALID_HASHES   = (TYPES - [{}]).freeze
-      INVALID_IOS      = (TYPES - [$stdout, ::StringIO]).freeze
       INVALID_CHARS    = (INVALID_NUMBERS & INVALID_STRINGS).freeze
 
       INVALID_POSITIVE_INTEGERS     = (INVALID_INTEGERS + [0, -1]).freeze
@@ -44,6 +43,30 @@ module ZSTDS
         UTF-33
       ]
       .freeze
+
+      class StringIOWithoutRead < ::StringIO
+        undef :read
+      end
+
+      class StringIOWithoutEOF < ::StringIO
+        undef :eof?
+      end
+
+      class StringIOWithoutReadpartial < ::StringIO
+        undef :readpartial
+      end
+
+      class StringIOWithoutReadNonblock < ::StringIO
+        undef :read_nonblock
+      end
+
+      class StringIOWithoutWrite < ::StringIO
+        undef :write
+      end
+
+      class StringIOWithoutWriteNonblock < ::StringIO
+        undef :write_nonblock
+      end
     end
   end
 end

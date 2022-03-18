@@ -23,6 +23,8 @@ module ZSTDS
       # -- synchronous --
 
       def write(*objects)
+        validate_write
+
         write_remaining_buffer
 
         bytes_written = 0
@@ -38,20 +40,26 @@ module ZSTDS
       end
 
       def flush
+        validate_write
+
         finish :flush
 
-        @io.flush
+        @io.flush if @io.respond_to? :flush
 
         self
       end
 
       def rewind
+        validate_write
+
         finish :close
 
         super
       end
 
       def close
+        validate_write
+
         finish :close
 
         super
@@ -75,6 +83,10 @@ module ZSTDS
         @raw_stream.send(method_name, *args) { |portion| @io.write portion }
       end
 
+      def validate_write
+        raise ValidateError, "io should be responsible to write" unless @io.respond_to? :write
+      end
+
       # -- asynchronous --
 
       # IO write nonblock can raise wait writable error.
@@ -83,6 +95,8 @@ module ZSTDS
       # So we have to accept content after processing IO write nonblock.
       # It means that first write nonblock won't call IO write nonblock.
       def write_nonblock(object, *options)
+        validate_write_nonblock
+
         return 0 unless write_remaining_buffer_nonblock(*options)
 
         source         = transcode object.to_s
@@ -93,14 +107,18 @@ module ZSTDS
       end
 
       def flush_nonblock(*options)
+        validate_write_nonblock
+
         return false unless finish_nonblock :flush, *options
 
-        @io.flush
+        @io.flush if @io.respond_to? :flush
 
         true
       end
 
       def rewind_nonblock(*options)
+        validate_write_nonblock
+
         return false unless finish_nonblock :close, *options
 
         method(:rewind).super_method.call
@@ -109,6 +127,8 @@ module ZSTDS
       end
 
       def close_nonblock(*options)
+        validate_write_nonblock
+
         return false unless finish_nonblock :close, *options
 
         method(:close).super_method.call
@@ -137,6 +157,10 @@ module ZSTDS
 
       protected def raw_nonblock_wrapper(method_name, *args)
         @raw_stream.send(method_name, *args) { |portion| @buffer << portion }
+      end
+
+      def validate_write_nonblock
+        raise ValidateError, "io should be responsible to write nonblock" unless @io.respond_to? :write_nonblock
       end
 
       # -- common --

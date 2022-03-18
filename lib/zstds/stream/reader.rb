@@ -54,6 +54,9 @@ module ZSTDS
         Validation.validate_not_negative_integer bytes_to_read unless bytes_to_read.nil?
         Validation.validate_string out_buffer unless out_buffer.nil?
 
+        raise ValidateError, "io should be responsible to read and eof" unless
+          @io.respond_to?(:read) && @io.respond_to?(:eof?)
+
         unless bytes_to_read.nil?
           return ::String.new :encoding => ::Encoding::BINARY if bytes_to_read.zero?
           return nil if eof?
@@ -86,16 +89,22 @@ module ZSTDS
       end
 
       def eof?
+        raise ValidateError, "io should be responsible to eof" unless @io.respond_to? :eof?
+
         empty? && @io.eof?
       end
 
       # -- asynchronous --
 
       def readpartial(bytes_to_read, out_buffer = nil)
+        raise ValidateError, "io should be responsible to readpartial" unless @io.respond_to? :readpartial
+
         read_more_nonblock(bytes_to_read, out_buffer) { @io.readpartial @source_buffer_length }
       end
 
       def read_nonblock(bytes_to_read, out_buffer = nil, *options)
+        raise ValidateError, "io should be responsible to read nonblock" unless @io.respond_to? :read_nonblock
+
         read_more_nonblock(bytes_to_read, out_buffer) { @io.read_nonblock(@source_buffer_length, *options) }
       end
 

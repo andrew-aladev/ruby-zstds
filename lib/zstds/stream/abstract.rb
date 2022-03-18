@@ -24,9 +24,7 @@ module ZSTDS
 
       def initialize(io, options = {})
         @raw_stream = create_raw_stream
-
-        Validation.validate_io io
-        @io = io
+        @io         = io
 
         @stat = Stat.new @io.stat if @io.respond_to? :stat
 
@@ -135,13 +133,19 @@ module ZSTDS
       end
 
       def close
-        @io.close
+        @io.close if @io.respond_to? :close
 
         nil
       end
 
       def closed?
-        @raw_stream.closed? && @io.closed?
+        return false unless @raw_stream.closed?
+
+        if @io.respond_to? :closed
+          @io.closed?
+        else
+          true
+        end
       end
 
       def to_io
