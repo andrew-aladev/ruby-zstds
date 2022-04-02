@@ -6,9 +6,6 @@ environment:
     CI: True
 
   matrix:
-    - job_name: ubuntu (2.5)
-      appveyor_build_worker_image: Ubuntu2004
-      RUBY_VERSION: ruby-2.5
     - job_name: ubuntu (2.6)
       appveyor_build_worker_image: Ubuntu2004
       RUBY_VERSION: ruby-2.6
@@ -18,9 +15,6 @@ environment:
     - job_name: ubuntu (3.0)
       appveyor_build_worker_image: Ubuntu2004
       RUBY_VERSION: ruby-3.0
-    - job_name: macos (2.5)
-      appveyor_build_worker_image: macos
-      RUBY_VERSION: ruby-2.5
     - job_name: macos (2.6)
       appveyor_build_worker_image: macos
       RUBY_VERSION: ruby-2.6
@@ -38,7 +32,6 @@ for:
   -
     matrix:
       only:
-        - job_name: ubuntu (2.5)
         - job_name: ubuntu (2.6)
         - job_name: ubuntu (2.7)
         - job_name: ubuntu (3.0)
@@ -51,7 +44,6 @@ for:
   -
     matrix:
       only:
-        - job_name: macos (2.5)
         - job_name: macos (2.6)
         - job_name: macos (2.7)
         - job_name: macos (3.0)

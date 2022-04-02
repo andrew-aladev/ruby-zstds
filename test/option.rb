@@ -400,7 +400,7 @@ module ZSTDS
 
       private_class_method def self.get_buffer_length_option_generator(buffer_length_names)
         OCG.new(
-          buffer_length_names.map { |name| [name, BUFFER_LENGTHS] }.to_h
+          buffer_length_names.to_h { |name| [name, BUFFER_LENGTHS] }
         )
       end
 
@@ -448,7 +448,7 @@ module ZSTDS
         if NB_WORKERS.first != NB_WORKERS.last
           # Multithreaded support is enabled.
           thread_generator = thread_generator.or(
-            :nb_workers  => NB_WORKERS[1..-1],
+            :nb_workers  => NB_WORKERS[1..],
             :job_size    => JOB_SIZES,
             :overlap_log => OVERLAP_LOGS
           )
