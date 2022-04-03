@@ -18,6 +18,10 @@ module ZSTDS
         # -- write --
 
         def flush(&writer)
+          do_not_use_after_close
+
+          Validation.validate_proc writer
+
           write_result(&writer)
 
           nil
