@@ -27,4 +27,4 @@ Build is rootless, just use your regular `my_user`.
 
 ## Related bugs
 
-- [dev-lang/ruby-3.1.1: patch -p1 failed with 900-musl-coroutine.patch](https://bugs.gentoo.org/835038)
+- [dev-lang/ruby-3.1.*: patch -p1 failed with 900-musl-coroutine.patch](https://bugs.gentoo.org/835038)
