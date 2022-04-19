@@ -1,0 +1,3 @@
+[submodule "test-images"]
+	path = test-images
+	url = git@github.com:andrew-aladev/test-images.git

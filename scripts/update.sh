@@ -8,6 +8,8 @@ git fetch --all || :
 git fetch --tags || :
 git remote | xargs -I {} git rebase "{}/$(git branch --show-current)" || :
 
+git submodule update --init --recursive --remote
+
 ./clang/complete.sh
 ./clang/format.sh
 
