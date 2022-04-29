@@ -44,20 +44,20 @@ module ZSTDS
       ]
       .freeze
 
-      class StringIOWithoutRead < ::StringIO
-        undef :read
-      end
-
       class StringIOWithoutEOF < ::StringIO
         undef :eof?
       end
 
-      class StringIOWithoutReadpartial < ::StringIO
-        undef :readpartial
+      class StringIOWithoutRead < ::StringIO
+        undef :read
       end
 
       class StringIOWithoutReadNonblock < ::StringIO
         undef :read_nonblock
+      end
+
+      class StringIOWithoutReadpartial < ::StringIO
+        undef :readpartial
       end
 
       class StringIOWithoutWrite < ::StringIO
