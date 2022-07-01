@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>module ZSTDS::File - Ruby ZSTDS rdoc</title>
+<title>class ZSTDS::File - Ruby ZSTDS rdoc</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -21,7 +21,7 @@
 <link href="../css/rdoc.css" rel="stylesheet">
 
 
-<body id="top" role="document" class="module">
+<body id="top" role="document" class="class">
 <nav role="navigation">
   <div id="project-navigation">
     <div id="home-section" role="region" title="Quick navigation" class="nav-section">
@@ -58,6 +58,12 @@
   <div id="class-metadata">
     
     
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link">ADSP::File
+</div>
+
     
     
     
@@ -66,22 +72,23 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
-    <li ><a href="#method-c-compress">::compress</a>
-    <li ><a href="#method-c-decompress">::decompress</a>
+    <li class="calls-super" ><a href="#method-c-compress">::compress</a>
+    <li ><a href="#method-c-native_compress_io">::native_compress_io</a>
+    <li ><a href="#method-c-native_decompress_io">::native_decompress_io</a>
   </ul>
 </div>
 
   </div>
 </nav>
 
-<main role="main" aria-labelledby="module-ZSTDS::File">
-  <h1 id="module-ZSTDS::File" class="module">
-    module ZSTDS::File
+<main role="main" aria-labelledby="class-ZSTDS::File">
+  <h1 id="class-ZSTDS::File" class="class">
+    class ZSTDS::File
   </h1>
 
   <section class="description">
     
-<p><a href="File.html"><code>ZSTDS::File</code></a> module.</p>
+<p><a href="File.html"><code>ZSTDS::File</code></a> class.</p>
 
   </section>
 
@@ -93,8 +100,8 @@
         <h3>Constants</h3>
       </header>
       <dl>
-        <dt id="BUFFER_LENGTH_NAMES">BUFFER_LENGTH_NAMES
-        <dd>
+        <dt id="Option">Option
+        <dd><p>Current option class.</p>
       </dl>
     </section>
 
@@ -114,22 +121,21 @@
 
         <div class="method-description">
           
+            <div class="method-calls-super">
+              Calls superclass method
+              
+            </div>
 
           <div class="method-source-code" id="compress-source">
-            <pre><span class="ruby-comment"># File lib/zstds/file.rb, line 15</span>
+            <pre><span class="ruby-comment"># File lib/zstds/file.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">compress</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">options</span> = {})
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">source</span>
-  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">destination</span>
 
   <span class="ruby-identifier">options</span> = <span class="ruby-constant">Option</span>.<span class="ruby-identifier">get_compressor_options</span> <span class="ruby-identifier">options</span>, <span class="ruby-constant">BUFFER_LENGTH_NAMES</span>
 
   <span class="ruby-identifier">options</span>[<span class="ruby-value">:pledged_size</span>] = <span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">size</span> <span class="ruby-identifier">source</span>
 
-  <span class="ruby-identifier">open_files</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">source_io</span>, <span class="ruby-identifier">destination_io</span><span class="ruby-operator">|</span>
-    <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_compress_io</span> <span class="ruby-identifier">source_io</span>, <span class="ruby-identifier">destination_io</span>, <span class="ruby-identifier">options</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-keyword">nil</span>
+  <span class="ruby-keyword">super</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">options</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -137,29 +143,41 @@
 
       </div>
 
-      <div id="method-c-decompress" class="method-detail ">
+      <div id="method-c-native_compress_io" class="method-detail ">
         <div class="method-heading">
-          <span class="method-name">decompress</span><span
-            class="method-args">(source, destination, options = {})</span>
+          <span class="method-name">native_compress_io</span><span
+            class="method-args">(*args)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
           
 
-          <div class="method-source-code" id="decompress-source">
+          <div class="method-source-code" id="native_compress_io-source">
+            <pre><span class="ruby-comment"># File lib/zstds/file.rb, line 26</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_compress_io</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_compress_io</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-native_decompress_io" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">native_decompress_io</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="native_decompress_io-source">
             <pre><span class="ruby-comment"># File lib/zstds/file.rb, line 30</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">decompress</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span>, <span class="ruby-identifier">options</span> = {})
-  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">source</span>
-  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">destination</span>
-
-  <span class="ruby-identifier">options</span> = <span class="ruby-constant">Option</span>.<span class="ruby-identifier">get_decompressor_options</span> <span class="ruby-identifier">options</span>, <span class="ruby-constant">BUFFER_LENGTH_NAMES</span>
-
-  <span class="ruby-identifier">open_files</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">destination</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">source_io</span>, <span class="ruby-identifier">destination_io</span><span class="ruby-operator">|</span>
-    <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_decompress_io</span> <span class="ruby-identifier">source_io</span>, <span class="ruby-identifier">destination_io</span>, <span class="ruby-identifier">options</span>
-  <span class="ruby-keyword">end</span>
-
-  <span class="ruby-keyword">nil</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_decompress_io</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_decompress_io</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

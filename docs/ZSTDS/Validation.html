@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>module ZSTDS::Validation - Ruby ZSTDS rdoc</title>
+<title>class ZSTDS::Validation - Ruby ZSTDS rdoc</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -21,7 +21,7 @@
 <link href="../css/rdoc.css" rel="stylesheet">
 
 
-<body id="top" role="document" class="module">
+<body id="top" role="document" class="class">
 <nav role="navigation">
   <div id="project-navigation">
     <div id="home-section" role="region" title="Quick navigation" class="nav-section">
@@ -58,6 +58,12 @@
   <div id="class-metadata">
     
     
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link">ADSP::Validation
+</div>
+
     
     
     
@@ -66,29 +72,21 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
-    <li ><a href="#method-c-validate_array">::validate_array</a>
     <li ><a href="#method-c-validate_bool">::validate_bool</a>
-    <li ><a href="#method-c-validate_hash">::validate_hash</a>
-    <li ><a href="#method-c-validate_integer">::validate_integer</a>
-    <li ><a href="#method-c-validate_not_negative_integer">::validate_not_negative_integer</a>
-    <li ><a href="#method-c-validate_positive_integer">::validate_positive_integer</a>
-    <li ><a href="#method-c-validate_proc">::validate_proc</a>
-    <li ><a href="#method-c-validate_string">::validate_string</a>
-    <li ><a href="#method-c-validate_symbol">::validate_symbol</a>
   </ul>
 </div>
 
   </div>
 </nav>
 
-<main role="main" aria-labelledby="module-ZSTDS::Validation">
-  <h1 id="module-ZSTDS::Validation" class="module">
-    module ZSTDS::Validation
+<main role="main" aria-labelledby="class-ZSTDS::Validation">
+  <h1 id="class-ZSTDS::Validation" class="class">
+    class ZSTDS::Validation
   </h1>
 
   <section class="description">
     
-<p><a href="Validation.html"><code>ZSTDS::Validation</code></a> module.</p>
+<p><a href="Validation.html"><code>ZSTDS::Validation</code></a> class.</p>
 
   </section>
 
@@ -103,27 +101,6 @@
          <h3>Public Class Methods</h3>
        </header>
 
-      <div id="method-c-validate_array" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_array</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_array-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 9</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_array</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid array&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">Array</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
       <div id="method-c-validate_bool" class="method-detail ">
         <div class="method-heading">
           <span class="method-name">validate_bool</span><span
@@ -135,158 +112,9 @@
           
 
           <div class="method-source-code" id="validate_bool-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 9</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid bool&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">TrueClass</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">FalseClass</span>)
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_hash" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_hash</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_hash-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 17</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_hash</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid hash&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">Hash</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_integer" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_integer</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_integer-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 21</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_integer</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid integer&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_not_negative_integer" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_not_negative_integer</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_not_negative_integer-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 25</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_not_negative_integer</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid not negative integer&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">value</span> <span class="ruby-operator">&gt;=</span> <span class="ruby-value">0</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_positive_integer" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_positive_integer</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_positive_integer-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 29</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_positive_integer</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid positive integer&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">positive?</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_proc" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_proc</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_proc-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 33</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_proc</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Proc</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">Method</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">UnboundMethod</span>)
-    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid proc&quot;</span>
-  <span class="ruby-keyword">end</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_string" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_string</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_string-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 39</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_string</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid string&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">String</span>
-<span class="ruby-keyword">end</span></pre>
-          </div>
-        </div>
-
-
-      </div>
-
-      <div id="method-c-validate_symbol" class="method-detail ">
-        <div class="method-heading">
-          <span class="method-name">validate_symbol</span><span
-            class="method-args">(value)</span>
-          <span class="method-click-advice">click to toggle source</span>
-        </div>
-
-        <div class="method-description">
-          
-
-          <div class="method-source-code" id="validate_symbol-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 43</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_symbol</span>(<span class="ruby-identifier">value</span>)
-  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid symbol&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">Symbol</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

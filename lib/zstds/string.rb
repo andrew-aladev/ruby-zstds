@@ -1,15 +1,17 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "adsp/string"
 require "zstds_ext"
 
 require_relative "option"
 require_relative "validation"
 
 module ZSTDS
-  # ZSTDS::String module.
-  module String
-    BUFFER_LENGTH_NAMES = %i[destination_buffer_length].freeze
+  # ZSTDS::String class.
+  class String < ADSP::String
+    # Current option class.
+    Option = ZSTDS::Option
 
     def self.compress(source, options = {})
       Validation.validate_string source
@@ -18,15 +20,15 @@ module ZSTDS
 
       options[:pledged_size] = source.bytesize
 
-      ZSTDS._native_compress_string source, options
+      super source, options
     end
 
-    def self.decompress(source, options = {})
-      Validation.validate_string source
+    def self.native_compress_string(*args)
+      ZSTDS._native_compress_string(*args)
+    end
 
-      options = Option.get_decompressor_options options, BUFFER_LENGTH_NAMES
-
-      ZSTDS._native_decompress_string source, options
+    def self.native_decompress_string(*args)
+      ZSTDS._native_decompress_string(*args)
     end
   end
 end

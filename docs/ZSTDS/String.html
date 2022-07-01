@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>module ZSTDS::String - Ruby ZSTDS rdoc</title>
+<title>class ZSTDS::String - Ruby ZSTDS rdoc</title>
 
 <script type="text/javascript">
   var rdoc_rel_prefix = "../";
@@ -21,7 +21,7 @@
 <link href="../css/rdoc.css" rel="stylesheet">
 
 
-<body id="top" role="document" class="module">
+<body id="top" role="document" class="class">
 <nav role="navigation">
   <div id="project-navigation">
     <div id="home-section" role="region" title="Quick navigation" class="nav-section">
@@ -58,6 +58,12 @@
   <div id="class-metadata">
     
     
+<div id="parent-class-section" class="nav-section">
+  <h3>Parent</h3>
+
+  <p class="link">ADSP::String
+</div>
+
     
     
     
@@ -66,22 +72,23 @@
   <h3>Methods</h3>
 
   <ul class="link-list" role="directory">
-    <li ><a href="#method-c-compress">::compress</a>
-    <li ><a href="#method-c-decompress">::decompress</a>
+    <li class="calls-super" ><a href="#method-c-compress">::compress</a>
+    <li ><a href="#method-c-native_compress_string">::native_compress_string</a>
+    <li ><a href="#method-c-native_decompress_string">::native_decompress_string</a>
   </ul>
 </div>
 
   </div>
 </nav>
 
-<main role="main" aria-labelledby="module-ZSTDS::String">
-  <h1 id="module-ZSTDS::String" class="module">
-    module ZSTDS::String
+<main role="main" aria-labelledby="class-ZSTDS::String">
+  <h1 id="class-ZSTDS::String" class="class">
+    class ZSTDS::String
   </h1>
 
   <section class="description">
     
-<p><a href="String.html"><code>ZSTDS::String</code></a> module.</p>
+<p><a href="String.html"><code>ZSTDS::String</code></a> class.</p>
 
   </section>
 
@@ -93,8 +100,8 @@
         <h3>Constants</h3>
       </header>
       <dl>
-        <dt id="BUFFER_LENGTH_NAMES">BUFFER_LENGTH_NAMES
-        <dd>
+        <dt id="Option">Option
+        <dd><p><a href="Option.html"><code>ZSTDS::Option</code></a> module.</p>
       </dl>
     </section>
 
@@ -114,9 +121,13 @@
 
         <div class="method-description">
           
+            <div class="method-calls-super">
+              Calls superclass method
+              
+            </div>
 
           <div class="method-source-code" id="compress-source">
-            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 14</span>
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">compress</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span> = {})
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">source</span>
 
@@ -124,7 +135,7 @@
 
   <span class="ruby-identifier">options</span>[<span class="ruby-value">:pledged_size</span>] = <span class="ruby-identifier">source</span>.<span class="ruby-identifier">bytesize</span>
 
-  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_compress_string</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span>
+  <span class="ruby-keyword">super</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
@@ -132,24 +143,41 @@
 
       </div>
 
-      <div id="method-c-decompress" class="method-detail ">
+      <div id="method-c-native_compress_string" class="method-detail ">
         <div class="method-heading">
-          <span class="method-name">decompress</span><span
-            class="method-args">(source, options = {})</span>
+          <span class="method-name">native_compress_string</span><span
+            class="method-args">(*args)</span>
           <span class="method-click-advice">click to toggle source</span>
         </div>
 
         <div class="method-description">
           
 
-          <div class="method-source-code" id="decompress-source">
-            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 24</span>
-<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">decompress</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span> = {})
-  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">source</span>
+          <div class="method-source-code" id="native_compress_string-source">
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 26</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_compress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_compress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
 
-  <span class="ruby-identifier">options</span> = <span class="ruby-constant">Option</span>.<span class="ruby-identifier">get_decompressor_options</span> <span class="ruby-identifier">options</span>, <span class="ruby-constant">BUFFER_LENGTH_NAMES</span>
 
-  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_decompress_string</span> <span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span>
+      </div>
+
+      <div id="method-c-native_decompress_string" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">native_decompress_string</span><span
+            class="method-args">(*args)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="native_decompress_string-source">
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 30</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_decompress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
+  <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_decompress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>
