@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>module ZSTDS::Option - Ruby ZSTDS rdoc</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../";
+  var index_rel_prefix = "../";
+</script>
+
+<script src="../js/navigation.js" defer></script>
+<script src="../js/search.js" defer></script>
+<script src="../js/search_index.js" defer></script>
+<script src="../js/searcher.js" defer></script>
+<script src="../js/darkfish.js" defer></script>
+
+<link href="../css/fonts.css" rel="stylesheet">
+<link href="../css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="module">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="../index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="../table_of_contents.html#pages">Pages</a>
+    <a href="../table_of_contents.html#classes">Classes</a>
+    <a href="../table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+
+  <div id="class-metadata">
+    
+    
+    
+    
+    
+<!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
+    <li ><a href="#method-c-get_compressor_options">::get_compressor_options</a>
+    <li ><a href="#method-c-get_decompressor_options">::get_decompressor_options</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-labelledby="module-ZSTDS::Option">
+  <h1 id="module-ZSTDS::Option" class="module">
+    module ZSTDS::Option
+  </h1>
+
+  <section class="description">
+    
+<p><a href="Option.html"><code>ZSTDS::Option</code></a> module.</p>
+
+  </section>
+
+  <section id="5Buntitled-5D" class="documentation-section">
+
+
+    <section class="constants-list">
+      <header>
+        <h3>Constants</h3>
+      </header>
+      <dl>
+        <dt id="COMPRESSOR_DEFAULTS">COMPRESSOR_DEFAULTS
+        <dd>
+        <dt id="DECOMPRESSOR_DEFAULTS">DECOMPRESSOR_DEFAULTS
+        <dd>
+        <dt id="DEFAULT_BUFFER_LENGTH">DEFAULT_BUFFER_LENGTH
+        <dd>
+      </dl>
+    </section>
+
+
+
+     <section id="public-class-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Class Methods</h3>
+       </header>
+
+      <div id="method-c-get_compressor_options" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">get_compressor_options</span><span
+            class="method-args">(options, buffer_length_names)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="get_compressor_options-source">
+            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 47</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">get_compressor_options</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">buffer_length_names</span>)
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_hash</span> <span class="ruby-identifier">options</span>
+
+  <span class="ruby-identifier">buffer_length_defaults</span> = <span class="ruby-identifier">buffer_length_names</span>.<span class="ruby-identifier">each_with_object</span>({}) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">defaults</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">defaults</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-constant">DEFAULT_BUFFER_LENGTH</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">options</span> = <span class="ruby-constant">COMPRESSOR_DEFAULTS</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">buffer_length_defaults</span>).<span class="ruby-identifier">merge</span> <span class="ruby-identifier">options</span>
+
+  <span class="ruby-identifier">buffer_length_names</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span> <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">name</span>] }
+
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:gvl</span>]
+
+  <span class="ruby-identifier">compression_level</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:compression_level</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">compression_level</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_integer</span> <span class="ruby-identifier">compression_level</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid compression level&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">compression_level</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_COMPRESSION_LEVEL</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">compression_level</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_COMPRESSION_LEVEL</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">window_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:window_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">window_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">window_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid window log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">window_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_WINDOW_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">window_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_WINDOW_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">hash_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:hash_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">hash_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">hash_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid hash log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">hash_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_HASH_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">hash_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_HASH_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">chain_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:chain_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">chain_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">chain_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid chain log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">chain_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_CHAIN_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">chain_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_CHAIN_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">search_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:search_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">search_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">search_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid search log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">search_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_SEARCH_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">search_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_SEARCH_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">min_match</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:min_match</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">min_match</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">min_match</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid min match&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">min_match</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_MIN_MATCH</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">min_match</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_MIN_MATCH</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">target_length</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:target_length</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">target_length</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">target_length</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid target length&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">target_length</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_TARGET_LENGTH</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">target_length</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_TARGET_LENGTH</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">strategy</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:strategy</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">strategy</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_symbol</span> <span class="ruby-identifier">strategy</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid strategy&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-constant">STRATEGIES</span>.<span class="ruby-identifier">include?</span> <span class="ruby-identifier">strategy</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">enable_long_distance_matching</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:enable_long_distance_matching</span>]
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">enable_long_distance_matching</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">enable_long_distance_matching</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">ldm_hash_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ldm_hash_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ldm_hash_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">ldm_hash_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid ldm hash log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">ldm_hash_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_LDM_HASH_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ldm_hash_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_LDM_HASH_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">ldm_min_match</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ldm_min_match</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ldm_min_match</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">ldm_min_match</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid ldm min match&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">ldm_min_match</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_LDM_MIN_MATCH</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ldm_min_match</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_LDM_MIN_MATCH</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">ldm_bucket_size_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ldm_bucket_size_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ldm_bucket_size_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">ldm_bucket_size_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid ldm bucket size log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">ldm_bucket_size_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_LDM_BUCKET_SIZE_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ldm_bucket_size_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_LDM_BUCKET_SIZE_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">ldm_hash_rate_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:ldm_hash_rate_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">ldm_hash_rate_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">ldm_hash_rate_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid ldm hash rate log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">ldm_hash_rate_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_LDM_HASH_RATE_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">ldm_hash_rate_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_LDM_HASH_RATE_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">content_size_flag</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:content_size_flag</span>]
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">content_size_flag</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">content_size_flag</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">checksum_flag</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:checksum_flag</span>]
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">checksum_flag</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">checksum_flag</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">dict_id_flag</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:dict_id_flag</span>]
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">dict_id_flag</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">dict_id_flag</span>.<span class="ruby-identifier">nil?</span>
+
+  <span class="ruby-identifier">nb_workers</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:nb_workers</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">nb_workers</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">nb_workers</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid nb workers&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">nb_workers</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_NB_WORKERS</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">nb_workers</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_NB_WORKERS</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">job_size</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:job_size</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">job_size</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">job_size</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid job size&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">job_size</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_JOB_SIZE</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">job_size</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_JOB_SIZE</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">overlap_log</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:overlap_log</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">overlap_log</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">overlap_log</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid overlap log&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">overlap_log</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_OVERLAP_LOG</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">overlap_log</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_OVERLAP_LOG</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">dictionary</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:dictionary</span>]
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid dictionary&quot;</span> <span class="ruby-keyword">unless</span>
+    <span class="ruby-identifier">dictionary</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">dictionary</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-constant">Dictionary</span>)
+
+  <span class="ruby-identifier">options</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-get_decompressor_options" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">get_decompressor_options</span><span
+            class="method-args">(options, buffer_length_names)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          
+
+          <div class="method-source-code" id="get_decompressor_options-source">
+            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 183</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">get_decompressor_options</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">buffer_length_names</span>)
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_hash</span> <span class="ruby-identifier">options</span>
+
+  <span class="ruby-identifier">buffer_length_defaults</span> = <span class="ruby-identifier">buffer_length_names</span>.<span class="ruby-identifier">each_with_object</span>({}) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">name</span>, <span class="ruby-identifier">defaults</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">defaults</span>[<span class="ruby-identifier">name</span>] = <span class="ruby-constant">DEFAULT_BUFFER_LENGTH</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">options</span> = <span class="ruby-constant">DECOMPRESSOR_DEFAULTS</span>.<span class="ruby-identifier">merge</span>(<span class="ruby-identifier">buffer_length_defaults</span>).<span class="ruby-identifier">merge</span> <span class="ruby-identifier">options</span>
+
+  <span class="ruby-identifier">buffer_length_names</span>.<span class="ruby-identifier">each</span> { <span class="ruby-operator">|</span><span class="ruby-identifier">name</span><span class="ruby-operator">|</span> <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">name</span>] }
+
+  <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_bool</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:gvl</span>]
+
+  <span class="ruby-identifier">window_log_max</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:window_log_max</span>]
+  <span class="ruby-keyword">unless</span> <span class="ruby-identifier">window_log_max</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_not_negative_integer</span> <span class="ruby-identifier">window_log_max</span>
+    <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid window log max&quot;</span> <span class="ruby-keyword">if</span>
+      <span class="ruby-identifier">window_log_max</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_WINDOW_LOG_MAX</span> <span class="ruby-operator">||</span> <span class="ruby-identifier">window_log_max</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MAX_WINDOW_LOG_MAX</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-identifier">options</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+    </section>
+
+  </section>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

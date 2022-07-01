@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>README - Ruby ZSTDS rdoc</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" role="document" class="file">
+<nav role="navigation">
+  <div id="project-navigation">
+    <div id="home-section" role="region" title="Quick navigation" class="nav-section">
+  <h2>
+    <a href="./index.html" rel="home">Home</a>
+  </h2>
+
+  <div id="table-of-contents-navigation">
+    <a href="./table_of_contents.html#pages">Pages</a>
+    <a href="./table_of_contents.html#classes">Classes</a>
+    <a href="./table_of_contents.html#methods">Methods</a>
+  </div>
+</div>
+
+    <div id="search-section" role="search" class="project-section initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <div id="search-field-wrapper">
+      <input id="search-field" role="combobox" aria-label="Search"
+             aria-autocomplete="list" aria-controls="search-results"
+             type="text" name="search" placeholder="Search" spellcheck="false"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </div>
+
+    <ul id="search-results" aria-label="Search Results"
+        aria-busy="false" aria-expanded="false"
+        aria-atomic="false" class="initially-hidden"></ul>
+  </form>
+</div>
+
+  </div>
+
+  
+<div class="nav-section">
+  <h3>Table of Contents</h3>
+
+  <ul class="link-list" role="directory">
+    <li><a href="#label-Ruby+bindings+for+zstd+library">Ruby bindings for zstd library</a>
+    <li><a href="#label-Installation">Installation</a>
+    <li><a href="#label-Installation+in+macOS+on+Apple+Silicon">Installation in macOS on Apple Silicon</a>
+    <li><a href="#label-Usage">Usage</a>
+    <li><a href="#label-Docs">Docs</a>
+    <li><a href="#label-Options">Options</a>
+    <li><a href="#label-String">String</a>
+    <li><a href="#label-File">File</a>
+    <li><a href="#label-Stream-3A-3AWriter">Stream::Writer</a>
+    <li><a href="#label-Stream-3A-3AReader">Stream::Reader</a>
+    <li><a href="#label-Dictionary">Dictionary</a>
+    <li><a href="#label-Thread+safety">Thread safety</a>
+    <li><a href="#label-CI">CI</a>
+    <li><a href="#label-License">License</a>
+  </ul>
+</div>
+
+
+  <div id="project-metadata">
+    
+<div id="fileindex-section" class="nav-section">
+  <h3>Pages</h3>
+
+  <ul class="link-list">
+    <li><a href="./AUTHORS.html">AUTHORS</a>
+    <li><a href="./LICENSE.html">LICENSE</a>
+    <li><a href="./README_md.html">README</a>
+  </ul>
+</div>
+
+  </div>
+</nav>
+
+<main role="main" aria-label="Page README.md">
+
+<h1 id="label-Ruby+bindings+for+zstd+library">Ruby bindings for zstd library<span><a href="#label-Ruby+bindings+for+zstd+library">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>| AppVeyor | Jenkins | Github actions | Codecov | Gem | | :——: | :—–: | :————: | :—–: | :–: | | <a href="https://ci.appveyor.com/project/andrew-aladev/ruby-zstds/branch/master"><img src="https://ci.appveyor.com/api/projects/status/github/andrew-aladev/ruby-zstds?branch=master&svg=true"></a> | <a href="http://37.187.122.190:58182/job/ruby-zstds"><img src="http://37.187.122.190:58182/buildStatus/icon?job=ruby-zstds"></a> | <a href="https://github.com/andrew-aladev/ruby-zstds/actions"><img src="https://github.com/andrew-aladev/ruby-zstds/workflows/test/badge.svg?branch=master"></a> | <a href="https://codecov.io/gh/andrew-aladev/ruby-zstds"><img src="https://codecov.io/gh/andrew-aladev/ruby-zstds/branch/master/graph/badge.svg"></a> | <a href="https://rubygems.org/gems/ruby-zstds"><img src="https://img.shields.io/gem/v/ruby-zstds.svg"></a> |</p>
+
+<p>See <a href="https://github.com/facebook/zstd">zstd library</a>.</p>
+
+<h2 id="label-Installation">Installation<span><a href="#label-Installation">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Operating systems: GNU/Linux, FreeBSD, OSX.</p>
+
+<p>Dependencies: <a href="https://github.com/facebook/zstd">zstd</a> 1.4.0+ version.</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Popular OS</th>
+<th>Dependencies</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ubuntu</td>
+<td>`libzstd-dev`</td>
+</tr>
+<tr>
+<td>CentOS</td>
+<td>`libzstd-devel`</td>
+</tr>
+<tr>
+<td>ArchLinux</td>
+<td>`zstd`</td>
+</tr>
+<tr>
+<td>OSX</td>
+<td>`zstd`</td>
+</tr>
+</tbody>
+</table>
+
+<pre class="ruby"><span class="ruby-identifier">gem</span> <span class="ruby-identifier">install</span> <span class="ruby-identifier">ruby</span><span class="ruby-operator">-</span><span class="ruby-identifier">zstds</span>
+</pre>
+
+<p>You can build it from source.</p>
+
+<pre>rake gem
+gem install pkg/ruby-zstds-*.gem</pre>
+
+<p>You can also use <a href="https://github.com/andrew-aladev/overlay">overlay</a> for gentoo.</p>
+
+<h3 id="label-Installation+in+macOS+on+Apple+Silicon">Installation in macOS on Apple Silicon<span><a href="#label-Installation+in+macOS+on+Apple+Silicon">&para;</a> <a href="#top">&uarr;</a></span></h3>
+
+<p>On M1 Macs, Homebrew installs to /opt/homebrew, so you’ll need to specify its include and lib paths when building the native extension for zstd.</p>
+
+<pre>brew install zstd
+gem install ruby-zstds -- --with-opt-include=/opt/homebrew/include --with-opt-lib=/opt/homebrew/lib</pre>
+
+<p>You can also configure Bundler to use those options when installing:</p>
+
+<pre>bundle config set build.ruby-zstds &quot;--with-opt-include=/opt/homebrew/include --with-opt-lib=/opt/homebrew/lib&quot;</pre>
+
+<h2 id="label-Usage">Usage<span><a href="#label-Usage">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>There are simple APIs: <code>String</code> and <code>File</code>. Also you can use generic streaming API: <code>Stream::Writer</code> and <code>Stream::Reader</code>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+
+<span class="ruby-identifier">data</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">compress</span> <span class="ruby-string">&quot;sample string&quot;</span>
+<span class="ruby-identifier">puts</span> <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">decompress</span>(<span class="ruby-identifier">data</span>)
+
+<span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">compress</span> <span class="ruby-string">&quot;file.txt&quot;</span>, <span class="ruby-string">&quot;file.txt.zst&quot;</span>
+<span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">File</span>.<span class="ruby-identifier">decompress</span> <span class="ruby-string">&quot;file.txt.zst&quot;</span>, <span class="ruby-string">&quot;file.txt&quot;</span>
+
+<span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Writer</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&quot;file.txt.zst&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">writer</span><span class="ruby-operator">|</span> <span class="ruby-identifier">writer</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&quot;sample string&quot;</span> }
+<span class="ruby-identifier">puts</span> <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Reader</span>.<span class="ruby-identifier">open</span>(<span class="ruby-string">&quot;file.txt.zst&quot;</span>) { <span class="ruby-operator">|</span><span class="ruby-identifier">reader</span><span class="ruby-operator">|</span> <span class="ruby-identifier">reader</span>.<span class="ruby-identifier">read</span> }
+
+<span class="ruby-identifier">writer</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Writer</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">output_socket</span>
+<span class="ruby-keyword">begin</span>
+  <span class="ruby-identifier">bytes_written</span> = <span class="ruby-identifier">writer</span>.<span class="ruby-identifier">write_nonblock</span> <span class="ruby-string">&quot;sample string&quot;</span>
+  <span class="ruby-comment"># handle &quot;bytes_written&quot;</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IO</span><span class="ruby-operator">::</span><span class="ruby-constant">WaitWritable</span>
+  <span class="ruby-comment"># handle wait</span>
+<span class="ruby-keyword">ensure</span>
+  <span class="ruby-identifier">writer</span>.<span class="ruby-identifier">close</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-identifier">reader</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Reader</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">input_socket</span>
+<span class="ruby-keyword">begin</span>
+  <span class="ruby-identifier">puts</span> <span class="ruby-identifier">reader</span>.<span class="ruby-identifier">read_nonblock</span>(<span class="ruby-value">512</span>)
+<span class="ruby-keyword">rescue</span> <span class="ruby-constant">IO</span><span class="ruby-operator">::</span><span class="ruby-constant">WaitReadable</span>
+  <span class="ruby-comment"># handle wait</span>
+<span class="ruby-keyword">rescue</span> <span class="ruby-operator">::</span><span class="ruby-constant">EOFError</span>
+  <span class="ruby-comment"># handle eof</span>
+<span class="ruby-keyword">ensure</span>
+  <span class="ruby-identifier">reader</span>.<span class="ruby-identifier">close</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>You can create dictionary using <code>ZSTDS::Dictionary</code>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;securerandom&quot;</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+
+<span class="ruby-identifier">samples</span> = (<span class="ruby-constant">Array</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">8</span>) { <span class="ruby-operator">::</span><span class="ruby-constant">SecureRandom</span>.<span class="ruby-identifier">random_bytes</span>(<span class="ruby-value">1</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-value">8</span>) } <span class="ruby-operator">+</span> [<span class="ruby-string">&quot;sample string&quot;</span>]).<span class="ruby-identifier">shuffle</span>
+
+<span class="ruby-identifier">dictionary</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Dictionary</span>.<span class="ruby-identifier">train</span> <span class="ruby-identifier">samples</span>
+<span class="ruby-constant">File</span>.<span class="ruby-identifier">write</span> <span class="ruby-string">&quot;dictionary.bin&quot;</span>, <span class="ruby-identifier">dictionary</span>.<span class="ruby-identifier">buffer</span>, <span class="ruby-value">:mode</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-string">&quot;wb&quot;</span>
+
+<span class="ruby-identifier">dictionary_buffer</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span> <span class="ruby-string">&quot;dictionary.bin&quot;</span>, <span class="ruby-value">:mode</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-string">&quot;rb&quot;</span>
+<span class="ruby-identifier">dictionary</span>        = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Dictionary</span>.<span class="ruby-identifier">new</span> <span class="ruby-identifier">dictionary_buffer</span>
+
+<span class="ruby-identifier">data</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">compress</span> <span class="ruby-string">&quot;sample string&quot;</span>, <span class="ruby-value">:dictionary</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">dictionary</span>
+<span class="ruby-identifier">puts</span> <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">decompress</span>(<span class="ruby-identifier">data</span>, <span class="ruby-value">:dictionary</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-identifier">dictionary</span>)
+</pre>
+
+<p>You can create and read <code>tar.zst</code> archives with <a href="https://github.com/halostatue/minitar">minitar</a>.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">&quot;minitar&quot;</span>
+
+<span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Writer</span>.<span class="ruby-identifier">open</span> <span class="ruby-string">&quot;file.tar.zst&quot;</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">writer</span><span class="ruby-operator">|</span>
+  <span class="ruby-constant">Minitar</span><span class="ruby-operator">::</span><span class="ruby-constant">Writer</span>.<span class="ruby-identifier">open</span> <span class="ruby-identifier">writer</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tar</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">tar</span>.<span class="ruby-identifier">add_file_simple</span> <span class="ruby-string">&quot;file&quot;</span>, <span class="ruby-value">:data</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-string">&quot;sample string&quot;</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+
+<span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">Stream</span><span class="ruby-operator">::</span><span class="ruby-constant">Reader</span>.<span class="ruby-identifier">open</span> <span class="ruby-string">&quot;file.tar.zst&quot;</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">reader</span><span class="ruby-operator">|</span>
+  <span class="ruby-constant">Minitar</span><span class="ruby-operator">::</span><span class="ruby-constant">Reader</span>.<span class="ruby-identifier">open</span> <span class="ruby-identifier">reader</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">tar</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">tar</span>.<span class="ruby-identifier">each_entry</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">entry</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">puts</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">name</span>
+      <span class="ruby-identifier">puts</span> <span class="ruby-identifier">entry</span>.<span class="ruby-identifier">read</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>You can also use <code>Content-Encoding: zstd</code> with <a href="http://sinatrarb.com">sinatra</a>:</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">&quot;sinatra&quot;</span>
+
+<span class="ruby-identifier">get</span> <span class="ruby-string">&quot;/&quot;</span> <span class="ruby-keyword">do</span>
+  <span class="ruby-identifier">headers</span>[<span class="ruby-string">&quot;Content-Encoding&quot;</span>] = <span class="ruby-string">&quot;zstd&quot;</span>
+  <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">compress</span> <span class="ruby-string">&quot;sample string&quot;</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<p>All functionality (including streaming) can be used inside multiple threads with <a href="https://github.com/grosser/parallel">parallel</a>. This code will provide heavy load for your CPU.</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+<span class="ruby-identifier">require</span> <span class="ruby-string">&quot;parallel&quot;</span>
+
+<span class="ruby-constant">Parallel</span>.<span class="ruby-identifier">each</span> <span class="ruby-identifier">large_datas</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">large_data</span><span class="ruby-operator">|</span>
+  <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">compress</span> <span class="ruby-identifier">large_data</span>
+<span class="ruby-keyword">end</span>
+</pre>
+
+<h1 id="label-Docs">Docs<span><a href="#label-Docs">&para;</a> <a href="#top">&uarr;</a></span></h1>
+
+<p>Please review <a href="https://andrew-aladev.github.io/ruby-zstds">rdoc generated docs</a>.</p>
+
+<h2 id="label-Options">Options<span><a href="#label-Options">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<table role="table">
+<thead>
+<tr>
+<th>Option</th>
+<th>Values</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`source_buffer_length`</td>
+<td>0 - inf</td>
+<td>0 (auto)</td>
+<td>internal buffer length for source data</td>
+</tr>
+<tr>
+<td>`destination_buffer_length`</td>
+<td>0 - inf</td>
+<td>0 (auto)</td>
+<td>internal buffer length for description data</td>
+</tr>
+<tr>
+<td>`gvl`</td>
+<td>true/false</td>
+<td>false</td>
+<td>enables global VM lock where possible</td>
+</tr>
+<tr>
+<td>`compression_level`</td>
+<td>-131072 - 22</td>
+<td>0 (auto)</td>
+<td>compression level</td>
+</tr>
+<tr>
+<td>`window_log`</td>
+<td>10 - 31</td>
+<td>0 (auto)</td>
+<td>maximum back-reference distance (power of 2)</td>
+</tr>
+<tr>
+<td>`hash_log`</td>
+<td>6 - 30</td>
+<td>0 (auto)</td>
+<td>size of the initial probe table (power of 2)</td>
+</tr>
+<tr>
+<td>`chain_log`</td>
+<td>6 - 30</td>
+<td>0 (auto)</td>
+<td>size of the multi-probe search table (power of 2)</td>
+</tr>
+<tr>
+<td>`search_log`</td>
+<td>1 - 30</td>
+<td>0 (auto)</td>
+<td>number of search attempts (power of 2)</td>
+</tr>
+<tr>
+<td>`min_match`</td>
+<td>3 - 7</td>
+<td>0 (auto)</td>
+<td>minimum size of searched matches</td>
+</tr>
+<tr>
+<td>`target_length`</td>
+<td>0 - 131072</td>
+<td>0 (auto)</td>
+<td>distance between match sampling (for `:fast` strategy), length of match considered &quot;good enough&quot; for (for other strategies)</td>
+</tr>
+<tr>
+<td>`strategy`</td>
+<td>`STRATEGIES`</td>
+<td>nil (auto)</td>
+<td>choses strategy</td>
+</tr>
+<tr>
+<td>`enable_long_distance_matching`</td>
+<td>true/false</td>
+<td>nil (auto)</td>
+<td>enables long distance matching</td>
+</tr>
+<tr>
+<td>`ldm_hash_log`</td>
+<td>6 - 30</td>
+<td>0 (auto)</td>
+<td>size of the table for long distance matching (power of 2)</td>
+</tr>
+<tr>
+<td>`ldm_min_match`</td>
+<td>4 - 4096</td>
+<td>0 (auto)</td>
+<td>minimum match size for long distance matcher</td>
+</tr>
+<tr>
+<td>`ldm_bucket_size_log`</td>
+<td>1 - 8</td>
+<td>0 (auto)</td>
+<td>log size of each bucket in the LDM hash table for collision resolution</td>
+</tr>
+<tr>
+<td>`ldm_hash_rate_log`</td>
+<td>0 - 25</td>
+<td>0 (auto)</td>
+<td>frequency of inserting/looking up entries into the LDM hash table</td>
+</tr>
+<tr>
+<td>`content_size_flag`</td>
+<td>true/false</td>
+<td>true</td>
+<td>enables writing of content size into frame header (if known)</td>
+</tr>
+<tr>
+<td>`checksum_flag`</td>
+<td>true/false</td>
+<td>false</td>
+<td>enables writing of 32-bits checksum of content at end of frame</td>
+</tr>
+<tr>
+<td>`dict_id_flag`</td>
+<td>true/false</td>
+<td>true</td>
+<td>enables writing of dictionary id into frame header</td>
+</tr>
+<tr>
+<td>`nb_workers`</td>
+<td>0 - 200</td>
+<td>0 (auto)</td>
+<td>number of threads spawned in parallel</td>
+</tr>
+<tr>
+<td>`job_size`</td>
+<td>0 - 1073741824</td>
+<td>0 (auto)</td>
+<td>size of job (nb_workers &gt;= 1)</td>
+</tr>
+<tr>
+<td>`overlap_log`</td>
+<td>0 - 9</td>
+<td>0 (auto)</td>
+<td>overlap size, as a fraction of window size</td>
+</tr>
+<tr>
+<td>`window_log_max`</td>
+<td>10 - 31</td>
+<td>0 (auto)</td>
+<td>size limit (power of 2)</td>
+</tr>
+<tr>
+<td>`dictionary`</td>
+<td>`Dictionary`</td>
+<td>nil</td>
+<td>chose dictionary</td>
+</tr>
+<tr>
+<td>`pledged_size`</td>
+<td>0 - inf</td>
+<td>0 (auto)</td>
+<td>size of input (if known)</td>
+</tr>
+</tbody>
+</table>
+
+<p>There are internal buffers for compressed and decompressed data. For example you want to use 1 KB as <code>source_buffer_length</code> for compressor - please use 256 B as <code>destination_buffer_length</code>. You want to use 256 B as <code>source_buffer_length</code> for decompressor - please use 1 KB as <code>destination_buffer_length</code>.</p>
+
+<p><code>gvl</code> is disabled by default, this mode allows running multiple compressors/decompressors in different threads simultaneously. Please consider enabling <code>gvl</code> if you don’t want to launch processors in separate threads. If <code>gvl</code> is enabled ruby won’t waste time on acquiring/releasing VM lock.</p>
+
+<p><code>String</code> and <code>File</code> will set <code>:pledged_size</code> automaticaly.</p>
+
+<p>You can also read zstd docs for more info about options.</p>
+
+<table role="table">
+<thead>
+<tr>
+<th>Option</th>
+<th>Related constants</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>`compression_level`</td>
+<td>`ZSTDS::Option::MIN_COMPRESSION_LEVEL` = -131072, `ZSTDS::Option::MAX_COMPRESSION_LEVEL` = 22</td>
+</tr>
+<tr>
+<td>`window_log`</td>
+<td>`ZSTDS::Option::MIN_WINDOW_LOG` = 10, `ZSTDS::Option::MAX_WINDOW_LOG` = 31</td>
+</tr>
+<tr>
+<td>`hash_log`</td>
+<td>`ZSTDS::Option::MIN_HASH_LOG` = 6, `ZSTDS::Option::MAX_HASH_LOG` = 30</td>
+</tr>
+<tr>
+<td>`chain_log`</td>
+<td>`ZSTDS::Option::MIN_CHAIN_LOG` = 6, `ZSTDS::Option::MAX_CHAIN_LOG` = 30</td>
+</tr>
+<tr>
+<td>`search_log`</td>
+<td>`ZSTDS::Option::MIN_SEARCH_LOG` = 1, `ZSTDS::Option::MAX_SEARCH_LOG` = 30</td>
+</tr>
+<tr>
+<td>`min_match`</td>
+<td>`ZSTDS::Option::MIN_MIN_MATCH` = 3, `ZSTDS::Option::MAX_MIN_MATCH` = 7</td>
+</tr>
+<tr>
+<td>`target_length`</td>
+<td>`ZSTDS::Option::MIN_TARGET_LENGTH` = 0, `ZSTDS::Option::MAX_TARGET_LENGTH` = 131072</td>
+</tr>
+<tr>
+<td>`strategy`</td>
+<td>`ZSTDS::Option::STRATEGIES` = `%i[fast dfast greedy lazy lazy2 btlazy2 btopt btultra btultra2]`</td>
+</tr>
+<tr>
+<td>`ldm_hash_log`</td>
+<td>`ZSTDS::Option::MIN_LDM_HASH_LOG` = 6, `ZSTDS::Option::MAX_LDM_HASH_LOG` = 30</td>
+</tr>
+<tr>
+<td>`ldm_min_match`</td>
+<td>`ZSTDS::Option::MIN_LDM_MIN_MATCH` = 4, `ZSTDS::Option::MAX_LDM_MIN_MATCH` = 4096</td>
+</tr>
+<tr>
+<td>`ldm_bucket_size_log`</td>
+<td>`ZSTDS::Option::MIN_LDM_BUCKET_SIZE_LOG` = 1, `ZSTDS::Option::MAX_LDM_BUCKET_SIZE_LOG` = 8</td>
+</tr>
+<tr>
+<td>`ldm_hash_rate_log`</td>
+<td>`ZSTDS::Option::MIN_LDM_HASH_RATE_LOG` = 0, `ZSTDS::Option::MAX_LDM_HASH_RATE_LOG` = 25</td>
+</tr>
+<tr>
+<td>`nb_workers`</td>
+<td>`ZSTDS::Option::MIN_NB_WORKERS` = 0, `ZSTDS::Option::MAX_NB_WORKERS` = 200</td>
+</tr>
+<tr>
+<td>`job_size`</td>
+<td>`ZSTDS::Option::MIN_JOB_SIZE` = 0, `ZSTDS::Option::MAX_JOB_SIZE` = 1073741824</td>
+</tr>
+<tr>
+<td>`overlap_log`</td>
+<td>`ZSTDS::Option::MIN_OVERLAP_LOG` = 0, `ZSTDS::Option::MAX_OVERLAP_LOG` = 9</td>
+</tr>
+<tr>
+<td>`window_log_max`</td>
+<td>`ZSTDS::Option::MIN_WINDOW_LOG_MAX` = 10, `ZSTDS::Option::MAX_WINDOW_LOG_MAX` = 31</td>
+</tr>
+</tbody>
+</table>
+
+<p>Possible compressor options:</p>
+
+<pre class="ruby"><span class="ruby-value">:source_buffer_length</span>
+<span class="ruby-value">:destination_buffer_length</span>
+<span class="ruby-value">:gvl</span>
+<span class="ruby-value">:compression_level</span>
+<span class="ruby-value">:window_log</span>
+<span class="ruby-value">:hash_log</span>
+<span class="ruby-value">:chain_log</span>
+<span class="ruby-value">:search_log</span>
+<span class="ruby-value">:min_match</span>
+<span class="ruby-value">:target_length</span>
+<span class="ruby-value">:strategy</span>
+<span class="ruby-value">:enable_long_distance_matching</span>
+<span class="ruby-value">:ldm_hash_log</span>
+<span class="ruby-value">:ldm_min_match</span>
+<span class="ruby-value">:ldm_bucket_size_log</span>
+<span class="ruby-value">:ldm_hash_rate_log</span>
+<span class="ruby-value">:content_size_flag</span>
+<span class="ruby-value">:checksum_flag</span>
+<span class="ruby-value">:dict_id_flag</span>
+<span class="ruby-value">:nb_workers</span>
+<span class="ruby-value">:job_size</span>
+<span class="ruby-value">:overlap_log</span>
+<span class="ruby-value">:dictionary</span>
+<span class="ruby-value">:pledged_size</span>
+</pre>
+
+<p>Possible decompressor options:</p>
+
+<pre class="ruby"><span class="ruby-value">:source_buffer_length</span>
+<span class="ruby-value">:destination_buffer_length</span>
+<span class="ruby-value">:gvl</span>
+<span class="ruby-value">:window_log_max</span>
+<span class="ruby-value">:dictionary</span>
+</pre>
+
+<p>Example:</p>
+
+<pre class="ruby"><span class="ruby-identifier">require</span> <span class="ruby-string">&quot;zstds&quot;</span>
+
+<span class="ruby-identifier">data</span> = <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">compress</span> <span class="ruby-string">&quot;sample string&quot;</span>, <span class="ruby-value">:compression_level</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-value">5</span>
+<span class="ruby-identifier">puts</span> <span class="ruby-constant">ZSTDS</span><span class="ruby-operator">::</span><span class="ruby-constant">String</span>.<span class="ruby-identifier">decompress</span>(<span class="ruby-identifier">data</span>, <span class="ruby-value">:window_log_max</span> <span class="ruby-operator">=&gt;</span> <span class="ruby-value">11</span>)
+</pre>
+
+<h2 id="label-String">String<span><a href="#label-String">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>String maintains destination buffer only, so it accepts <code>destination_buffer_length</code> option only.</p>
+
+<pre>::compress(source, options = {})
+::decompress(source, options = {})</pre>
+
+<p><code>source</code> is a source string.</p>
+
+<h2 id="label-File">File<span><a href="#label-File">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>File maintains both source and destination buffers, it accepts both <code>source_buffer_length</code> and <code>destination_buffer_length</code> options.</p>
+
+<pre>::compress(source, destination, options = {})
+::decompress(source, destination, options = {})</pre>
+
+<p><code>source</code> and <code>destination</code> are file pathes.</p>
+
+<h2 id="label-Stream-3A-3AWriter">Stream::Writer<span><a href="#label-Stream-3A-3AWriter">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Its behaviour is similar to builtin {<code>Zlib::GzipWriter</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipWriter.html">}</a>.</p>
+
+<p>Writer maintains destination buffer only, so it accepts <code>destination_buffer_length</code> option only.</p>
+
+<pre>::open(file_path, options = {}, :external_encoding =&gt; nil, :transcode_options =&gt; {}, &amp;block)</pre>
+
+<p>Open file path and create stream writer associated with opened file. Data will be transcoded to <code>:external_encoding</code> using <code>:transcode_options</code> before compressing.</p>
+
+<p>It may be tricky to use both <code>:pledged_size</code> and <code>:transcode_options</code>. You have to provide size of transcoded input.</p>
+
+<pre>::new(destination_io, options = {}, :external_encoding =&gt; nil, :transcode_options =&gt; {})</pre>
+
+<p>Create stream writer associated with destination io. Data will be transcoded to <code>:external_encoding</code> using <code>:transcode_options</code> before compressing.</p>
+
+<p>It may be tricky to use both <code>:pledged_size</code> and <code>:transcode_options</code>. You have to provide size of transcoded input.</p>
+
+<pre class="ruby"><span class="ruby-comment">#set_encoding(external_encoding, nil, transcode_options)</span>
+</pre>
+
+<p>Set another encodings, <code>nil</code> is just for compatibility with <code>IO</code>.</p>
+
+<pre class="ruby"><span class="ruby-comment">#io</span>
+<span class="ruby-comment">#to_io</span>
+<span class="ruby-comment">#stat</span>
+<span class="ruby-comment">#external_encoding</span>
+<span class="ruby-comment">#transcode_options</span>
+<span class="ruby-comment">#pos</span>
+<span class="ruby-comment">#tell</span>
+</pre>
+
+<p>See {<code>IO</code><a href="https://ruby-doc.org/core/IO.html">}</a> docs.</p>
+
+<pre class="ruby"><span class="ruby-comment">#write(*objects)</span>
+<span class="ruby-comment">#flush</span>
+<span class="ruby-comment">#rewind</span>
+<span class="ruby-comment">#close</span>
+<span class="ruby-comment">#closed?</span>
+</pre>
+
+<p>See {<code>Zlib::GzipWriter</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipWriter.html">}</a> docs.</p>
+
+<pre class="ruby"><span class="ruby-comment">#write_nonblock(object, *options)</span>
+<span class="ruby-comment">#flush_nonblock(*options)</span>
+<span class="ruby-comment">#rewind_nonblock(*options)</span>
+<span class="ruby-comment">#close_nonblock(*options)</span>
+</pre>
+
+<p>Special asynchronous methods missing in <code>Zlib::GzipWriter</code>. <code>rewind</code> wants to <code>close</code>, <code>close</code> wants to <code>write</code> something and <code>flush</code>, <code>flush</code> want to <code>write</code> something. So it is possible to have asynchronous variants for these synchronous methods. Behaviour is the same as <code>IO#write_nonblock</code> method.</p>
+
+<pre class="ruby"><span class="ruby-comment">#&lt;&lt;(object)</span>
+<span class="ruby-comment">#print(*objects)</span>
+<span class="ruby-comment">#printf(*args)</span>
+<span class="ruby-comment">#putc(object, :encoding =&gt; &#39;ASCII-8BIT&#39;)</span>
+<span class="ruby-comment">#puts(*objects)</span>
+</pre>
+
+<p>Typical helpers, see {<code>Zlib::GzipWriter</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipWriter.html">}</a> docs.</p>
+
+<h2 id="label-Stream-3A-3AReader">Stream::Reader<span><a href="#label-Stream-3A-3AReader">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Its behaviour is similar to builtin {<code>Zlib::GzipReader</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipReader.html">}</a>.</p>
+
+<p>Reader maintains both source and destination buffers, it accepts both <code>source_buffer_length</code> and <code>destination_buffer_length</code> options.</p>
+
+<pre>::open(file_path, options = {}, :external_encoding =&gt; nil, :internal_encoding =&gt; nil, :transcode_options =&gt; {}, &amp;block)</pre>
+
+<p>Open file path and create stream reader associated with opened file. Data will be force encoded to <code>:external_encoding</code> and transcoded to <code>:internal_encoding</code> using <code>:transcode_options</code> after decompressing.</p>
+
+<pre>::new(source_io, options = {}, :external_encoding =&gt; nil, :internal_encoding =&gt; nil, :transcode_options =&gt; {})</pre>
+
+<p>Create stream reader associated with source io. Data will be force encoded to <code>:external_encoding</code> and transcoded to <code>:internal_encoding</code> using <code>:transcode_options</code> after decompressing.</p>
+
+<pre class="ruby"><span class="ruby-comment">#set_encoding(external_encoding, internal_encoding, transcode_options)</span>
+</pre>
+
+<p>Set another encodings.</p>
+
+<pre class="ruby"><span class="ruby-comment">#io</span>
+<span class="ruby-comment">#to_io</span>
+<span class="ruby-comment">#stat</span>
+<span class="ruby-comment">#external_encoding</span>
+<span class="ruby-comment">#internal_encoding</span>
+<span class="ruby-comment">#transcode_options</span>
+<span class="ruby-comment">#pos</span>
+<span class="ruby-comment">#tell</span>
+</pre>
+
+<p>See {<code>IO</code><a href="https://ruby-doc.org/core/IO.html">}</a> docs.</p>
+
+<pre class="ruby"><span class="ruby-comment">#read(bytes_to_read = nil, out_buffer = nil)</span>
+<span class="ruby-comment">#eof?</span>
+<span class="ruby-comment">#rewind</span>
+<span class="ruby-comment">#close</span>
+<span class="ruby-comment">#closed?</span>
+</pre>
+
+<p>See {<code>Zlib::GzipReader</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipReader.html">}</a> docs.</p>
+
+<pre class="ruby"><span class="ruby-comment">#readpartial(bytes_to_read = nil, out_buffer = nil)</span>
+<span class="ruby-comment">#read_nonblock(bytes_to_read, out_buffer = nil, *options)</span>
+</pre>
+
+<p>See {<code>IO</code><a href="https://ruby-doc.org/core/IO.html">}</a> docs.</p>
+
+<pre class="ruby"><span class="ruby-comment">#getbyte</span>
+<span class="ruby-comment">#each_byte(&amp;block)</span>
+<span class="ruby-comment">#readbyte</span>
+<span class="ruby-comment">#ungetbyte(byte)</span>
+
+<span class="ruby-comment">#getc</span>
+<span class="ruby-comment">#readchar</span>
+<span class="ruby-comment">#each_char(&amp;block)</span>
+<span class="ruby-comment">#ungetc(char)</span>
+
+<span class="ruby-comment">#lineno</span>
+<span class="ruby-comment">#lineno=</span>
+<span class="ruby-comment">#gets(separator = $OUTPUT_RECORD_SEPARATOR, limit = nil)</span>
+<span class="ruby-comment">#readline</span>
+<span class="ruby-comment">#readlines</span>
+<span class="ruby-comment">#each(&amp;block)</span>
+<span class="ruby-comment">#each_line(&amp;block)</span>
+<span class="ruby-comment">#ungetline(line)</span>
+</pre>
+
+<p>Typical helpers, see {<code>Zlib::GzipReader</code><a href="https://ruby-doc.org/stdlib/libdoc/zlib/rdoc/Zlib/GzipReader.html">}</a> docs.</p>
+
+<h2 id="label-Dictionary">Dictionary<span><a href="#label-Dictionary">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>You can train dictionary from samples using <code>train</code> class method.</p>
+
+<pre>::train(samples, :capacity =&gt; 0)</pre>
+
+<p>Please review zstd code before using it. There are many validation requirements and it changes between versions.</p>
+
+<pre class="ruby"><span class="ruby-comment">#buffer</span>
+</pre>
+
+<p>There is an attribute reader for buffer. You can use it to store dictionary somewhere.</p>
+
+<pre>::new(buffer)</pre>
+
+<p>Please use regular constructor to create dictionary from buffer.</p>
+
+<pre class="ruby"><span class="ruby-comment">#id</span>
+</pre>
+
+<p>Read dictionary id from buffer.</p>
+
+<h2 id="label-Thread+safety">Thread safety<span><a href="#label-Thread+safety">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p><code>:gvl</code> option is disabled by default, you can use bindings effectively in multiple threads. Please be careful: bindings are not thread safe. You should lock all shared data between threads.</p>
+
+<p>For example: you should not use same compressor/decompressor inside multiple threads. Please verify that you are using each processor inside single thread at the same time.</p>
+
+<h2 id="label-CI">CI<span><a href="#label-CI">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>Please visit <a href="scripts/test-images">scripts/test-images</a>. See universal test script <a href="scripts/ci_test.sh">scripts/ci_test.sh</a> for CI.</p>
+
+<h2 id="label-License">License<span><a href="#label-License">&para;</a> <a href="#top">&uarr;</a></span></h2>
+
+<p>MIT license, see <a href="LICENSE">LICENSE</a> and <a href="AUTHORS">AUTHORS</a>.</p>
+
+</main>
+
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

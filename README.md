@@ -8,7 +8,7 @@ See [zstd library](https://github.com/facebook/zstd).
 
 ## Installation
 
-Operating systems: GNU/Linux, FreeBSD, OSX, Windows (MinGW).
+Operating systems: GNU/Linux, FreeBSD, OSX.
 
 Dependencies: [zstd](https://github.com/facebook/zstd) 1.4.0+ version.
 
@@ -18,7 +18,6 @@ Dependencies: [zstd](https://github.com/facebook/zstd) 1.4.0+ version.
 | CentOS     | `libzstd-devel`           |
 | ArchLinux  | `zstd`                    |
 | OSX        | `zstd`                    |
-| Windows    | `mingw-w64-x86_64-zstd`   |
 
 ```sh
 gem install ruby-zstds
@@ -150,6 +149,10 @@ Parallel.each large_datas do |large_data|
   ZSTDS::String.compress large_data
 end
 ```
+
+# Docs
+
+Please review [rdoc generated docs](https://andrew-aladev.github.io/ruby-zstds).
 
 ## Options
 
@@ -344,14 +347,11 @@ Special asynchronous methods missing in `Zlib::GzipWriter`.
 So it is possible to have asynchronous variants for these synchronous methods.
 Behaviour is the same as `IO#write_nonblock` method.
 
-All nonblock operations for file will raise `EBADF` error on Windows.
-Setting file into nonblocking mode is [not available on Windows](https://github.com/ruby/ruby/blob/master/win32/win32.c#L4388).
-
 ```
 #<<(object)
 #print(*objects)
 #printf(*args)
-#putc(object, encoding: ::Encoding::BINARY)
+#putc(object, :encoding => 'ASCII-8BIT')
 #puts(*objects)
 ```
 

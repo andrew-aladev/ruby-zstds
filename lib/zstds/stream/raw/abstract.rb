@@ -7,6 +7,7 @@ require_relative "../../validation"
 module ZSTDS
   module Stream
     module Raw
+      # ZSTDS::Stream::Raw::Abstract class.
       class Abstract
         def initialize(native_stream)
           @native_stream = native_stream

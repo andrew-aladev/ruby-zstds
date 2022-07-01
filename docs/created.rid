@@ -1,0 +1,22 @@
+Fri, 01 Jul 2022 16:42:40 +0300
+lib/zstds.rb	Wed, 06 Nov 2019 13:34:29 +0300
+lib/zstds/dictionary.rb	Fri, 01 Jul 2022 16:40:29 +0300
+lib/zstds/error.rb	Mon, 18 Apr 2022 17:57:48 +0300
+lib/zstds/file.rb	Fri, 01 Jul 2022 16:40:39 +0300
+lib/zstds/option.rb	Fri, 01 Jul 2022 16:40:46 +0300
+lib/zstds/stream/abstract.rb	Fri, 01 Jul 2022 16:38:43 +0300
+lib/zstds/stream/delegates.rb	Fri, 01 Jul 2022 16:38:58 +0300
+lib/zstds/stream/raw/abstract.rb	Fri, 01 Jul 2022 16:38:10 +0300
+lib/zstds/stream/raw/compressor.rb	Fri, 01 Jul 2022 16:38:25 +0300
+lib/zstds/stream/raw/decompressor.rb	Fri, 01 Jul 2022 16:38:34 +0300
+lib/zstds/stream/reader.rb	Fri, 01 Jul 2022 16:39:36 +0300
+lib/zstds/stream/reader_helpers.rb	Fri, 01 Jul 2022 16:39:24 +0300
+lib/zstds/stream/stat.rb	Fri, 01 Jul 2022 16:39:47 +0300
+lib/zstds/stream/writer.rb	Fri, 01 Jul 2022 16:40:20 +0300
+lib/zstds/stream/writer_helpers.rb	Fri, 01 Jul 2022 16:40:06 +0300
+lib/zstds/string.rb	Fri, 01 Jul 2022 16:40:53 +0300
+lib/zstds/validation.rb	Fri, 01 Jul 2022 16:40:59 +0300
+lib/zstds/version.rb	Mon, 18 Apr 2022 17:57:48 +0300
+AUTHORS	Mon, 18 Apr 2022 17:57:48 +0300
+LICENSE	Tue, 29 Oct 2019 15:50:40 +0300
+README.md	Fri, 01 Jul 2022 16:36:27 +0300

@@ -8,6 +8,7 @@ require_relative "../validation"
 
 module ZSTDS
   module Stream
+    # ZSTDS::Stream::Abstract class.
     class Abstract
       # Native stream is not seekable by design.
       # Related methods like "seek" and "pos=" can't be implemented.

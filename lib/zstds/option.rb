@@ -8,6 +8,7 @@ require_relative "error"
 require_relative "validation"
 
 module ZSTDS
+  # ZSTDS::Option module.
   module Option
     DEFAULT_BUFFER_LENGTH = 0
 

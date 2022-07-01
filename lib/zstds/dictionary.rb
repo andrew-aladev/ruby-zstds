@@ -7,6 +7,7 @@ require_relative "error"
 require_relative "validation"
 
 module ZSTDS
+  # ZSTDS::Dictionary class.
   class Dictionary
     TRAIN_DEFAULTS = {
       :gvl      => false,

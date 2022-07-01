@@ -8,6 +8,7 @@ require_relative "../validation"
 
 module ZSTDS
   module Stream
+    # ZSTDS::Stream::WriterHelpers module.
     module WriterHelpers
       def <<(object)
         write object
@@ -66,6 +67,7 @@ module ZSTDS
 
       # -- etc --
 
+      # ZSTDS::Stream::WriterHelpers::ClassMethods module.
       module ClassMethods
         def open(file_path, *args, &block)
           Validation.validate_string file_path

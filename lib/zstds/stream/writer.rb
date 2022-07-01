@@ -7,6 +7,7 @@ require_relative "writer_helpers"
 
 module ZSTDS
   module Stream
+    # ZSTDS::Stream::Writer class.
     class Writer < Abstract
       include WriterHelpers
 

@@ -8,6 +8,7 @@ require_relative "../validation"
 
 module ZSTDS
   module Stream
+    # ZSTDS::Stream::Reader class.
     class Reader < Abstract
       include ReaderHelpers
 

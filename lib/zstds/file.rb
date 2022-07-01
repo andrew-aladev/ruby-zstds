@@ -8,6 +8,7 @@ require_relative "option"
 require_relative "validation"
 
 module ZSTDS
+  # ZSTDS::File module.
   module File
     BUFFER_LENGTH_NAMES = %i[source_buffer_length destination_buffer_length].freeze
 

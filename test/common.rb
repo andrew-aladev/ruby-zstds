@@ -5,6 +5,8 @@ require "parallel"
 require "securerandom"
 require "tempfile"
 
+require_relative "coverage_helper"
+
 module ZSTDS
   module Test
     module Common
@@ -113,7 +115,7 @@ module ZSTDS
           file.write_nonblock "text"
         end
       rescue Errno::EBADF
-        # Nonblock operations with files are not available on Windows.
+        # Nonblock operations may not be available.
         false
       else
         true

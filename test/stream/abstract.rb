@@ -84,7 +84,7 @@ module ZSTDS
             instance.close_on_exec = true
             assert_predicate instance, :close_on_exec?
 
-            # Fcntl is not available on windows.
+            # Fcntl may not be available.
             if Fcntl.const_defined? :F_GETFL
               stats = instance.fcntl Fcntl::F_GETFL, 0
               refute_nil stats

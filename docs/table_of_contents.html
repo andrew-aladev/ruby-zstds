@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+
+<title>Table of Contents - Ruby ZSTDS rdoc</title>
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "./";
+  var index_rel_prefix = "./";
+</script>
+
+<script src="./js/navigation.js" defer></script>
+<script src="./js/search.js" defer></script>
+<script src="./js/search_index.js" defer></script>
+<script src="./js/searcher.js" defer></script>
+<script src="./js/darkfish.js" defer></script>
+
+<link href="./css/fonts.css" rel="stylesheet">
+<link href="./css/rdoc.css" rel="stylesheet">
+
+
+<body id="top" class="table-of-contents">
+<main role="main">
+<h1 class="class">Table of Contents - Ruby ZSTDS rdoc</h1>
+
+<h2 id="pages">Pages</h2>
+<ul>
+  <li class="file">
+    <a href="AUTHORS.html">AUTHORS</a>
+  </li>
+  <li class="file">
+    <a href="LICENSE.html">LICENSE</a>
+  </li>
+  <li class="file">
+    <a href="README_md.html">README</a>
+
+    <ul>
+      <li><a href="README_md.html#label-Ruby+bindings+for+zstd+library">Ruby bindings for zstd library</a>
+      <li><a href="README_md.html#label-Installation">Installation</a>
+      <li><a href="README_md.html#label-Installation+in+macOS+on+Apple+Silicon">Installation in macOS on Apple Silicon</a>
+      <li><a href="README_md.html#label-Usage">Usage</a>
+      <li><a href="README_md.html#label-Docs">Docs</a>
+      <li><a href="README_md.html#label-Options">Options</a>
+      <li><a href="README_md.html#label-String">String</a>
+      <li><a href="README_md.html#label-File">File</a>
+      <li><a href="README_md.html#label-Stream-3A-3AWriter">Stream::Writer</a>
+      <li><a href="README_md.html#label-Stream-3A-3AReader">Stream::Reader</a>
+      <li><a href="README_md.html#label-Dictionary">Dictionary</a>
+      <li><a href="README_md.html#label-Thread+safety">Thread safety</a>
+      <li><a href="README_md.html#label-CI">CI</a>
+      <li><a href="README_md.html#label-License">License</a>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="classes">Classes and Modules</h2>
+<ul>
+  <li class="module">
+    <a href="ZSTDS.html">ZSTDS</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/AccessIOError.html">ZSTDS::AccessIOError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/AllocateError.html">ZSTDS::AllocateError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/BaseError.html">ZSTDS::BaseError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/CorruptedDictionaryError.html">ZSTDS::CorruptedDictionaryError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/DecompressorCorruptedSourceError.html">ZSTDS::DecompressorCorruptedSourceError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Dictionary.html">ZSTDS::Dictionary</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/File.html">ZSTDS::File</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/NotEnoughDestinationBufferError.html">ZSTDS::NotEnoughDestinationBufferError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/NotEnoughDestinationError.html">ZSTDS::NotEnoughDestinationError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/NotEnoughSourceBufferError.html">ZSTDS::NotEnoughSourceBufferError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/NotImplementedError.html">ZSTDS::NotImplementedError</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Option.html">ZSTDS::Option</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/ReadIOError.html">ZSTDS::ReadIOError</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream.html">ZSTDS::Stream</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Abstract.html">ZSTDS::Stream::Abstract</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/Delegates.html">ZSTDS::Stream::Delegates</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/Raw.html">ZSTDS::Stream::Raw</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Raw/Abstract.html">ZSTDS::Stream::Raw::Abstract</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Raw/Compressor.html">ZSTDS::Stream::Raw::Compressor</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Raw/Decompressor.html">ZSTDS::Stream::Raw::Decompressor</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Reader.html">ZSTDS::Stream::Reader</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/ReaderHelpers.html">ZSTDS::Stream::ReaderHelpers</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/ReaderHelpers/ClassMethods.html">ZSTDS::Stream::ReaderHelpers::ClassMethods</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Stat.html">ZSTDS::Stream::Stat</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/Stream/Writer.html">ZSTDS::Stream::Writer</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/WriterHelpers.html">ZSTDS::Stream::WriterHelpers</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Stream/WriterHelpers/ClassMethods.html">ZSTDS::Stream::WriterHelpers::ClassMethods</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/String.html">ZSTDS::String</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/UnexpectedError.html">ZSTDS::UnexpectedError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/UsedAfterCloseError.html">ZSTDS::UsedAfterCloseError</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/ValidateError.html">ZSTDS::ValidateError</a>
+  </li>
+  <li class="module">
+    <a href="ZSTDS/Validation.html">ZSTDS::Validation</a>
+  </li>
+  <li class="class">
+    <a href="ZSTDS/WriteIOError.html">ZSTDS::WriteIOError</a>
+  </li>
+</ul>
+
+<h2 id="methods">Methods</h2>
+<ul>
+
+  <li class="method">
+    <a href="ZSTDS/File.html#method-c-compress">::compress</a>
+    &mdash;
+    <span class="container">ZSTDS::File</span>
+
+  <li class="method">
+    <a href="ZSTDS/String.html#method-c-compress">::compress</a>
+    &mdash;
+    <span class="container">ZSTDS::String</span>
+
+  <li class="method">
+    <a href="ZSTDS/File.html#method-c-decompress">::decompress</a>
+    &mdash;
+    <span class="container">ZSTDS::File</span>
+
+  <li class="method">
+    <a href="ZSTDS/String.html#method-c-decompress">::decompress</a>
+    &mdash;
+    <span class="container">ZSTDS::String</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-c-finalize">::finalize</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Option.html#method-c-get_compressor_options">::get_compressor_options</a>
+    &mdash;
+    <span class="container">ZSTDS::Option</span>
+
+  <li class="method">
+    <a href="ZSTDS/Option.html#method-c-get_decompressor_options">::get_decompressor_options</a>
+    &mdash;
+    <span class="container">ZSTDS::Option</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Delegates.html#method-c-included">::included</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Delegates</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-c-included">::included</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-c-included">::included</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Compressor.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Compressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Decompressor.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Decompressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Stat.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Stat</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-c-new">::new</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-c-train">::train</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_array">::validate_array</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_bool">::validate_bool</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_hash">::validate_hash</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_integer">::validate_integer</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_not_negative_integer">::validate_not_negative_integer</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_positive_integer">::validate_positive_integer</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_proc">::validate_proc</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-c-validate_samples">::validate_samples</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_string">::validate_string</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Validation.html#method-c-validate_symbol">::validate_symbol</a>
+    &mdash;
+    <span class="container">ZSTDS::Validation</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-i-3C-3C">#&lt;&lt;</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-advise">#advise</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-append_io_data">#append_io_data</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Compressor.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Compressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Decompressor.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Decompressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-close">#close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-close_nonblock">#close_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-closed-3F">#closed?</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-closed-3F">#closed?</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-create_raw_stream">#create_raw_stream</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-create_raw_stream">#create_raw_stream</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-do_not_use_after_close">#do_not_use_after_close</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-each">#each</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-each_byte">#each_byte</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-each_char">#each_char</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-each_line">#each_line</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-each_string">#each_string</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-empty-3F">#empty?</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-eof-3F">#eof?</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-finish">#finish</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-finish_nonblock">#finish_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-flush">#flush</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Compressor.html#method-i-flush">#flush</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Compressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Decompressor.html#method-i-flush">#flush</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Decompressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-flush">#flush</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-flush_io_data">#flush_io_data</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-flush_nonblock">#flush_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-getbyte">#getbyte</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-getc">#getc</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-gets">#gets</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-i-header_size">#header_size</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Dictionary.html#method-i-id">#id</a>
+    &mdash;
+    <span class="container">ZSTDS::Dictionary</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-initialize_source_buffer_length">#initialize_source_buffer_length</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-more_destination">#more_destination</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers/ClassMethods.html#method-i-open">#open</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers::ClassMethods</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers/ClassMethods.html#method-i-open">#open</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers::ClassMethods</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-i-print">#print</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-i-printf">#printf</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-process_set_encoding_arguments">#process_set_encoding_arguments</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-i-putc">#putc</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/WriterHelpers.html#method-i-puts">#puts</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::WriterHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-raw_nonblock_wrapper">#raw_nonblock_wrapper</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-raw_wrapper">#raw_wrapper</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-raw_wrapper">#raw_wrapper</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Decompressor.html#method-i-read">#read</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Decompressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-read">#read</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-read_buffer">#read_buffer</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-read_bytes_from_buffer">#read_bytes_from_buffer</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-read_more_nonblock">#read_more_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-read_nonblock">#read_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-readbyte">#readbyte</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-readchar">#readchar</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-readline">#readline</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-readlines">#readlines</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-readpartial">#readpartial</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-readstring">#readstring</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-reset_buffer">#reset_buffer</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-reset_io_advise">#reset_io_advise</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-reset_io_remainder">#reset_io_remainder</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-reset_need_to_flush">#reset_need_to_flush</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-rewind">#rewind</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-rewind">#rewind</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-rewind">#rewind</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-rewind_nonblock">#rewind_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-set_encoding">#set_encoding</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-set_target_encoding">#set_target_encoding</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-target_encoding">#target_encoding</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Abstract.html#method-i-to_io">#to_io</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Abstract</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-transcode">#transcode</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-transcode_to_external">#transcode_to_external</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Reader.html#method-i-transcode_to_internal">#transcode_to_internal</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Reader</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-ungetbyte">#ungetbyte</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-ungetc">#ungetc</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-ungetline">#ungetline</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/ReaderHelpers.html#method-i-ungetstring">#ungetstring</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::ReaderHelpers</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-validate_write">#validate_write</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-validate_write_nonblock">#validate_write_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Compressor.html#method-i-write">#write</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Compressor</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-write">#write</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-write_nonblock">#write_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-write_remaining_buffer">#write_remaining_buffer</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Writer.html#method-i-write_remaining_buffer_nonblock">#write_remaining_buffer_nonblock</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Writer</span>
+
+  <li class="method">
+    <a href="ZSTDS/Stream/Raw/Abstract.html#method-i-write_result">#write_result</a>
+    &mdash;
+    <span class="container">ZSTDS::Stream::Raw::Abstract</span>
+</ul>
+</main>
+
+
+<footer id="validator-badges" role="contentinfo">
+  <p><a href="https://validator.w3.org/check/referer">Validate</a>
+  <p>Generated by <a href="https://ruby.github.io/rdoc/">RDoc</a> 6.4.0.
+  <p>Based on <a href="http://deveiate.org/projects/Darkfish-RDoc/">Darkfish</a> by <a href="http://deveiate.org">Michael Granger</a>.
+</footer>
+

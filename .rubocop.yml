@@ -49,7 +49,7 @@ Naming/VariableNumber:
 Style/AccessModifierDeclarations:
   EnforcedStyle: inline
 Style/Documentation:
-  Enabled: false
+  Enabled: true
 Style/FormatStringToken:
   EnforcedStyle: template
 Style/FrozenStringLiteralComment:

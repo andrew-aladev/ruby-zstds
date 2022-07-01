@@ -4,6 +4,7 @@
 require_relative "error"
 
 module ZSTDS
+  # ZSTDS::Validation module.
   module Validation
     def self.validate_array(value)
       raise ValidateError, "invalid array" unless value.is_a? ::Array

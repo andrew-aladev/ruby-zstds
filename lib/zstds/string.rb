@@ -7,6 +7,7 @@ require_relative "option"
 require_relative "validation"
 
 module ZSTDS
+  # ZSTDS::String module.
   module String
     BUFFER_LENGTH_NAMES = %i[destination_buffer_length].freeze
 

@@ -5,6 +5,7 @@ require "forwardable"
 
 module ZSTDS
   module Stream
+    # ZSTDS::Stream::Delegates module.
     module Delegates
       DELEGATES = %i[
         autoclose=

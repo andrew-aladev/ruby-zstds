@@ -24,9 +24,6 @@ environment:
     - job_name: macos (3.0)
       appveyor_build_worker_image: macos
       RUBY_VERSION: ruby-3.0
-    - job_name: windows-mingw
-      appveyor_build_worker_image: Visual Studio 2022
-      MSYSTEM: MINGW64
 
 for:
   -
@@ -52,21 +49,3 @@ for:
     test_script:
       - sh: rvm use "$RUBY_VERSION"
       - sh: scripts/ci_test.sh
-
-  -
-    matrix:
-      only:
-        - job_name: windows-mingw
-    init:
-      - cmd: >-
-          C:\msys64\usr\bin\bash -cl "
-          pacman --sync --noconfirm --needed
-          git
-          make
-          mingw-w64-x86_64-curl
-          mingw-w64-x86_64-gcc
-          mingw-w64-x86_64-ruby
-          mingw-w64-x86_64-zstd
-          "
-    test_script:
-      - cmd: C:\msys64\usr\bin\bash -l "%cd%\scripts\ci_test.sh"
