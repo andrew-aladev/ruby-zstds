@@ -10,40 +10,93 @@ require_relative "validation"
 module ZSTDS
   # ZSTDS::Option module.
   module Option
+    # Current default buffer length.
     DEFAULT_BUFFER_LENGTH = 0
 
+    # Current compressor defaults.
     COMPRESSOR_DEFAULTS = {
+      # Enables global VM lock where possible.
       :gvl                           => false,
+      # Compression level.
       :compression_level             => nil,
+      # Maximum back-reference distance (power of 2).
       :window_log                    => nil,
+      # Size of the initial probe table (power of 2).
       :hash_log                      => nil,
+      # Size of the multi-probe search table (power of 2).
       :chain_log                     => nil,
+      # Number of search attempts (power of 2).
       :search_log                    => nil,
+      # Minimum size of searched matches.
       :min_match                     => nil,
+      # Distance between match sampling (for :fast strategy),
+      #   length of match considered "good enough" for (for other strategies).
       :target_length                 => nil,
+      # Choses strategy.
       :strategy                      => nil,
+      # Enables long distance matching.
       :enable_long_distance_matching => nil,
+      # Size of the table for long distance matching (power of 2).
       :ldm_hash_log                  => nil,
+      # Minimum match size for long distance matcher.
       :ldm_min_match                 => nil,
+      # Log size of each bucket in the LDM hash table for collision resolution.
       :ldm_bucket_size_log           => nil,
+      # Frequency of inserting/looking up entries into the LDM hash table.
       :ldm_hash_rate_log             => nil,
+      # Enables writing of content size into frame header (if known).
       :content_size_flag             => nil,
+      # Enables writing of 32-bits checksum of content at end of frame.
       :checksum_flag                 => nil,
+      # Enables writing of dictionary id into frame header.
       :dict_id_flag                  => nil,
+      # Number of threads spawned in parallel.
       :nb_workers                    => nil,
+      # Size of job (nb_workers >= 1).
       :job_size                      => nil,
+      # Overlap size, as a fraction of window size.
       :overlap_log                   => nil,
+      # Chose dictionary.
       :dictionary                    => nil
     }
     .freeze
 
+    # Current decompressor defaults.
     DECOMPRESSOR_DEFAULTS = {
+      # Enables global VM lock where possible.
       :gvl            => false,
+      # Size limit (power of 2).
       :window_log_max => nil,
+      # Chose dictionary.
       :dictionary     => nil
     }
     .freeze
 
+    # Processes compressor +options+ and +buffer_length_names+.
+    # Option: +:source_buffer_length+ source buffer length.
+    # Option: +:destination_buffer_length+ destination buffer length.
+    # Option: +:gvl+ enables global VM lock where possible.
+    # Option: +:compression_level+ compression level.
+    # Option: +:window_log+ maximum back-reference distance (power of 2).
+    # Option: +:hash_log+ size of the initial probe table (power of 2).
+    # Option: +:chain_log+ size of the multi-probe search table (power of 2).
+    # Option: +:search_log+ number of search attempts (power of 2).
+    # Option: +:min_match+ minimum size of searched matches.
+    # Option: +:target_length+ distance between match sampling (for :fast strategy),
+    #   length of match considered "good enough" for (for other strategies).
+    # Option: +:strategy+ choses strategy.
+    # Option: +:ldm_hash_log+ size of the table for long distance matching (power of 2).
+    # Option: +:ldm_min_match+ minimum match size for long distance matcher.
+    # Option: +:ldm_bucket_size_log+ log size of each bucket in the LDM hash table for collision resolution.
+    # Option: +:ldm_hash_rate_log+ frequency of inserting/looking up entries into the LDM hash table.
+    # Option: +:content_size_flag+ enables writing of content size into frame header (if known).
+    # Option: +:checksum_flag+ enables writing of 32-bits checksum of content at end of frame.
+    # Option: +:dict_id_flag+ enables writing of dictionary id into frame header.
+    # Option: +:nb_workers+ number of threads spawned in parallel.
+    # Option: +:job_size+ size of job (nb_workers >= 1).
+    # Option: +:overlap_log+ overlap size, as a fraction of window size.
+    # Option: +:dictionary+ chose dictionary.
+    # Returns processed compressor options.
     def self.get_compressor_options(options, buffer_length_names)
       Validation.validate_hash options
 
@@ -180,6 +233,12 @@ module ZSTDS
       options
     end
 
+    # Processes decompressor +options+ and +buffer_length_names+.
+    # Option: +:source_buffer_length+ source buffer length.
+    # Option: +:destination_buffer_length+ destination buffer length.
+    # Option: +:gvl+ enables global VM lock where possible.
+    # Option: +:window_log_max+ size limit (power of 2).
+    # Returns processed decompressor options.
     def self.get_decompressor_options(options, buffer_length_names)
       Validation.validate_hash options
 

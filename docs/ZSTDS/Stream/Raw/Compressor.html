@@ -120,14 +120,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes compressor. Option: <code>:destination_buffer_length</code> destination buffer length. Option: <code>:pledged_size</code> source bytesize.</p>
             <div class="method-calls-super">
               Calls superclass method
               
             </div>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/zstds/stream/raw/compressor.rb, line 21</span>
+            <pre><span class="ruby-comment"># File lib/zstds/stream/raw/compressor.rb, line 24</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">options</span> = {})
   <span class="ruby-identifier">options</span> = <span class="ruby-constant">Option</span>.<span class="ruby-identifier">get_compressor_options</span> <span class="ruby-identifier">options</span>, <span class="ruby-constant">BUFFER_LENGTH_NAMES</span>
 

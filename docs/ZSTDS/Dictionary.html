@@ -104,11 +104,11 @@
       </header>
       <dl>
         <dt id="FINALIZE_DEFAULTS">FINALIZE_DEFAULTS
-        <dd>
+        <dd><p>Current finalize defaults.</p>
         <dt id="FINALIZE_DICTIONARY_DEFAULTS">FINALIZE_DICTIONARY_DEFAULTS
-        <dd>
+        <dd><p>Current finalize dictionary defaults.</p>
         <dt id="TRAIN_DEFAULTS">TRAIN_DEFAULTS
-        <dd>
+        <dd><p>Current train defaults.</p>
       </dl>
     </section>
 
@@ -124,7 +124,7 @@
         </div>
 
         <div class="method-description">
-        
+        <p>Reads current <code>buffer</code> binary data.</p>
         </div>
       </div>
     </section>
@@ -143,10 +143,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Finalizes dictionary. Uses <code>content</code> binary data. Uses <code>samples</code> list of binary datas. Uses <code>options</code> options hash. <a href="Option.html"><code>Option</code></a> <code>gvl</code> is global interpreter lock enabled. <a href="Option.html"><code>Option</code></a> <code>max_size</code> max size of dictionary buffer. <a href="Option.html"><code>Option</code></a> <code>dictionary_options</code> standard dictionary options hash. Returns dictionary based on new buffer.</p>
 
           <div class="method-source-code" id="finalize-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 55</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 75</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">finalize</span>(<span class="ruby-identifier">content</span>, <span class="ruby-identifier">samples</span>, <span class="ruby-identifier">options</span> = {})
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">content</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;content should not be empty&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">content</span>.<span class="ruby-identifier">empty?</span>
@@ -188,10 +188,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Initializes compressor. Uses <code>buffer</code> binary data.</p>
 
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 34</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 40</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">initialize</span>(<span class="ruby-identifier">buffer</span>)
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">buffer</span>
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;dictionary buffer should not be empty&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">buffer</span>.<span class="ruby-identifier">empty?</span>
@@ -212,10 +212,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Trains dictionary. Uses <code>samples</code> list of binary datas. Uses <code>options</code> options hash. <a href="Option.html"><code>Option</code></a> <code>gvl</code> is global interpreter lock enabled. <a href="Option.html"><code>Option</code></a> <code>capacity</code> capacity of dictionary buffer. Returns dictionary based on new buffer.</p>
 
           <div class="method-source-code" id="train-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 41</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 53</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">train</span>(<span class="ruby-identifier">samples</span>, <span class="ruby-identifier">options</span> = {})
   <span class="ruby-identifier">validate_samples</span> <span class="ruby-identifier">samples</span>
 
@@ -243,10 +243,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Raises error when <code>samples</code> are not list of not empty strings.</p>
 
           <div class="method-source-code" id="validate_samples-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 83</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 104</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_samples</span>(<span class="ruby-identifier">samples</span>)
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_array</span> <span class="ruby-identifier">samples</span>
 
@@ -276,10 +276,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns current dictionary header size.</p>
 
           <div class="method-source-code" id="header_size-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 96</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 119</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">header_size</span>
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">get_header_size</span> <span class="ruby-ivar">@buffer</span>
 <span class="ruby-keyword">end</span></pre>
@@ -297,10 +297,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Returns current dictionary id.</p>
 
           <div class="method-source-code" id="id-source">
-            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 92</span>
+            <pre><span class="ruby-comment"># File lib/zstds/dictionary.rb, line 114</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier ruby-title">id</span>
   <span class="ruby-keyword">self</span>.<span class="ruby-identifier">class</span>.<span class="ruby-identifier">get_buffer_id</span> <span class="ruby-ivar">@buffer</span>
 <span class="ruby-keyword">end</span></pre>

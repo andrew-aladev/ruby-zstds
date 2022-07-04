@@ -9,12 +9,14 @@ require_relative "validation"
 module ZSTDS
   # ZSTDS::Dictionary class.
   class Dictionary
+    # Current train defaults.
     TRAIN_DEFAULTS = {
       :gvl      => false,
       :capacity => 0
     }
     .freeze
 
+    # Current finalize defaults.
     FINALIZE_DEFAULTS = {
       :gvl                => false,
       :max_size           => 0,
@@ -22,6 +24,7 @@ module ZSTDS
     }
     .freeze
 
+    # Current finalize dictionary defaults.
     FINALIZE_DICTIONARY_DEFAULTS = {
       :compression_level  => 0,
       :notification_level => 0,
@@ -29,8 +32,11 @@ module ZSTDS
     }
     .freeze
 
+    # Reads current +buffer+ binary data.
     attr_reader :buffer
 
+    # Initializes compressor.
+    # Uses +buffer+ binary data.
     def initialize(buffer)
       Validation.validate_string buffer
       raise ValidateError, "dictionary buffer should not be empty" if buffer.empty?
@@ -38,6 +44,12 @@ module ZSTDS
       @buffer = buffer
     end
 
+    # Trains dictionary.
+    # Uses +samples+ list of binary datas.
+    # Uses +options+ options hash.
+    # Option +gvl+ is global interpreter lock enabled.
+    # Option +capacity+ capacity of dictionary buffer.
+    # Returns dictionary based on new buffer.
     def self.train(samples, options = {})
       validate_samples samples
 
@@ -52,6 +64,14 @@ module ZSTDS
       new buffer
     end
 
+    # Finalizes dictionary.
+    # Uses +content+ binary data.
+    # Uses +samples+ list of binary datas.
+    # Uses +options+ options hash.
+    # Option +gvl+ is global interpreter lock enabled.
+    # Option +max_size+ max size of dictionary buffer.
+    # Option +dictionary_options+ standard dictionary options hash.
+    # Returns dictionary based on new buffer.
     def self.finalize(content, samples, options = {})
       Validation.validate_string content
       raise ValidateError, "content should not be empty" if content.empty?
@@ -80,6 +100,7 @@ module ZSTDS
       new buffer
     end
 
+    # Raises error when +samples+ are not list of not empty strings.
     def self.validate_samples(samples)
       Validation.validate_array samples
 
@@ -89,10 +110,12 @@ module ZSTDS
       end
     end
 
+    # Returns current dictionary id.
     def id
       self.class.get_buffer_id @buffer
     end
 
+    # Returns current dictionary header size.
     def header_size
       self.class.get_header_size @buffer
     end

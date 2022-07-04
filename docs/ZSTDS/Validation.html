@@ -73,6 +73,7 @@
 
   <ul class="link-list" role="directory">
     <li ><a href="#method-c-validate_bool">::validate_bool</a>
+    <li ><a href="#method-c-validate_integer">::validate_integer</a>
   </ul>
 </div>
 
@@ -109,12 +110,33 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Raises error when <code>value</code> is not boolean.</p>
 
           <div class="method-source-code" id="validate_bool-source">
-            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 9</span>
+            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 10</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_bool</span>(<span class="ruby-identifier">value</span>)
   <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid bool&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">TrueClass</span>) <span class="ruby-operator">||</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span>(<span class="ruby-operator">::</span><span class="ruby-constant">FalseClass</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div id="method-c-validate_integer" class="method-detail ">
+        <div class="method-heading">
+          <span class="method-name">validate_integer</span><span
+            class="method-args">(value)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+
+        <div class="method-description">
+          <p>Raises error when <code>value</code> is not integer.</p>
+
+          <div class="method-source-code" id="validate_integer-source">
+            <pre><span class="ruby-comment"># File lib/zstds/validation.rb, line 15</span>
+<span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">validate_integer</span>(<span class="ruby-identifier">value</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ValidateError</span>, <span class="ruby-string">&quot;invalid integer&quot;</span> <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">is_a?</span> <span class="ruby-operator">::</span><span class="ruby-constant">Integer</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
         </div>

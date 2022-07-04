@@ -120,14 +120,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Compresses <code>source</code> string using <code>options</code>. Option: <code>:destination_buffer_length</code> destination buffer length. Option: <code>:pledged_size</code> source bytesize. Returns compressed string.</p>
             <div class="method-calls-super">
               Calls superclass method
               
             </div>
 
           <div class="method-source-code" id="compress-source">
-            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 16</span>
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 20</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">compress</span>(<span class="ruby-identifier">source</span>, <span class="ruby-identifier">options</span> = {})
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_string</span> <span class="ruby-identifier">source</span>
 
@@ -151,10 +151,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Bypasses native compress.</p>
 
           <div class="method-source-code" id="native_compress_string-source">
-            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 26</span>
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 31</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_compress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_compress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -172,10 +172,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Bypasses native decompress.</p>
 
           <div class="method-source-code" id="native_decompress_string-source">
-            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 30</span>
+            <pre><span class="ruby-comment"># File lib/zstds/string.rb, line 36</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">native_decompress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
   <span class="ruby-constant">ZSTDS</span>.<span class="ruby-identifier">_native_decompress_string</span>(<span class="ruby-operator">*</span><span class="ruby-identifier">args</span>)
 <span class="ruby-keyword">end</span></pre>

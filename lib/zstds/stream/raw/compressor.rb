@@ -18,6 +18,9 @@ module ZSTDS
         # Current option class.
         Option = ZSTDS::Option
 
+        # Initializes compressor.
+        # Option: +:destination_buffer_length+ destination buffer length.
+        # Option: +:pledged_size+ source bytesize.
         def initialize(options = {})
           options = Option.get_compressor_options options, BUFFER_LENGTH_NAMES
 

@@ -94,11 +94,11 @@
       </header>
       <dl>
         <dt id="COMPRESSOR_DEFAULTS">COMPRESSOR_DEFAULTS
-        <dd>
+        <dd><p>Current compressor defaults.</p>
         <dt id="DECOMPRESSOR_DEFAULTS">DECOMPRESSOR_DEFAULTS
-        <dd>
+        <dd><p>Current decompressor defaults.</p>
         <dt id="DEFAULT_BUFFER_LENGTH">DEFAULT_BUFFER_LENGTH
-        <dd>
+        <dd><p>Current default buffer length.</p>
       </dl>
     </section>
 
@@ -117,10 +117,14 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Processes compressor <code>options</code> and <code>buffer_length_names</code>. Option: <code>:source_buffer_length</code> source buffer length. Option: <code>:destination_buffer_length</code> destination buffer length. Option: <code>:gvl</code> enables global VM lock where possible. Option: <code>:compression_level</code> compression level. Option: <code>:window_log</code> maximum back-reference distance (power of 2). Option: <code>:hash_log</code> size of the initial probe table (power of 2). Option: <code>:chain_log</code> size of the multi-probe search table (power of 2). Option: <code>:search_log</code> number of search attempts (power of 2). Option: <code>:min_match</code> minimum size of searched matches. Option: <code>:target_length</code> distance between match sampling (for :fast strategy),</p>
+
+<pre>length of match considered &quot;good enough&quot; for (for other strategies).</pre>
+
+<p>Option: <code>:strategy</code> choses strategy. Option: <code>:ldm_hash_log</code> size of the table for long distance matching (power of 2). Option: <code>:ldm_min_match</code> minimum match size for long distance matcher. Option: <code>:ldm_bucket_size_log</code> log size of each bucket in the LDM hash table for collision resolution. Option: <code>:ldm_hash_rate_log</code> frequency of inserting/looking up entries into the LDM hash table. Option: <code>:content_size_flag</code> enables writing of content size into frame header (if known). Option: <code>:checksum_flag</code> enables writing of 32-bits checksum of content at end of frame. Option: <code>:dict_id_flag</code> enables writing of dictionary id into frame header. Option: <code>:nb_workers</code> number of threads spawned in parallel. Option: <code>:job_size</code> size of job (nb_workers &gt;= 1). Option: <code>:overlap_log</code> overlap size, as a fraction of window size. Option: <code>:dictionary</code> chose dictionary. Returns processed compressor options.</p>
 
           <div class="method-source-code" id="get_compressor_options-source">
-            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 47</span>
+            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 100</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">get_compressor_options</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">buffer_length_names</span>)
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_hash</span> <span class="ruby-identifier">options</span>
 
@@ -270,10 +274,10 @@
         </div>
 
         <div class="method-description">
-          
+          <p>Processes decompressor <code>options</code> and <code>buffer_length_names</code>. Option: <code>:source_buffer_length</code> source buffer length. Option: <code>:destination_buffer_length</code> destination buffer length. Option: <code>:gvl</code> enables global VM lock where possible. Option: <code>:window_log_max</code> size limit (power of 2). Returns processed decompressor options.</p>
 
           <div class="method-source-code" id="get_decompressor_options-source">
-            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 183</span>
+            <pre><span class="ruby-comment"># File lib/zstds/option.rb, line 242</span>
 <span class="ruby-keyword">def</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier ruby-title">get_decompressor_options</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">buffer_length_names</span>)
   <span class="ruby-constant">Validation</span>.<span class="ruby-identifier">validate_hash</span> <span class="ruby-identifier">options</span>
 
