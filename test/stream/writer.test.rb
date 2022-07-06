@@ -1,13 +1,13 @@
 # Ruby bindings for zstd library.
 # Copyright (c) 2019 AUTHORS, MIT License.
 
+require "adsp/test/stream/abstract"
 require "set"
 require "socket"
 require "stringio"
 require "zstds/stream/writer"
 require "zstds/string"
 
-require_relative "abstract"
 require_relative "../common"
 require_relative "../minitest"
 require_relative "../option"
@@ -15,7 +15,7 @@ require_relative "../option"
 module ZSTDS
   module Test
     module Stream
-      class Writer < Abstract
+      class Writer < ADSP::Test::Stream::Abstract
         Target = ZSTDS::Stream::Writer
         String = ZSTDS::String
 
