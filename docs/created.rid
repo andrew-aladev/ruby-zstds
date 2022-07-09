@@ -1,4 +1,4 @@
-Wed, 06 Jul 2022 23:32:21 +0300
+Sat, 09 Jul 2022 12:14:50 +0300
 lib/zstds.rb	Tue, 08 Sep 2020 12:25:29 +0300
 lib/zstds/dictionary.rb	Wed, 06 Jul 2022 23:08:29 +0300
 lib/zstds/error.rb	Wed, 06 Jul 2022 23:08:29 +0300
@@ -10,7 +10,7 @@ lib/zstds/stream/reader.rb	Wed, 06 Jul 2022 23:08:29 +0300
 lib/zstds/stream/writer.rb	Wed, 06 Jul 2022 23:08:29 +0300
 lib/zstds/string.rb	Wed, 06 Jul 2022 23:08:29 +0300
 lib/zstds/validation.rb	Wed, 06 Jul 2022 23:08:29 +0300
-lib/zstds/version.rb	Thu, 31 Mar 2022 01:21:08 +0300
+lib/zstds/version.rb	Wed, 06 Jul 2022 23:44:28 +0300
 AUTHORS	Thu, 31 Mar 2022 01:21:08 +0300
 LICENSE	Tue, 08 Sep 2020 12:25:29 +0300
 README.md	Wed, 06 Jul 2022 23:08:29 +0300
