@@ -6,6 +6,8 @@
 
 See [zstd library](https://github.com/facebook/zstd).
 
+Other bindings: [lzw](https://github.com/andrew-aladev/ruby-lzws), [brotli](https://github.com/andrew-aladev/ruby-brs), [bzip2](https://github.com/andrew-aladev/ruby-bzs).
+
 ## Installation
 
 Operating systems: GNU/Linux, FreeBSD, OSX.
