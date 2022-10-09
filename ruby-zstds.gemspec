@@ -28,9 +28,9 @@ GEMSPEC = Gem::Specification.new do |gem|
   gem.add_development_dependency "rake"
   gem.add_development_dependency "rake-compiler"
   gem.add_development_dependency "rdoc"
-  gem.add_development_dependency "rubocop", "~> 1.35"
-  gem.add_development_dependency "rubocop-minitest", "~> 0.21"
-  gem.add_development_dependency "rubocop-performance", "~> 1.14"
+  gem.add_development_dependency "rubocop", "~> 1.36"
+  gem.add_development_dependency "rubocop-minitest", "~> 0.22"
+  gem.add_development_dependency "rubocop-performance", "~> 1.15"
   gem.add_development_dependency "rubocop-rake", "~> 0.6"
   gem.add_development_dependency "simplecov"
 
