@@ -1,5 +1,5 @@
 pipeline {
-    agent { docker { image "puchuu/test-compression_i686-gentoo-linux-musl:latest" } }
+    agent { docker { image "puchuu/test-compression_x86_64-pc-linux-gnu:latest" } }
     stages {
         stage("ci_test") {
             steps {

@@ -19,20 +19,6 @@ GEMSPEC = Gem::Specification.new do |gem|
   }
 
   gem.add_runtime_dependency "adsp", "~> 1.0"
-  gem.add_development_dependency "codecov"
-  gem.add_development_dependency "json"
-  gem.add_development_dependency "minitar", "~> 0.9"
-  gem.add_development_dependency "minitest", "~> 5.16"
-  gem.add_development_dependency "ocg", "~> 1.4"
-  gem.add_development_dependency "parallel"
-  gem.add_development_dependency "rake"
-  gem.add_development_dependency "rake-compiler"
-  gem.add_development_dependency "rdoc"
-  gem.add_development_dependency "rubocop", "~> 1.36"
-  gem.add_development_dependency "rubocop-minitest", "~> 0.22"
-  gem.add_development_dependency "rubocop-performance", "~> 1.15"
-  gem.add_development_dependency "rubocop-rake", "~> 0.6"
-  gem.add_development_dependency "simplecov"
 
   gem.files =
     `find ext lib -type f \\( -name "*.rb" -o -name "*.h" -o -name "*.c" \\) -print0`.split("\x0") +

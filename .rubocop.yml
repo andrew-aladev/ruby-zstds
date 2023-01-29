@@ -39,6 +39,11 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
+Minitest/TestFileName:
+  Enabled: false
+
 Naming/AccessorMethodName:
   Enabled: false
 Naming/RescuedExceptionsVariableName:

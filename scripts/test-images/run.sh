@@ -4,8 +4,8 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 cd "$DIR"
 
-./x86_64-unknown-linux-gnu/run.sh
-./i686-unknown-linux-gnu/run.sh
+./x86_64-pc-linux-gnu/run.sh
+./i386-pc-linux-gnu/run.sh
 
-./x86_64-gentoo-linux-musl/run.sh
-./i686-gentoo-linux-musl/run.sh
+./x86_64-alpine-linux-musl/run.sh
+./i386-alpine-linux-musl/run.sh

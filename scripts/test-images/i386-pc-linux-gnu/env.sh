@@ -4,5 +4,5 @@ set -e
 DIR=$(dirname "${BASH_SOURCE[0]}")
 source "${DIR}/../env.sh"
 
-TARGET="x86_64-unknown-linux-gnu"
+TARGET="i386-pc-linux-gnu"
 IMAGE_NAME="${IMAGE_PREFIX}_${TARGET}"
