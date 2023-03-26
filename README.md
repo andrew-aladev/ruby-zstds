@@ -1,8 +1,8 @@
 # Ruby bindings for zstd library
 
-| AppVeyor | Jenkins | Github actions | Codecov | Gem  |
-| :------: | :-----: | :------------: | :-----: | :--: |
-| [![AppVeyor test status](https://ci.appveyor.com/api/projects/status/github/andrew-aladev/ruby-zstds?branch=master&svg=true)](https://ci.appveyor.com/project/andrew-aladev/ruby-zstds/branch/master) | [![Jenkins test status](http://37.187.122.190:58182/buildStatus/icon?job=ruby-zstds)](http://37.187.122.190:58182/job/ruby-zstds) | [![Github Actions test status](https://github.com/andrew-aladev/ruby-zstds/workflows/test/badge.svg?branch=master)](https://github.com/andrew-aladev/ruby-zstds/actions) | [![Codecov](https://codecov.io/gh/andrew-aladev/ruby-zstds/branch/master/graph/badge.svg)](https://codecov.io/gh/andrew-aladev/ruby-zstds) | [![Gem](https://img.shields.io/gem/v/ruby-zstds.svg)](https://rubygems.org/gems/ruby-zstds) |
+| Github actions | Codecov | Gem  |
+| :------------: | :-----: | :--: |
+| [![Github Actions test status](https://github.com/andrew-aladev/ruby-zstds/workflows/test/badge.svg?branch=master)](https://github.com/andrew-aladev/ruby-zstds/actions) | [![Codecov](https://codecov.io/gh/andrew-aladev/ruby-zstds/branch/master/graph/badge.svg)](https://codecov.io/gh/andrew-aladev/ruby-zstds) | [![Gem](https://img.shields.io/gem/v/ruby-zstds.svg)](https://rubygems.org/gems/ruby-zstds) |
 
 See [zstd library](https://github.com/facebook/zstd).
 
